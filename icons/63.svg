@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:ns1="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:ns2="http://www.inkscape.org/namespaces/inkscape" width="1000mm" height="1000mm" viewBox="0 0 1000 1000" version="1.1" id="svg1" ns1:docname="universal.svg" ns2:version="1.4.3 (0d15f75042, 2025-12-25)">
+  <ns1:namedview id="namedview1" pagecolor="#ffffff" bordercolor="#000000" borderopacity="0.25" ns2:showpageshadow="2" ns2:pageopacity="0.0" ns2:pagecheckerboard="0" ns2:deskcolor="#d1d1d1" ns2:document-units="mm" ns2:zoom="0.12472598" ns2:cx="2962.4942" ns2:cy="1848.0512" ns2:window-width="2560" ns2:window-height="1080" ns2:window-x="0" ns2:window-y="0" ns2:window-maximized="1" ns2:current-layer="layer1" />
+  <defs id="defs1" />
+  <g ns2:label="Layer 1" ns2:groupmode="layer" id="layer1">
+    <path style="fill:#000000;stroke-width:0.264583;stroke-dasharray:none;display:inline" d="m 432.5,500 67.5,-78 500,578 H 865 Z" id="path6" ns1:nodetypes="ccccc" ns2:label="downright" />
+    <path style="fill:#000000;stroke-width:0.264583;stroke-dasharray:none;display:inline" d="M 567.5,500 500,422 0,1000 h 135 z" id="path7" ns1:nodetypes="ccccc" ns2:label="downleft" />
+    <path style="fill:#000000;stroke-width:0.264583;stroke-dasharray:none;display:inline" d="M 432.5,500 500,578 1000,0 H 865 Z" id="path2" ns1:nodetypes="ccccc" ns2:label="upright" />
+    <path style="fill:#000000;stroke-width:0.264583;stroke-dasharray:none;display:inline" d="M 567.5,500 500,578 0,0 h 135 z" id="path5" ns1:nodetypes="ccccc" ns2:label="upleft" />
+    <path style="fill:#000000;stroke-width:0.264583;stroke-dasharray:none;display:inline" d="M 913.5,900 H 86.5 L 0,1000 h 1000 z" id="path3" ns1:nodetypes="ccccc" ns2:label="down" />
+    <path style="fill:#000000;stroke-width:0.264583;stroke-dasharray:none;display:inline" d="M 913.5,100 H 86.5 L 0,0 h 1000 z" id="path4" ns1:nodetypes="ccccc" ns2:label="up" />
+  </g>
+</svg>
