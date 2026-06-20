@@ -1,0 +1,59 @@
+:root {
+    --size: 450px;
+    --dot-size: calc(var(--size) / 37.5);
+    font-family: monospace;
+    user-select: none;
+}
+
+body {
+    display: grid;
+    align-items: center;
+    margin: 0;
+    background-color: #000;
+    animation: subtle-glow 5s infinite alternate;
+}
+
+#map{
+    margin: auto;
+    height: var(--size);
+    width: var(--size);
+    background: hsl(0, 0%, 12%)var(--size) url("../../images/bad-pet.png");
+    background-size: cover;
+    border: calc(var(--size) / 45) solid #fff;
+    font-size: calc(var(--size) / 4.5);
+    text-align: center;
+}
+
+#status {
+    margin: calc(var(--size) / 22.5) auto;
+    width: var(--size);
+    text-align: center;
+    font-size: calc(var(--size) / 22.5);
+    color: hsl(255, 100%, 60%);
+    text-shadow: 0 0 calc(var(--size) / 7.5);
+    padding: calc(var(--size) / 22.5);
+    background-color: #141414;
+    border: calc(var(--size) / 225) solid #fff;
+    border-radius: calc(var(--size) / 11.25);
+
+    span {
+        display: block;
+        margin: auto;
+        font-size: calc(var(--size) / 7.5);
+        text-align: center;
+    }
+}
+
+#pointer {
+    display: none;
+    position: absolute;
+    width: var(--dot-size);
+    height: var(--dot-size);
+    background-color: #f00;
+    border-radius: var(--dot-size);
+}
+
+@keyframes subtle-glow {
+    0% { background-color: #070707; }
+    100% { background-color: #111; }
+}
