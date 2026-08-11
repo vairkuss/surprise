@@ -10,6 +10,8 @@
 		*  [[characters]]
 			*  [[virko]]
 			*  [[infi]]
+			*  [[sharon]]
+			*  [[king-of-kings]]
 			
 		*  [[text]]
 		*  [[images]]
@@ -25,17 +27,18 @@
 		*  [[secret-page]]
 		
 	*  [[animations]]
+	*  [[sounds]]
 	
 * ###  [[presentation]]
 	
 	*  [[short-about]]
 	*  [[growth]]
 	*  [[our-story]]
-	*  [[present-days]]
 	*  [[future-plans]]
 	*  [[things-i-like]]
 	*  [[things-i-dislike]]
 	*  [[memes]]
+	*  [[cuseics]]
 	*  [[hall-of-works]]
 	
 * ###  [[games]]
@@ -47,7 +50,6 @@
 			*  [[lvl1]]
 			*  [[lvl2]]
 			*  [[lvl3]]
-			*  [[lvl4]]
 			*  [[freeplay]]
 			
 		*  [[snake-input]]
@@ -61,8 +63,8 @@
 			*  [[glitch]]
 			
 		*  [[snake-mechanics]]
-			*  [[buffs]]
-			*  [[debuffs]]
+			*  [[mixins]]
+			*  [[progression]]
 			*  [[gameover]]
 			*  [[level-end]]
 			*  [[score]]
@@ -72,9 +74,7 @@
 	
 * ###  [[music]]
 	
-	*  [[study-preferences]]
-	*  [[write-melody]]
+	*  [[preferences]]
 	*  [[write-lyrics]]
 	*  [[make-clip]]
-	*  [[sounds]]
 	
