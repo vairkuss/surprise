@@ -1,0 +1,63 @@
+@font-face {
+    font-family: infex;
+    src: url(../fonts/infex-main-100.ttf);
+}
+
+:root {
+    font-family: infex, monospace;
+    font-size: 3em;
+}
+
+body {
+    display: grid;
+    place-items: center;
+    margin: 0;
+}
+
+#stats {
+    position: fixed;
+    top: 0.5rem;
+    left: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    background: hsla(0, 0%, 100%, 0.5);
+    font-size: 0.5rem;
+    box-shadow: 0 0 10px #fff;
+}
+
+#score {
+    margin: auto;
+    text-align: center;
+}
+
+#stamina {
+    display: block;
+    margin: 0.2rem auto;
+    box-shadow: 0 0 10px hsla(0, 0% 40%, 0.8);
+    border-radius: 0.2rem;
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+#board {
+    display: block;
+    margin: 3rem auto;
+    outline: 5px solid #443533;
+    touch-action: none;
+    /*width: 200px;
+    height: 200px;*/
+}
+
+#bar {
+    display: flex;
+    margin: auto;
+    align-items: center;
+}
+
+.btn {
+    background: #000;
+    color: #fff;
+    margin: 10px;
+    border-radius: 0.2rem;
+    padding: 0.3rem 0.5rem;
+}

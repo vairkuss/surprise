@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+
+<html>
+
+
+    <head>
+    
+        <link rel="stylesheet" href="infilaxy.css">
+        
+        <title>INFILAXY</title>
+        <link rel="icon" type="image/x-icon" href="63.ico">
+        <link rel="icon" href="63.svg" sizes="any" type="image/svg+xml">
+        <link rel="manifest" href="manifest.json">
+
+        <style>
+            @keyframes awakening {
+                0% {
+                    background-color: #000;
+                    height: 100%;
+                    h1 {
+                        scale: 0%;
+                        margin: 0;
+                        color: hsla(0, 0%, 0%, 0);
+                    }
+                }
+                75% {
+                    h1 {
+                        margin: 0;
+                        scale: 120%;
+                    }
+                }
+                90% {
+                    h1 {
+                        margin-top: 0.1rem;
+                        color: #fff;
+                        scale: 100%;
+                    };
+                }
+                100% {
+                    background-color: hsla(0, 0%, 0%, 0.3);
+                    height: 2rem;
+                }
+            }
+
+            #header {
+                animation: awakening 3.5s cubic-bezier(.6,.25,.08,.95);
+            }
+        </style>
+        
+    </head>
+    
+    
+    <body>
+
+        <div id="header">
+            <h1>INFILAXY</h1>
+            <div id="player">
+                <h1>pipiska</h1>
+            </div>
+        </div>
+    
+        <div class="block fineborder padding">
+
+            <h1>Main Page</h1>
+            <h2><span class="infilaxy">start of journey</span></h2>
+          
+            <ul>
+                <li><a href="block.html">block</a></li>
+                <li><a href="slide.html">slide</a></li>
+                <li><a>Who is Infilaxy?</a></li>
+                <li><a href="hall-of-works.html">Hall of works</a></li>
+                <li><a>Quiz</a></li>
+            </ul>
+            <div class="easteregg"><a>???</a></div>
+
+        </div>
+            
+        <div class="testik" style="display:none;"></div>
+       
+    </body>
+    
+</html>

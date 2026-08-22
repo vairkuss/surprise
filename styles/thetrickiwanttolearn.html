@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Energy Comet Button</title>
+  <style>
+    /* =========================================
+       1. НАСТРОЙКИ (меняй только здесь)
+       ========================================= */
+    .energy-btn {
+      /* Размеры */
+      --btn-width: 240px;
+      --btn-height: 64px;
+      --btn-radius: 14px;
+
+      /* Цвета кометы */
+      --comet-tail: #00f5ff;     /* самый конец хвоста */
+      --comet-mid:  #22d3ee;     /* середина */
+      --comet-head: #a855f7;     /* яркая часть */
+      --comet-tip:  #ffffff;     /* кончик */
+
+      /* Параметры линии */
+      --stroke-width: 3.2;
+      --head-length: 18;         /* длина головы (из 100) */
+
+      /* Тайминги */
+      --anim-duration: 1.2s;
+      --anim-easing: cubic-bezier(0.4, 0, 0.2, 1);
+
+      /* Финальное свечение кнопки */
+      --glow-1: rgba(0, 245, 255, 0.4);
+      --glow-2: rgba(0, 245, 255, 0.28);
+      --glow-3: rgba(168, 85, 247, 0.2);
+    }
+
+    /* =========================================
+       2. КНОПКА
+       ========================================= */
+    .energy-btn {
+      position: relative;
+      width: var(--btn-width);
+      height: var(--btn-height);
+      border: none;
+      border-radius: var(--btn-radius);
+      background: #0f0f13;
+      color: #e2e8f0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      overflow: hidden;
+      isolation: isolate;
+
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
+      transition: background 0.35s ease;
+    }
+
+    /* Состояние после анимации */
+    .energy-btn.is-charged {
+      background: #111827;
+      box-shadow:
+        0 0 0 1px var(--glow-1),
+        0 0 20px 5px var(--glow-2),
+        0 0 48px 12px var(--glow-3);
+    }
+
+    .btn-text {
+      position: relative;
+      z-index: 2;
+    }
+
+    /* =========================================
+       3. SVG
+       ========================================= */
+    .border-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* =========================================
+       4. ПУТЬ КОМЕТЫ
+       pathLength="100" → работаем как с процентами
+       ========================================= */
+    .comet-path {
+      stroke-dasharray: var(--head-length) 100;
+      stroke-dashoffset: 100; /* спрятана в начале */
+    }
+
+    /* =========================================
+       5. АНИМАЦИИ
+       ========================================= */
+    @keyframes comet-run {
+      0% {
+        stroke-dashoffset: 100;
+        opacity: 1;
+      }
+      65% {
+        stroke-dashoffset: 0;
+        opacity: 1;
+      }
+      100% {
+        /* уезжаем в минус + растворяемся → хвост красиво исчезает */
+        stroke-dashoffset: -100;
+        opacity: 0;
+      }
+    }
+
+    @keyframes energy-burst {
+      0% {
+        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
+      }
+      42% {
+        /* пик вспышки */
+        box-shadow:
+          0 0 0 1px rgba(0, 245, 255, 0.7),
+          0 0 36px 14px rgba(0, 245, 255, 0.55),
+          0 0 70px 26px rgba(168, 85, 247, 0.38);
+      }
+      100% {
+        box-shadow:
+          0 0 0 1px var(--glow-1),
+          0 0 20px 5px var(--glow-2),
+          0 0 48px 12px var(--glow-3);
+      }
+    }
+
+    /* Запуск */
+    .energy-btn.run .comet-path {
+      animation: comet-run var(--anim-duration) var(--anim-easing) forwards;
+    }
+
+    .energy-btn.run {
+      animation: energy-burst var(--anim-duration) var(--anim-easing) forwards;
+    }
+  </style>
+</head>
+<body style="margin:0; min-height:100vh; display:grid; place-items:center; background:#050505;">
+
+  <button class="energy-btn">
+    <span class="btn-text">Зарядить</span>
+
+    <svg class="border-svg" viewBox="0 0 240 64" preserveAspectRatio="none">
+      <defs>
+        <!-- 
+          Градиент сразу делает хвост рассеянным:
+          0%   — полностью прозрачный
+          70%  — полупрозрачный
+          100% — яркий кончик
+        -->
+        <linearGradient id="cometGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%"   stop-color="var(--comet-tail)" stop-opacity="0"/>
+          <stop offset="55%"  stop-color="var(--comet-mid)"  stop-opacity="0.45"/>
+          <stop offset="85%"  stop-color="var(--comet-head)" stop-opacity="1"/>
+          <stop offset="100%" stop-color="var(--comet-tip)"  stop-opacity="1"/>
+        </linearGradient>
+
+        <!-- Мягкое свечение линии -->
+        <filter id="cometGlow" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="2.6" result="blur"/>
+          <feMerge>
+            <feMergeNode in="blur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+
+      <!-- pathLength="100" = полный круг считаем за 100 единиц -->
+      <path
+        class="comet-path"
+        pathLength="100"
+        d="M 120,2
+           H 220
+           A 10,10 0 0 1 230,12
+           V 52
+           A 10,10 0 0 1 220,62
+           H 20
+           A 10,10 0 0 1 10,52
+           V 12
+           A 10,10 0 0 1 20,2
+           H 120"
+        fill="none"
+        stroke="url(#cometGrad)"
+        stroke-width="var(--stroke-width)"
+        stroke-linecap="round"
+        filter="url(#cometGlow)"
+      />
+    </svg>
+  </button>
+
+  <script>
+    const btn = document.querySelector('.energy-btn');
+
+    btn.addEventListener('mouseenter', () => {
+      if (btn.classList.contains('is-charged')) return;
+      btn.classList.add('run');
+    });
+
+    btn.addEventListener('animationend', (e) => {
+      if (e.animationName !== 'energy-burst') return;
+
+      btn.classList.remove('run');
+      btn.classList.add('is-charged');
+    });
+  </script>
+</body>
+</html>
