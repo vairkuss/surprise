@@ -1,15 +1,4 @@
-@font-face {
-    font-family: infex;
-    src: url(../fonts/infex-main-100.ttf);
-}
-
-:root {
-    font-family: infex, monospace;
-    font-size: 1em;
-}
-
-
-.buttons {
+#buttons {
     display: grid;
     grid-template-columns: var(--btn-size) var(--btn-size) var(--btn-size);
     place-content: space-evenly;
