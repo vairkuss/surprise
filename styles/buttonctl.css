@@ -1,0 +1,246 @@
+:root {
+    --btn-l: 5;
+}
+
+
+/*           BUTTON           */
+
+.btn {
+    user-select: none;
+    height: var(--btn-size);
+    width: fit-content(var(--btn-size));
+    
+    will-change: transform;
+    transition:
+            0.09s transform ease-in 0.09s,
+            0.1s background ease-in,
+            0.1s box-shadow ease-in 0.1s,
+            0s z-index 0.42s;
+    
+    /**/
+    @media(hover: hover) {
+    /**/
+        &:hover {
+            z-index: calc((var(--btn-l) * 10) + 2);
+            transform: scale(1.2);
+        
+            background: var(--block-bg-grad-hover);
+            box-shadow:
+                0 0
+                var(--btn-size)
+                hsl( var(--m-hue), calc(var(--m-sat) * 0.4), calc(var(--m-lum) * 0.2) );
+        
+            transition:
+                0.09s transform ease-in 0.09s,
+                0.1s background ease-in,
+                0.1s box-shadow ease-in 0.1s,
+                0s z-index;
+        }
+    /**/
+    }
+    /**/
+    
+    
+    &:active {
+        
+        transform: scale(0.5);
+        
+        background: var(--block-bg-grad-active);
+        box-shadow:
+            0 0
+            calc(var(--btn-size) * 1.5)
+            hsl( var(--m-hue), calc(var(--m-sat) * 0.8), calc(var(--m-lum) * 0.7) );
+        
+        transition:
+            0.09s transform ease-in 0.09s,
+            0.1s background ease-in,
+            0.1s box-shadow ease-in 0.1s,
+            0s z-index 0.42s;
+        
+    }
+    
+    
+    /*            RING            */
+    
+    & > .inner-ring {
+        
+        &::before {
+            padding: 0;
+            
+            transition:
+                0.8s background ease-in;
+                
+        }
+        
+        will-change: transform; 
+        transition:
+            0.2s box-shadow ease-in 0.1s,
+            0.06s transform ease-in 0.06s;
+        
+    }
+    
+    /**/
+    @media(hover: hover) {
+    /**/
+        &:hover > .inner-ring {
+            transform: scale(1.1);
+            box-shadow:
+                0 0
+                calc(var(--ring-size) * 0.5)
+                hsl(var(--m-hue), calc(var(--m-sat) * 0.6), calc(var(--m-lum) * 0.6)),
+                inset 0 0
+                calc(var(--ring-size) * 0.5)
+                hsl(var(--m-hue), calc(var(--m-sat) * 0.6), calc(var(--m-lum) * 0.6));
+            
+            transition:
+                0.2s box-shadow ease-in 0.1s,
+                0.06s transform ease-in 0.06s;    
+        }
+    /**/
+    }
+    /**/
+    
+    
+    &:active > .inner-ring {
+        
+        transform: scale(0.8);
+        box-shadow:
+            0 0
+            calc(var(--ring-size) * 0.5)
+            hsl(var(--m-hue), calc(var(--m-sat) * 0.6), calc(var(--m-lum) * 0.8)),
+            inset 0 0
+            calc(var(--ring-size) * 0.5)
+            hsl(var(--m-hue), calc(var(--m-sat) * 0.6), calc(var(--m-lum) * 0.8));
+            
+        transition:
+            0.2s box-shadow ease-in 0.1s,
+            0.06s transform ease-in 0.06s;
+            
+    }
+    
+    
+    /*            ICON            */
+            
+    & > .inner-ring > .icon {
+        
+        filter:
+            drop-shadow(
+                0 0 0
+                transparent
+            );
+        
+        will-change: transform, opacity, filter;
+        transition:
+            0.03s transform ease-in,
+            0.12s opacity ease-in 0.05s,
+            0.2s color ease-in 0.1s,
+            0.2s filter ease-in 0.1s;
+            
+   }
+    
+    /**/
+    @media(hover: hover) {
+    /**/
+        &:hover > .inner-ring > .icon {
+            position: relative;
+            z-index: calc((var(--btn-l) * 10) + 4);
+            
+            transform: scale(1.1);
+            color: hsl(var(--m-hue), calc(var(--m-sat) * 0.4), calc(var(--m-lum) * 0.8));
+        
+            filter:
+                drop-shadow(
+                    0
+                    calc(var(--icon-size) * 0.05)
+                    0
+                    hsl(var(--m-hue), calc(var(--m-sat) * 0.3), calc(var(--m-lum) * 0.2))
+            );
+            
+            transition:
+                0.03s transform ease-in,
+                0.12s opacity ease-in 0.05s,
+                0.2s color ease-in 0.1s,
+                0.2s filter ease-in 0.1s
+                0s position 0.3s;
+        }
+    /**/
+    }
+    /**/
+    
+    
+    &:active > .inner-ring > .icon {
+        
+        transform: scale(0.4);
+        opacity: 0;
+        
+        transition:
+            0.06s transform ease-in,
+            0.12s opacity ease-in,
+            0.2s color ease-in 0.1s,
+            0.2s filter ease-in 0.1s;
+            
+    }
+    
+}
+
+
+
+/*          DISABLED          */
+
+.disabled {
+    
+    transform: scale(0.8);
+    
+    pointer-events: none;
+    
+    background: 
+        radial-gradient(
+            ellipse 40% 40%,
+            hsl( var(--m-hue), calc(var(--m-sat) * 0.1), calc(var(--m-lum) * 0.175) ),
+            hsl( var(--m-hue), calc(var(--m-sat) * 0.05), calc(var(--m-lum) * 0.075) )
+        );
+    
+    
+    /*         DIS RING          */
+            
+    & > .inner-ring {
+        
+        box-shadow: none;
+        
+        &::before {
+            
+            border-radius: var(--ring-size);
+            border: var(--brd-size) solid transparent;
+        
+            background:
+                linear-gradient(
+                    105deg,
+                    hsl( calc(var(--m-hue) - 5), calc(var(--m-sat) * 0.1), calc(var(--m-lum) * 0.55) ),
+                    hsl( var(--m-hue), calc(var(--m-sat) * 0.05), calc(var(--m-lum) * 0.4) ),
+                    hsl( calc(var(--m-hue) + 5), calc(var(--m-sat) * 0.1), calc(var(--m-lum) * 0.55) ),
+                    hsl( var(--m-hue), calc(var(--m-sat) * 0.05), calc(var(--m-lum) * 0.7) ),
+                    hsl( calc(var(--m-hue) - 5), calc(var(--m-sat) * 0.1), calc(var(--m-lum) * 0.55) )
+                ) border-box;
+            
+            transition:
+                0.8s background ease-in;
+                
+        }
+        
+        transition:
+            0.2s box-shadow ease-in 0.1s,
+            0.06s transform ease-in 0.06s;
+            
+    }
+    
+    
+    /*         DIS ICON          */
+    
+    & > .inner-ring > .icon {
+        
+        color: hsl( var(--m-hue), calc(var(--m-sat) * 0.075), calc(var(--m-lum) * 0.55) );
+        transform: scale(0.8);
+        
+    }
+    
+}

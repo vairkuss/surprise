@@ -1,0 +1,93 @@
+:root {
+    --btn-size: 3rem;
+    --ring-size: calc(var(--btn-size) * 0.85);
+    --brd-size: calc(var(--btn-size) * 0.05);
+    --icon-size: calc(var(--ring-size) - var(--brd-size));
+    
+    --block-l: 4;
+}
+
+.block {
+    
+    display: grid;
+    place-items: center;
+    
+    position: relative;
+    z-index: calc((var(--block-l) * 10) + 1);
+    
+    padding: calc((var(--btn-size) - var(--ring-size)));
+    width: 76vw;
+    height: auto;
+    border-radius: var(--btn-size);
+    
+    background: var(--block-bg-grad);
+    box-shadow:
+        0 0
+        var(--btn-size)
+        hsl( var(--m-hue), calc(var(--m-sat) * 0.4), calc(var(--m-lum) * 0.2) );
+    
+    transition:
+        0.5s height ease-out;
+    
+    & > .inner-ring {
+        
+        display: grid;
+        place-content: center;
+        overflow: visible;
+        
+        position: relative;
+        z-index: calc((var(--block-l) * 10) + 3);
+        
+        width: 100%;
+        min-width: var(--ring-size);
+        height: 100%;
+        border-radius: var(--ring-size);
+        
+        box-sizing: border-box;
+        
+        box-shadow:
+            0 0
+            calc(var(--ring-size) * 0.25)
+            hsl(var(--m-hue), calc(var(--m-sat) * 0.6), calc(var(--m-lum) * 0.4)),
+            inset 0 0
+            calc(var(--ring-size) * 0.2)
+            hsl(var(--m-hue), calc(var(--m-sat) * 0.6), calc(var(--m-lum) * 0.4));
+        background: transparent;
+            
+            
+        &::before {
+            
+            content: "";
+            
+            position: absolute;
+            inset: 0;
+            z-index: calc((var(--block-l) * 10) + 2);
+            
+            border-radius: inherit;
+            border: var(--brd-size) solid transparent;
+            
+            background: url(#text-grad) border-box;
+            
+            mask: linear-gradient(#000 0 0), linear-gradient(#000 0 0) padding-box;
+            mask-composite: exclude;
+            
+        }
+        
+    }
+    
+    
+    & > .inner-ring > .icon {
+        
+        display: grid;
+        place-content: center;
+        
+        width: 100%;
+        min-width: var(--icon-size);
+        height: 100%;
+        min-height: var(--icon-size);
+        
+        place-content: center;
+        
+    }
+    
+}
