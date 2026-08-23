@@ -8,7 +8,8 @@
 .btn {
     user-select: none;
     height: var(--btn-size);
-    width: fit-content(var(--btn-size));
+    min-width: var(--btn-size);
+    width: fit-content;
     
     will-change: transform;
     transition:

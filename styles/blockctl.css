@@ -1,7 +1,7 @@
 :root {
     --btn-size: 3rem;
-    --ring-size: calc(var(--btn-size) * 0.85);
-    --brd-size: calc(var(--btn-size) * 0.05);
+    --ring-size: calc(var(--btn-size) * 0.9);
+    --brd-size: calc(var(--btn-size) * 0.08);
     --icon-size: calc(var(--ring-size) - var(--brd-size));
     
     --block-l: 4;
@@ -10,6 +10,7 @@
 .block {
     
     display: grid;
+    
     place-items: center;
     
     position: relative;
@@ -81,9 +82,9 @@
         display: grid;
         place-content: center;
         
-        width: 100%;
+        width: auto;
         min-width: var(--icon-size);
-        height: 100%;
+        height: auto;
         min-height: var(--icon-size);
         
         place-content: center;

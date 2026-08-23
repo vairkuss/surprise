@@ -5,14 +5,7 @@ function addMeta () {
         ["colorctl", "textctl", "bgctl", "blockctl", "buttonctl"]
             .map(v => `<link rel="stylesheet" href="${v}.css" />`)
             .concat([
-                '<meta charset="UTF-8"/>',
-                `
-<style>
-:root {
-    interpolate-size: allow-keywords;
-}
-</style>
-`
+                '<meta charset="UTF-8"/>'
             ])
             .join("")
     );
@@ -55,7 +48,7 @@ async function loadSVG() {
                     if (iconElement.textContent) {
                         const iconStyle = window.getComputedStyle(iconElement);
                         iconElement.innerHTML = `
-<svg xmlns="http://www.w3.org/2000/svg" width="100%" height"100%">
+<svg xmlns="http://www.w3.org/2000/svg" width="72vw" height="var(--icon-size)">
     <text x="50%" y="50%" class="text">
         ${iconElement.textContent}
     </text>

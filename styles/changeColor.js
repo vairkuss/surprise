@@ -68,6 +68,7 @@ got:      ${values.length}`
         return values;
     } catch (e) {
         msgElement.innerText = e.toString();
+        console.error(e);
     }
 }
 
