@@ -2,9 +2,9 @@
 document.querySelector("body").insertAdjacentHTML("beforeend", `
 <svg id="grads" xmlns="http://www.w3.org/2000/svg"></svg>
 <div id="input" class="block" style="
+display: flex;
+flex-flow: column;
 align-content: space-evenly;
-position: relative;
-top: 0;
 bottom: auto;
 transform: scale(0);
 opacity: 0;
@@ -41,6 +41,13 @@ document.querySelector("#grads").innerHTML = `
         <stop offset="50%" stop-color="hsl(calc(var(--m-hue) + 5), calc(var(--m-sat) * 0.8), calc(var(--m-lum) * 0.75))" />
         <stop offset="75%" stop-color="hsl(var(--m-hue), calc(var(--m-sat) * 0.8), calc(var(--m-lum) * 0.9))" />
         <stop offset="100%" stop-color="hsl(calc(var(--m-hue) - 5), calc(var(--m-sat) * 0.8), calc(var(--m-lum) * 0.75))" />
+    </linearGradient>
+    <linearGradient id="dis-grad" x1="37%" y1="2%" x2="63%" y2="98%">
+        <stop offset="0%" stop-color="hsl(calc(var(--m-hue) - 5), calc(var(--m-sat) * 0.1), calc(var(--m-lum) * 0.55))" />
+        <stop offset="25%" stop-color="hsl(var(--m-hue), calc(var(--m-sat) * 0.05), calc(var(--m-lum) * 0.4))" />
+        <stop offset="50%" stop-color="hsl(calc(var(--m-hue) + 5), calc(var(--m-sat) * 0.1), calc(var(--m-lum) * 0.55))" />
+        <stop offset="75%" stop-color="hsl(var(--m-hue), calc(var(--m-sat) * 0.05), calc(var(--m-lum) * 0.7))" />
+        <stop offset="100%" stop-color="hsl(calc(var(--m-hue) - 5), calc(var(--m-sat) * 0.1), calc(var(--m-lum) * 0.55))" />
     </linearGradient>
 </defs>
 `;

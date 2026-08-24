@@ -1,44 +1,45 @@
-function addMeta () {
-    const headElement = document.querySelector("head");
-    headElement.insertAdjacentHTML(
-        "beforeend",
-        ["colorctl", "textctl", "bgctl", "blockctl", "buttonctl"]
-            .map(v => `<link rel="stylesheet" href="${v}.css" />`)
-            .concat([
-                '<meta charset="UTF-8"/>'
-            ])
-            .join("")
-    );
-}
+class CompletePage {
+    static #addMeta () {
+        const headElement = document.querySelector("head");
+        headElement.insertAdjacentHTML(
+            "beforeend",
+            ["colorctl", "textctl", "bgctl", "blockctl", "buttonctl"]
+                .map(v => `<link rel="stylesheet" href="${v}.css" />`)
+                .concat([
+                    '<meta charset="UTF-8"/>'
+                ])
+               .join("")
+        );
+    }
 
-async function developBlocks() {
-    [...document.querySelectorAll(".block")]
-        .filter(
-            blockElement => ![...blockElement.children].flatMap(
-                blockChild => blockChild.className.split(" ")
-            ).includes("inner-ring")
-        )
-        .forEach(
-            blockElement => {
-                blockElement.innerHTML = `
+    static #developBlocks() {
+        [...document.querySelectorAll(".block")]
+            .filter(
+                blockElement => ![...blockElement.children].flatMap(
+                    blockChild => blockChild.className.split(" ")
+                ).includes("inner-ring")
+            )
+            .forEach(
+                blockElement => {
+                    blockElement.innerHTML = `
 <div class="inner-ring">
     ${blockElement.innerHTML}
 </div>
 `;
-            }
-        );
-    if (
-        ![...document.querySelectorAll(".block")].every(
-            blockElement => [...blockElement.children].some(
-                blockChild => blockChild.className === "inner-ring"
+                }
+            );
+        if (
+            ![...document.querySelectorAll(".block")].every(
+                blockElement => [...blockElement.children].some(
+                    blockChild => blockChild.className === "inner-ring"
+                )
             )
-        )
-    ) { developBlocks() }
-}
+        ) { this.#developBlocks() }
+    }
 
-
-async function loadSVG() {
-    document.querySelectorAll(".icon").forEach(
+    static #loadSVG() {
+    
+        document.querySelectorAll(".icon").forEach(
             async iconElement => {
                 
                 const url = iconElement.getAttribute("path");
@@ -78,13 +79,17 @@ async function loadSVG() {
                 }
             }
         );
-}
+    }
 
+    static #ready = 0;
 
-function init() {
-    addMeta();
-    developBlocks();
-    loadSVG();
+    static init() {
+        if (this.#ready) { return }
+        this.#addMeta();
+        this.#developBlocks();
+        this.#loadSVG();
+        this.#ready = 1;
+    }
 }
 
 /**
@@ -93,7 +98,7 @@ window.addEventListener(
     e => {
         e.preventDefault();
         //*/
-        init();
+        CompletePage.init();
         /**
     }
 );

@@ -4,7 +4,7 @@
     --brd-size: calc(var(--btn-size) * 0.08);
     --icon-size: calc(var(--ring-size) - var(--brd-size));
     
-    --block-l: 4;
+    --block-l: 1;
 }
 
 .block {
@@ -58,6 +58,8 @@
             
         &::before {
             
+            pointer-events: none;
+            
             content: "";
             
             position: absolute;
@@ -79,12 +81,15 @@
     
     & > .inner-ring > .icon {
         
+        position: relative;
+        z-index: calc((var(--block-l) * 10) + 4);
+        
         display: grid;
         place-content: center;
         
-        width: auto;
+        width: 100%;
         min-width: var(--icon-size);
-        height: auto;
+        height: fit-content;
         min-height: var(--icon-size);
         
         place-content: center;

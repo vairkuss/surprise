@@ -39,6 +39,16 @@
             hsl( var(--m-hue), calc(var(--m-sat) * 0.65), calc(var(--m-lum) * 0.20) )
         );
         
+        --dis-grad:
+            linear-gradient(
+                    105deg,
+                    hsl( calc(var(--m-hue) - 5), calc(var(--m-sat) * 0.1), calc(var(--m-lum) * 0.55) ),
+                    hsl( var(--m-hue), calc(var(--m-sat) * 0.05), calc(var(--m-lum) * 0.4) ),
+                    hsl( calc(var(--m-hue) + 5), calc(var(--m-sat) * 0.1), calc(var(--m-lum) * 0.55) ),
+                    hsl( var(--m-hue), calc(var(--m-sat) * 0.05), calc(var(--m-lum) * 0.7) ),
+                    hsl( calc(var(--m-hue) - 5), calc(var(--m-sat) * 0.1), calc(var(--m-lum) * 0.55) )
+                );
+        
     --text-grad:
         linear-gradient(
             105deg,

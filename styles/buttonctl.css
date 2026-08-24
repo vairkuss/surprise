@@ -104,7 +104,8 @@
     
     &:active > .inner-ring {
         
-        transform: scale(0.8);
+        width: calc(100% - (var(--btn-size) - var(--ring-size)) * (1 / 0.4));
+        height: calc(100% - (var(--btn-size) - var(--ring-size)) * (1 / 0.4));
         box-shadow:
             0 0
             calc(var(--ring-size) * 0.5)
@@ -123,6 +124,8 @@
     /*            ICON            */
             
     & > .inner-ring > .icon {
+        
+        z-index: calc((var(--btn-l) * 10) + 4);
         
         filter:
             drop-shadow(
@@ -144,7 +147,6 @@
     /**/
         &:hover > .inner-ring > .icon {
             position: relative;
-            z-index: calc((var(--btn-l) * 10) + 4);
             
             transform: scale(1.1);
             color: hsl(var(--m-hue), calc(var(--m-sat) * 0.4), calc(var(--m-lum) * 0.8));
@@ -214,14 +216,7 @@
             border: var(--brd-size) solid transparent;
         
             background:
-                linear-gradient(
-                    105deg,
-                    hsl( calc(var(--m-hue) - 5), calc(var(--m-sat) * 0.1), calc(var(--m-lum) * 0.55) ),
-                    hsl( var(--m-hue), calc(var(--m-sat) * 0.05), calc(var(--m-lum) * 0.4) ),
-                    hsl( calc(var(--m-hue) + 5), calc(var(--m-sat) * 0.1), calc(var(--m-lum) * 0.55) ),
-                    hsl( var(--m-hue), calc(var(--m-sat) * 0.05), calc(var(--m-lum) * 0.7) ),
-                    hsl( calc(var(--m-hue) - 5), calc(var(--m-sat) * 0.1), calc(var(--m-lum) * 0.55) )
-                ) border-box;
+                var(--dis-grad) border-box;
             
             transition:
                 0.8s background ease-in;
@@ -239,7 +234,10 @@
     
     & > .inner-ring > .icon {
         
-        color: hsl( var(--m-hue), calc(var(--m-sat) * 0.075), calc(var(--m-lum) * 0.55) );
+        svg {
+            fill: url(#dis-grad) !important;
+        }
+        
         transform: scale(0.8);
         
     }
