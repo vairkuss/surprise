@@ -49,5 +49,12 @@
             hsl(calc(var(--m-hue) - 5), calc(var(--m-sat) * 0.8), calc(var(--m-lum) * 0.75))
         );
     
+}
+
+svg {
     fill: url(#text-grad) !important;
+}
+
+svg > * {
+    fill: inherit;
 }
