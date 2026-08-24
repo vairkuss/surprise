@@ -38,6 +38,16 @@
             hsl( var(--m-hue), calc(var(--m-sat) * 0.30), calc(var(--m-lum) * 0.75) ),
             hsl( var(--m-hue), calc(var(--m-sat) * 0.65), calc(var(--m-lum) * 0.20) )
         );
+        
+    --text-grad:
+        linear-gradient(
+            105deg,
+            hsl(calc(var(--m-hue) - 5), calc(var(--m-sat) * 0.8), calc(var(--m-lum) * 0.75)),
+            hsl(var(--m-hue), calc(var(--m-sat) * 0.8), calc(var(--m-lum) * 0.6)),
+            hsl(calc(var(--m-hue) + 5), calc(var(--m-sat) * 0.8), calc(var(--m-lum) * 0.75)),
+            hsl(var(--m-hue), calc(var(--m-sat) * 0.8), calc(var(--m-lum) * 0.9)),
+            hsl(calc(var(--m-hue) - 5), calc(var(--m-sat) * 0.8), calc(var(--m-lum) * 0.75))
+        );
     
-    fill: url(#text-grad);
+    fill: url(#text-grad) !important;
 }

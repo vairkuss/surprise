@@ -67,7 +67,7 @@
             border-radius: inherit;
             border: var(--brd-size) solid transparent;
             
-            background: url(#text-grad) border-box;
+            background: var(--text-grad) border-box;
             
             mask: linear-gradient(#000 0 0), linear-gradient(#000 0 0) padding-box;
             mask-composite: exclude;
