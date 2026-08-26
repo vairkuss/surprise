@@ -9,7 +9,7 @@
     user-select: none;
     height: var(--btn-size);
     min-width: var(--btn-size);
-    width: auto;
+    width: fit-content;
     border-radius: var(--btn-size);
     
     will-change: transform;

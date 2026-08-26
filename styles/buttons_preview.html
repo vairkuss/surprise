@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html style="background: black">
+
 <head>
     <link rel="stylesheet" href="buttons_preview.css" />
     <title>Buttons preview</title>
 </head>
 
+
 <body>
+
     <div id="cover" style="
 position: fixed;
 z-index: 100;
@@ -22,39 +25,70 @@ height: 250vh;
 will-change: height;
 transition: 1.4s height ease-out;
 "></div>
+
+
     <div class="block">
+    
         <div class="lable icon">INFILAXY</div>
         <div class="icon">Lorem ibsum bla bla bla choto tam eto razumnij tekst ya ochen umnij pupupupu</div>
+        
         <div id="buttons">
+        
             <div class="btn block">
                 <div class="icon" path="../icons/arrow.svg"></div>
             </div>
+            
             <div class="btn block disabled">
                 <div class="icon" path="../icons/rune.svg"></div>
             </div>
+            
             <div class="btn block disabled">
                 <div class="icon" path="../icons/filter.svg"></div>
             </div>
+            
             <div class="btn block">
                 <div class="icon" path="../icons/play.svg"></div>
             </div>
+            
             <div class="btn block"> 
                 <div class="icon" path="../icons/pause.svg"></div>
             </div>
+            
             <div class="btn block">
                 <div class="icon" path="../icons/plus.svg"></div>
             </div>
+            
             <div class="btn block">
                 <div class="icon" path="../icons/loop.svg"></div>
             </div>
+            
             <div class="btn block">
                 <div class="icon" path="../icons/random.svg"></div>
             </div>
+            
             <div class="btn block" onclick="debug()">
                 <div class="icon">testing testing</div>
             </div>
+            
         </div>
+        
     </div>
+    
+    
+    <div class="block" id="input" style="opacity:0">
+            
+                <input type="text" id="values" placeholder="h, s, l" value="714, 825, 285" />
+                <pre id="message"></pre>
+                
+                <div class="btn block" id="execute" onclick="newColor()">
+                    <div class="icon">submit</div>
+                </div>
+                
+            </div>
+    
+    
     <script src="init.js"></script>
+    
 </body>
+
 </html>

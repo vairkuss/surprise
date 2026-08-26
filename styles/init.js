@@ -12,16 +12,7 @@ class CompletePage {
         );
     }
     
-    static #addCommonInsertion () {
-        document.querySelector("body").insertAdjacentHTML("beforeend", `
-<div class="block" id="input" style="opacity:0">
-    <input type="text" id="values" placeholder="h, s, l" value="714, 825, 285" />
-    <pre id="message"></pre>
-    <div class="btn block" id="execute" onclick="newColor()">
-        <div class="icon">submit</div>
-    </div>
-</div>
-`);
+    static #addSVGGradients () {
         const grads = document.createElementNS("http://www.w3.org/2000/svg", "svg");
         grads.setAttribute("xmlns", "http://www.w3.org/2000/svg");
         grads.setAttribute("id", "grads");
@@ -83,7 +74,7 @@ class CompletePage {
                     if (iconElement.textContent) {
                         const iconStyle = window.getComputedStyle(iconElement);
                         iconElement.innerHTML = `
-<svg class="text" viewBox="0 0 250 250" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+<svg class="text" viewBox="0 0 250 250" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg">
     <text x="125" y="125" text-anchor="middle" font-size="${iconStyle.fontSize}" vector-effect="non-scaling-size">${iconElement.textContent}</text>
 </svg>
 `;
@@ -131,7 +122,7 @@ class CompletePage {
         if (this.#used) { return }
         this.#used = 1;
         this.#addMeta();
-        this.#addCommonInsertion();
+        this.#addSVGGradients();
         this.#developBlocks();
         this.#loadSVG();
         this.#breakLines();

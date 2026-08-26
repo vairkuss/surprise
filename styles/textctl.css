@@ -28,15 +28,10 @@
 .text {
     display: block;
     margin: auto;
-    width: 90%;
-    height: auto;
-    max-width:
+    width:
         calc(var(--ring-size) * 2 /* side rings */
         + calc(var(--btn-size) - var(--ring-size)) /* padding */
-        /*+ var(--btn-size) /* insides */;
-        
-    & > text {
-        font-size: 1rem;
-        vector-effect: non-scaling-size;
-    }
+        /*+ var(--btn-size) /* insides */;;
+    height: auto;
+    max-width: 90%;
 }
