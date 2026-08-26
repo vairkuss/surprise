@@ -1,7 +1,7 @@
 :root {
-    --m-hue: 149;
-    --m-sat: 100%;
-    --m-lum: 100%;
+    --m-hue: 0;
+    --m-sat: 0%;
+    --m-lum: 82.5%;
     
     --bg-grad:
         radial-gradient(
@@ -63,6 +63,9 @@
 
 svg {
     fill: url(#text-grad) !important;
+    /**
+    fill: red !important;
+    /**/
 }
 
 svg > * {

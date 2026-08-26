@@ -9,7 +9,8 @@
     user-select: none;
     height: var(--btn-size);
     min-width: var(--btn-size);
-    width: fit-content;
+    width: auto;
+    border-radius: var(--btn-size);
     
     will-change: transform;
     transition:
@@ -65,6 +66,8 @@
     
     & > .inner-ring {
         
+        border-radius: var(--ring-size);
+        
         &::before {
             padding: 0;
             
@@ -73,10 +76,10 @@
                 
         }
         
-        will-change: transform; 
         transition:
             0.2s box-shadow ease-in 0.1s,
-            0.06s transform ease-in 0.06s;
+            0.06s width ease-in 0.06s,
+            0.06s height ease-in 0.06s;
         
     }
     
@@ -84,7 +87,10 @@
     @media(hover: hover) {
     /**/
         &:hover > .inner-ring {
-            transform: scale(1.1);
+            
+            width: calc(100% - (var(--btn-size) - var(--ring-size)) * (1 / 1.1));
+            height: calc(100% - (var(--btn-size) - var(--ring-size)) * (1 / 1.1));
+            
             box-shadow:
                 0 0
                 calc(var(--ring-size) * 0.5)
@@ -95,7 +101,8 @@
             
             transition:
                 0.2s box-shadow ease-in 0.1s,
-                0.06s transform ease-in 0.06s;    
+                0.06s width ease-in 0.06s,
+                0.06s height ease-in 0.06s;  
         }
     /**/
     }
@@ -116,7 +123,8 @@
             
         transition:
             0.2s box-shadow ease-in 0.1s,
-            0.06s transform ease-in 0.06s;
+            0.06s width ease-in 0.06s,
+            0.06s height ease-in 0.06s;
             
     }
     

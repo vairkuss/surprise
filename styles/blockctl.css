@@ -19,7 +19,7 @@
     padding: calc((var(--btn-size) - var(--ring-size)));
     width: 76vw;
     height: auto;
-    border-radius: var(--btn-size);
+    border-radius: calc(var(--btn-size) * 0.5);
     
     background: var(--block-bg-grad);
     box-shadow:
@@ -40,9 +40,8 @@
         z-index: calc((var(--block-l) * 10) + 3);
         
         width: 100%;
-        min-width: var(--ring-size);
         height: 100%;
-        border-radius: var(--ring-size);
+        border-radius: calc(var(--ring-size) * 0.5);
         
         box-sizing: border-box;
         

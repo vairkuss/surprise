@@ -1,11 +1,27 @@
 <!DOCTYPE html>
-<html>
+<html style="background: black">
 <head>
     <link rel="stylesheet" href="buttons_preview.css" />
     <title>Buttons preview</title>
 </head>
 
 <body>
+    <div id="cover" style="
+position: fixed;
+z-index: 100;
+background:
+    linear-gradient(
+        to bottom,
+        black 40%,
+        transparent 100%
+    );
+top: 0;
+left: 0;
+width: 100vw;
+height: 250vh;
+will-change: height;
+transition: 1.4s height ease-out;
+"></div>
     <div class="block">
         <div class="lable icon">INFILAXY</div>
         <div class="icon">Lorem ibsum bla bla bla choto tam eto razumnij tekst ya ochen umnij pupupupu</div>
@@ -39,7 +55,6 @@
             </div>
         </div>
     </div>
-    <script src="changeColor.js"></script>
     <script src="init.js"></script>
 </body>
 </html>
