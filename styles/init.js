@@ -1,5 +1,6 @@
 class CompletePage {
-    static #addMeta () {
+    
+    static #addMeta() {
         const headElement = document.querySelector("head");
         headElement.insertAdjacentHTML(
             "beforeend",
@@ -12,7 +13,8 @@ class CompletePage {
         );
     }
     
-    static #addSVGGradients () {
+    
+    static #addSVGGradients() {
         const grads = document.createElementNS("http://www.w3.org/2000/svg", "svg");
         grads.setAttribute("xmlns", "http://www.w3.org/2000/svg");
         grads.setAttribute("id", "grads");
@@ -36,8 +38,9 @@ class CompletePage {
 `;
         document.querySelector("body").appendChild(grads);
     }
+    
 
-    static #developBlocks () {
+    static #developBlocks() {
         [...document.querySelectorAll(".block")]
             .filter(
                 blockElement => ![...blockElement.children].flatMap(
@@ -61,8 +64,9 @@ class CompletePage {
             )
         ) { this.#developBlocks() }
     }
+    
 
-    static #loadSVG () {
+    static #loadSVG() {
     
         document.querySelectorAll(".icon").forEach(
             async iconElement => {
@@ -71,12 +75,13 @@ class CompletePage {
                 
                 try {
                     
-                    if (iconElement.textContent) {
+                    if (iconElement.textContent &&0) {
                         const iconStyle = window.getComputedStyle(iconElement);
+                        console.log(iconElement.textContent, iconStyle.fontSize)
                         iconElement.innerHTML = `
-<svg class="text" viewBox="0 0 250 250" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg">
-    <text x="125" y="125" text-anchor="middle" font-size="${iconStyle.fontSize}" vector-effect="non-scaling-size">${iconElement.textContent}</text>
-</svg>
+<div class="text">
+    ${iconElement.textContent}
+</div>
 `;
                     }
                     if (url == null) { return }
@@ -104,6 +109,7 @@ class CompletePage {
         );
     }
     
+    
     static #breakLines() {
         document.querySelectorAll(".text").forEach(
             async textElement => {
@@ -116,9 +122,10 @@ class CompletePage {
         )
     }
 
+
     static #used = 0;
 
-    static init () {
+    static init() {
         if (this.#used) { return }
         this.#used = 1;
         this.#addMeta();
@@ -126,6 +133,7 @@ class CompletePage {
         this.#developBlocks();
         this.#loadSVG();
         this.#breakLines();
+        document.querySelector("html").setAttribute("style", "")
         document.querySelector("#cover").style.setProperty("height", "0");
     }
 }
@@ -156,8 +164,8 @@ got:      ${values.length}`
     }
 }
 
-function newColor () {
-    const input = getInputValues();
+function newColor (values=null) {
+    const input = values ?? getInputValues();
     if (input != null) {
         const [h, s, l] = input;
         const root = document.querySelector(":root");
@@ -176,14 +184,13 @@ function debug() {
     inputElement.style.setProperty("opacity", debugModeOn > 0 ? "100%" : "0");
 }
 
-/**
-window.addEventListener(
-    "load",
-    e => {
-        e.preventDefault();
+/**/
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
         //*/
         CompletePage.init();
-        /**
+        /**/
     }
 );
 //*/

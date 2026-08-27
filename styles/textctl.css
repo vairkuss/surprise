@@ -16,22 +16,30 @@
 
 :root {
     font-family: "Goodhers Hooney", sans-serif;
-    font-size: 1em;
+    font-size: 4vh;
     color: hsl(var(--m-hue), calc(var(--m-sat) * 0.8), calc(var(--m-lum) * 0.75));
 }
 
 .lable {
     font-family: fraiche, serif;
-    font-size: 3rem;
+    font-size: 2rem !important;
 }
 
 .text {
+    
+    background: var(--text-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    /*
     display: block;
     margin: auto;
     width:
-        calc(var(--ring-size) * 2 /* side rings */
+        calc(var(--ring-size) * 2 /* side rings * /
         + calc(var(--btn-size) - var(--ring-size)) /* padding */
-        /*+ var(--btn-size) /* insides */;;
+        /*+ var(--btn-size) /* insides* /;
     height: auto;
     max-width: 90%;
+    */
 }

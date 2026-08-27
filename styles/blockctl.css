@@ -1,5 +1,5 @@
 :root {
-    --btn-size: 3rem;
+    --btn-size: 2rem;
     --ring-size: calc(var(--btn-size) * 0.9);
     --brd-size: calc(var(--btn-size) * 0.08);
     --icon-size: calc(var(--ring-size) - var(--brd-size));
@@ -34,6 +34,7 @@
         
         display: grid;
         place-content: center;
+        padding: 10%;
         overflow: visible;
         
         position: relative;

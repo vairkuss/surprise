@@ -57,7 +57,7 @@
             0.09s transform ease-in 0.09s,
             0.1s background ease-in,
             0.1s box-shadow ease-in 0.1s,
-            0s z-index 0.42s;
+            0s z-index;
         
     }
     
@@ -67,9 +67,9 @@
     & > .inner-ring {
         
         border-radius: var(--ring-size);
+        padding: 0;
         
         &::before {
-            padding: 0;
             
             transition:
                 0.8s background ease-in;
@@ -88,8 +88,16 @@
     /**/
         &:hover > .inner-ring {
             
-            width: calc(100% - (var(--btn-size) - var(--ring-size)) * (1 / 1.1));
-            height: calc(100% - (var(--btn-size) - var(--ring-size)) * (1 / 1.1));
+            width: calc(100% - (var(--btn-size) - var(--ring-size)) * (1 / -1.1));
+            height: calc(100% - (var(--btn-size) - var(--ring-size)) * (1 / -1.1));
+            
+            filter:
+                drop-shadow(
+                    0
+                    calc(var(--icon-size) * 0.05)
+                    0
+                    hsl(var(--m-hue), calc(var(--m-sat) * 0.3), calc(var(--m-lum) * 0.2))
+            );
             
             box-shadow:
                 0 0
@@ -156,7 +164,7 @@
         &:hover > .inner-ring > .icon {
             position: relative;
             
-            transform: scale(1.1);
+            transform: scale(1.21);
             color: hsl(var(--m-hue), calc(var(--m-sat) * 0.4), calc(var(--m-lum) * 0.8));
         
             filter:
@@ -181,7 +189,7 @@
     
     &:active > .inner-ring > .icon {
         
-        transform: scale(0.4);
+        transform: scale(0.32);
         opacity: 0;
         
         transition:
@@ -204,12 +212,7 @@
     
     pointer-events: none;
     
-    background: 
-        radial-gradient(
-            ellipse 40% 40%,
-            hsl( var(--m-hue), calc(var(--m-sat) * 0.1), calc(var(--m-lum) * 0.175) ),
-            hsl( var(--m-hue), calc(var(--m-sat) * 0.05), calc(var(--m-lum) * 0.075) )
-        );
+    background: var(--btn-bg-grad-disabled);
     
     
     /*         DIS RING          */
