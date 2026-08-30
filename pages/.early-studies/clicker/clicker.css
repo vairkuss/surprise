@@ -1,0 +1,71 @@
+:root {
+    --heading-size: 10rem;
+    user-select: none;
+}
+
+body {
+    background-color: #000;
+    margin: 0;
+    animation: subtle-glow 5s infinite alternate;
+}
+
+h1 {
+    font-family: monospace;
+}
+
+#heading {
+    display: grid;
+    align-items: center;
+    position: fixed;
+    z-index: 1;
+    margin: 0;
+    width: var(--heading-size);
+    height: var(--heading-size);
+    background-color: #aaa;
+    text-shadow: 0 0 1rem;
+    box-shadow: 0 0 -2rem #000;
+    border: 0.1rem dashed #000;
+    border-radius: 1.6rem;
+    font-size: 2.5rem;
+    text-align: center;
+    transition: all 0.15s ease-in;
+}
+
+#heading:active {
+    background-color: #000;
+    border-color: #fff;
+    color: #fff;
+    text-shadow: 0 0 4rem #fff;
+    box-shadow:
+        0 0 3rem #999,
+        0 0 1rem #fff
+    ;
+    font-size: 3rem;
+    transition: all 0.08s ease-out;
+}
+
+#health {
+    position: absolute;
+    margin: 1rem;
+    color: #a00;
+    text-shadow:
+        0 0 0.3rem #000,
+        0 0 2rem #633,
+        0 0 5rem #833
+    ;
+    font-size: 3rem;
+}
+
+#gameover {
+    display: none;
+    margin: auto;
+    text-align: center;
+    padding: auto;
+    color: #fff;
+    font-size: 5rem;
+}
+
+@keyframes subtle-glow {
+    0% { background-color: #070707; }
+    100% { background-color: #111; }
+}
