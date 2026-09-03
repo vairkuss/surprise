@@ -36,21 +36,24 @@
             }
           },
           {
-            "id": "4a8ae5e97b79c8e0",
+            "id": "51106cb9a3271f9e",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "canvas",
               "state": {
-                "file": "ideas.md",
-                "mode": "source",
-                "source": false
+                "file": "web/layout/website-plan.canvas",
+                "viewState": {
+                  "x": -1157.8635025921806,
+                  "y": 305.91326748757706,
+                  "zoom": -2.0942806645608605
+                }
               },
-              "icon": "lucide-file",
-              "title": "ideas"
+              "icon": "lucide-layout-dashboard",
+              "title": "website-plan"
             }
           }
         ],
-        "currentTab": 2
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -80,7 +83,7 @@
         "state": {
           "type": "search",
           "state": {
-            "query": "tag:#index",
+            "query": "",
             "matchingCase": false,
             "explainSearch": false,
             "collapseAll": false,
@@ -134,7 +137,7 @@
         }
       }
     ],
-    "currentTab": 1
+    "currentTab": 0
   },
   "right": {
     "id": "1117d002861e478b",
@@ -200,12 +203,14 @@
       "obsidian-importer:Open Importer": false
     }
   },
-  "active": "0fa6b80b00e8a5bf",
+  "active": "259aefd359c04a34",
   "lastOpenFiles": [
+    "web/layout/website-plan.canvas",
+    "web/layout/navigation.md",
+    "web/layout/main-page.md",
     "index.md",
     "surprise.md",
     "ideas.md",
-    "games/secret-arg.md",
-    "web/layout/website-plan.canvas"
+    "games/secret-arg.md"
   ]
 }

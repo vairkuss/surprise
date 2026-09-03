@@ -2,21 +2,35 @@
 <html>
 <head>
       <meta charset="UTF-8">
-    <link rel="stylesheet" href="snake.css">
+    <link rel="stylesheet" href="styles/snake.css">
     <title>HEROSNAKE</title>
 </head>
 
 <body>
-    <canvas id="board" width=200 height=200></canvas>
+
     <div id="stats">
         <div id="score"></div>
-        <div><img src="imgs/stamina-0.png" id="stamina" onclick="Board.addInput(Board.snake.direction)"></div>
+        <div><img src="/res/images/gui/stamina/0.png" id="stamina" onclick="Board.addInput(Board.snake.direction)"></div>
     </div>
-    <div id="bar">
-        <div class="btn" onclick="Board.pause()">p</div>
-        <div class="btn" onclick="Board.gameStart()">r</div>
-        <div class="btn" onclick="Board.gameOver()">k</div>
+
+    <div class="block">
+        <canvas id="board" width=200 height=200></canvas>
     </div>
-    <script src="snake.js"></script>
+    
+    <div class="block">
+        <div id="bar">
+            <div class="btn block" onclick="Board.pause()">
+                <div class="icon">p</div>
+            </div>
+            <div class="btn block" onclick="Board.gameStart()">
+                <div class="icon">r</div>
+            </div>
+            <div class="btn block" onclick="Board.gameOver()">
+                <div class="icon">k</div>
+            </div>
+        </div>
+    </div>
+    <script src="scripts/init.js" id="init"></script>
+    <script src="scripts/snake.js"></script>
 </body>
 </html>

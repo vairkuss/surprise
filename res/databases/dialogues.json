@@ -1,0 +1,55 @@
+{
+  "index.html:0": {
+    "virko:0": {
+      "before": [
+        {
+          "id": "infi",
+          "pose": "smile"
+        }
+      ],
+      "replicas": [
+        {
+          "id": "virko",
+          "text": "Привет!",
+          "pose": "wave",
+        },
+        {
+          "id": "virko",
+          "text": "Это тестовый диалог.",
+          "pose": "show",
+        },
+        {
+          "id": "infi",
+          "text": "Капец, мы разговариваем  :0",
+          "pose": "shock"
+        }
+      ],
+      "choice": {
+        "Хорошо": -1,
+        "Пока": 1
+      }
+    },
+        
+    "virko:1": {
+      "before": [
+        {
+          "id": "infi",
+          "pose": "smile"
+        }
+      ],
+      "replicas": [
+        {
+          "id": "virko",
+          "text": "Бб братишк",
+          "pose": "wave"
+        },
+        {
+          "id": "infi",
+          "text": "Пока-пока!",
+          "pose": "wave"
+        }
+      ],
+      "choice": null
+    }
+  }
+}

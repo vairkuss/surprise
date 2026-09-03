@@ -251,7 +251,9 @@ class StreamlinedEnemy extends Enemy {
             !this.x || this.x + 1 === gridSize[0],
             !this.y || this.y + 1 === gridSize[1]
         ].forEach(
-            (v, i) => if (v) { this.direction[i] *= -1 }
+            (v, i) => {
+                if (v) { this.direction[i] *= -1 }
+            }
         );
     }
 }
@@ -279,7 +281,7 @@ class Board {
             this.staminaCounter = 0;
         }
         this.staminaCounter++;
-        this.staminaElement.src = `imgs/stamina-${Math.max(0, Math.ceil(this.staminaCounter / (this.staminaAnimationFrameDuration * this.fps)))}.png`;
+        this.staminaElement.src = `/res/images/gui/stamina/${Math.max(0, Math.ceil(this.staminaCounter / (this.staminaAnimationFrameDuration * this.fps)))}.png`;
     }
     
     static scoreElement = document.querySelector("#score");
@@ -302,16 +304,15 @@ class Board {
                 i % this.width()
             ]
         );
-    static outerTiles = () => [
-        [...Array(this.width() - 2)],
+    static outerTiles = () => {//
+    console.log(this.width() - 2);
+    return [
+        [...Array(this.width() - 2)], //ошибка
         [...Array(this.height() - 2)]
     ].flatMap(
         (v, i, a) => v.flatMap(
             (_, j) => [
-                [
-                    (j + 1) * (1 - i),
-                    (j + 1) * i
-                ],
+                [(j + 1) * (1 - i), (j + 1) * i],
                 [
                     a[1 - i].length * i + (j + 1) * (1 - i) + i,
                     a[1 - i].length * (1 - i) + (j + 1) * i + (1 - i)
@@ -321,11 +322,11 @@ class Board {
     ).concat(
         [...Array(4)].map(
             (_, i) => [this.width(), this.height()].map(
-                    (v, j) => (v - 1) * (Math.trunc((i - j + 1) / 2) % 2)
-                )
+                (v, j) => (v - 1) * (Math.trunc((i - j + 1) / 2) % 2)
+            )
         )
     );
-    
+    }//
     static randomFreeTile () {
         let unallowed = this.snake.tail
             .map(seg => seg.cords())
@@ -575,7 +576,7 @@ class Board {
         this.paused = 1;
         clearInterval(this.gameInterval);
         clearInterval(this.drawInterval);
-        this.staminaElement.src = "imgs/stamina-0.png"
+        this.staminaElement.src = "/res/images/gui/stamina/0.png"
         
         this.ctx.strokeStyle = "#710";
         this.ctx.fillStyle = "#f21";
@@ -594,10 +595,10 @@ class Board {
     }
     
     static init () {
-        this.ctx.font = `${this.tileSize}px infilaxy`;
+        this.ctx.font = `${this.tileSize}px infex`;
         document.body.addEventListener("pointerdown", e => { this.swipe([e.offsetX, e.offsetY]) });
         document.body.addEventListener("keydown", e => { this.keyboardInput(e.code) })
-        this.gameStart();
+        //this.gameStart();
     }
 }
 

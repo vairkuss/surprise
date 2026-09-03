@@ -1,8 +1,3 @@
-@font-face {
-    font-family: infex;
-    src: url(../fonts/infex-main-100.ttf);
-}
-
 :root {
     font-family: infex, monospace;
     font-size: 3em;
@@ -44,20 +39,12 @@ body {
     margin: 3rem auto;
     outline: 5px solid #443533;
     touch-action: none;
-    /*width: 200px;
-    height: 200px;*/
+    width: min(60vh, 60vw);
+    height: min(60vh, 60vw);
 }
 
 #bar {
     display: flex;
     margin: auto;
     align-items: center;
-}
-
-.btn {
-    background: #000;
-    color: #fff;
-    margin: 10px;
-    border-radius: 0.2rem;
-    padding: 0.3rem 0.5rem;
 }

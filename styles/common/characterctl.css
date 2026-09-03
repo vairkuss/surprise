@@ -1,0 +1,16 @@
+.character {
+    position: fixed;
+    bottom: 5vh;
+    height: 5rem;
+    width: auto;
+}
+
+#infi {
+    left: 8vh;
+    background: yellow;
+}
+
+#virko {
+    right: 8vh;
+    background: brown;
+}

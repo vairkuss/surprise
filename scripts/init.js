@@ -1,20 +1,36 @@
-class CompletePage {
+class PM {
     
-    static #addMeta = async function() {
+    static async #addMeta() {
         const headElement = document.querySelector("head");
-        const response = await fetch("http://localhost:7142/common_styles");
-        const commonStyles = await response.json();
+        const commonStyles = await fetch("http://localhost:7148/get/common_styles")
+        .then(async response => await response.json());
         headElement.insertAdjacentHTML(
             "beforeend",
             commonStyles
-                .map(ctl => `<link rel="stylesheet" href="../styles/${ctl}" />`)
-                .concat(['<meta charset="UTF-8"/>'])
-               .join("")
+                .map(ctl => `<link rel="stylesheet" href="../styles/common/${ctl}" />`)
+                .concat([
+                    '<meta charset="UTF-8"/>',
+                    '<link rel="shortcut icon" href="../res/icons/rune.svg" type="image/svg+xml" sizes="any">',
+                    '<link rel="manifest" href="../res/databases/manifest.json">'
+                ])
+                .join("")
         );
     }
     
     
-    static #addSVGGradients() {
+    static async #loadGlobalVariables() {
+        this.variables = await fetch("http://localhost:7148/get/variables");
+    }
+    
+    static async setColor([h, s, l]) {
+        const root = document.querySelector(":root");
+        root.style.setProperty('--m-hue', `${h}`);
+        root.style.setProperty('--m-sat', `${s}%`);
+        root.style.setProperty('--m-lum', `${l}%`);
+    }
+    
+    
+    static async #addSVGGradients() {
         const grads = document.createElementNS("http://www.w3.org/2000/svg", "svg");
         grads.setAttribute("xmlns", "http://www.w3.org/2000/svg");
         grads.setAttribute("id", "grads");
@@ -40,7 +56,7 @@ class CompletePage {
     }
     
 
-    static #developBlocks() {
+    static async #developBlocks() {
         [...document.querySelectorAll(".block")]
             .filter(
                 blockElement => ![...blockElement.children].flatMap(
@@ -66,7 +82,7 @@ class CompletePage {
     }
     
 
-    static #loadSVG() {
+    static async #loadSVG() {
     
         document.querySelectorAll(".icon").forEach(
             async iconElement => {
@@ -76,9 +92,7 @@ class CompletePage {
                 
                 try {
                     
-                    if (iconElement.textContent &&0) {
-                        const iconStyle = window.getComputedStyle(iconElement);
-                        console.log(iconElement.textContent, iconStyle.fontSize)
+                    if (iconElement.textContent) {
                         iconElement.innerHTML = `
 <div class="text">
     ${iconElement.textContent}
@@ -111,7 +125,7 @@ class CompletePage {
     }
     
     
-    static #breakLines() {
+    static async #breakLines() {
         document.querySelectorAll(".text").forEach(
             async textElement => {
                 let text = textElement.textContent.split(" ");
@@ -122,76 +136,63 @@ class CompletePage {
             }
         )
     }
+    
 
+    static #initiated = 0;
+    static get initiated() {
+        return this.#initiated;
+    }
+    
+    static get globalVariables() {
+        return this.#globalVariables;
+    }
 
-    static #used = 0;
-
-    static init() {
-        if (this.#used) { return }
-        this.#used = 1;
-        this.#addMeta();
-        this.#addSVGGradients();
-        this.#developBlocks();
-        this.#loadSVG();
-        this.#breakLines();
-        document.querySelector("html").setAttribute("style", "")
-        document.querySelector("#cover").style.setProperty("height", "0");
+    static async init() {
+        if (this.#initiated) { return }
+        let ready = 0;
+        this.#globalVariables = await fetch("http://localhost:7148/get/variables")
+        .then((variables) => {
+            ready++;
+            return JSON.parse(variables);
+        });
+        this.#loadGlobalVariables()
+        .then(() => this.setColor([149, 80, 90]))
+        .then(() => ready++);
+        this.#addMeta()
+        .then(() => ready++);
+        this.#addSVGGradients()
+        .then(() => ready++);
+        this.#developBlocks()
+        .then(() => this.#loadSVG())
+        .then(() => this.#breakLines())
+        .then(() => ready++);
+        await new Promise(() => {
+            while (ready < 5) {}
+            this.#initiated = 1;
+        });
     }
 }
 
-
-function getInputValues () { 
-    const msgElement = document.querySelector("#message");
-    const inputElement = document.querySelector("#values");
-    try {
-        msgElement.innerText = "";
-        let values = inputElement.value.split(",")
-            .map(v => parseInt(v) ? parseInt(v) : 0);
-        if (values.length !== 3) { 
-            throw new Error(
-`h, s, l parameters must be just numbers
-and properly separated with commas
-expected: 3
-got:      ${values.length}`
-            );
-        }
-        values[0] %= 360;
-        values[1] = Math.max(5, Math.min(values[1], 100));
-        values[2] = Math.max(5, Math.min(values[2], 100));
-        return values;
-    } catch (e) {
-        msgElement.innerText = e.toString();
-        console.error(e);
-    }
-}
-
-function newColor (values=null) {
-    const input = values ?? getInputValues();
-    if (input != null) {
-        const [h, s, l] = input;
-        const root = document.querySelector(":root");
-        root.style.setProperty('--m-hue', `${h}`);
-        root.style.setProperty('--m-sat', `${s}%`);
-        root.style.setProperty('--m-lum', `${l}%`);
-    }
-}
-
-
-let debugModeOn = -1;
-function debug() {
-    const inputElement = document.querySelector("#input");
-    debugModeOn *= -1;
-    inputElement.style.setProperty("transform", debugModeOn > 0 ? "scale(100%)" : "scale(0)");
-    inputElement.style.setProperty("opacity", debugModeOn > 0 ? "100%" : "0");
-}
 
 /**/
 document.addEventListener(
     "DOMContentLoaded",
     () => {
         //*/
-        CompletePage.init();
-        FunctionSetter?.init();
+        PM.init()
+        .then(() => document.querySelectorAll(".character").forEach(async el => {
+            el.addEventListener("pointerenter", async () => {
+                el.src = await fetch(`http://localhost:7148/get/random_sprite?${el.id}=active`);
+            });
+            el.addEventListener("pointerleave", async () => {
+                el.src = await fetch(`http://localhost:7148/get/random_sprite?${el.id}=idle`);
+            });
+            el.addEventListener("click", async () => {
+                if (!DM.active) {
+                    DM.dialogue(el.id);
+                }
+            });
+        }));
         /**/
     }
 );

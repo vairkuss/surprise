@@ -1,15 +1,10 @@
 {
     "name": "Who is Infilaxy? =]",
     "short_name": "-INFILAXY-",
-    "description": "I hope you like it,.",
+    "description": "Надеюсь, Вам нравится!",
     "icons": [
         {
-            "src": "63.ico",
-            "sizes": "16x16",
-            "type": "image/x-icon"
-        },
-        {
-            "src": "63.svg",
+            "src": "rune.svg",
             "sizes": "512x512",
             "type": "image/svg+xml"
         }

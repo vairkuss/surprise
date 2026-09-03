@@ -1,0 +1,15 @@
+{
+    "name": "Presentation: Who is Infilaxy?",
+    "short_name": "-INFILAXY-",
+    "description": "Virko and Infi are presenting Infilaxy, the talanted musician and skilled programmer. There are some secrets hidden here and there, could discover them all? =]",
+    "icons": [
+        {
+            "src": "../icons/rune.svg",
+            "sizes": "16x16",
+            "type": "image/svg+xml"
+        }
+    ],
+    "theme_color": "white",
+    "background_color": "#000",
+    "display": "standalone"
+}

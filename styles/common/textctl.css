@@ -1,16 +1,16 @@
 @font-face {
     font-family: infex;
-    src: url(../res/fonts/infex-main-100.ttf);
+    src: url(../../res/fonts/infex-main-100.ttf);
 }
 
 @font-face {
    font-family: "Goodhers Hooney";
-   src: url(../res/fonts/GoodhersHooney.ttf);
+   src: url(../../res/fonts/GoodhersHooney.ttf);
 }
 
 @font-face {
    font-family: fraiche;
-   src: url(../res/fonts/fraiche.ttf);
+   src: url(../../res/fonts/fraiche.ttf);
 }
 
 
@@ -26,20 +26,9 @@
 }
 
 .text {
-    
     background: var(--text-grad);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
     color: transparent;
-    /*
-    display: block;
-    margin: auto;
-    width:
-        calc(var(--ring-size) * 2 /* side rings * /
-        + calc(var(--btn-size) - var(--ring-size)) /* padding */
-        /*+ var(--btn-size) /* insides* /;
-    height: auto;
-    max-width: 90%;
-    */
 }

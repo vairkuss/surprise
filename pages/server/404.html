@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <ling rel="stylesheet" href="styles/character.css"/>
+    <title>404ILAXY</title>
+</head>
+
+<body>
+    <div class="block">
+        <div class="icon"><span style="lable">404: </span>Ресурс "http://localhost:7148<span id="url"></span>" не найден!</div>
+    </div>
+
+    <img id="virko" class="character" />
+    <script>
+document.querySelector("#url").textContent = window.href;
+    </script>
+    <script src="scripts/init.js" id="init"></script>
+</body>
+</html>

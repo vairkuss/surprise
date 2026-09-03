@@ -1,21 +1,36 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link rel="stylesheet" href="styles/unique/index.css" />
+  <link rel="stylesheet" href="styles/index.css" />
   <title>INFILAXY</title>
 </head>
 
-  <div class="btn">
-    <div class="inner-ring">
-      <div class="load-svg icon" icon="arrow"><div>
-    </div>
+<body>
+  <div id="cover" style="
+position: fixed;
+z-index: 100;
+background:
+    linear-gradient(
+        to bottom,
+        black 40%,
+        transparent 100%
+    );
+top: 0;
+left: 0;
+width: 100vw;
+height: 250vh;
+will-change: height;
+transition: 1.4s height ease-out;
+"></div>
+
+  <div class="btn block" href="/preview">
+    <div class="load-svg icon" icon="arrow"><div>
   </div>
 
   <img id="infi" class="character" />
   <img id="virko" class="character" />
   
   <script src="scripts/init.js" id="init"></script>
-  <script src="scripts/characters.js"></script>
 
-<body></body>
+</body>
 </html>
