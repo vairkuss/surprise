@@ -1,5 +1,5 @@
 {
-  "index.html:0": {
+  "index:0": {
     "virko:0": {
       "before": [
         {
@@ -17,6 +17,7 @@
           "id": "virko",
           "text": "Это тестовый диалог.",
           "pose": "show",
+          "pause": 1.8
         },
         {
           "id": "infi",
@@ -49,7 +50,6 @@
           "pose": "wave"
         }
       ],
-      "choice": null
     }
   }
 }

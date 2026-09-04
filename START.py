@@ -31,7 +31,7 @@ def open_browser() -> None:
         count_start = time.time()
         while time.time() - count_start < 2:
             print(f"\r{2 - (time.time() - count_start):.1f}", end="")
-        print(f'\r> Запускаю "termux-open {url}"...')
+        print(f'\r      \n> Запускаю "termux-open {url}"...')
         subprocess.run(["termux-open", url])
         print("\n")
 

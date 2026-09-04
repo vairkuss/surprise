@@ -23,8 +23,8 @@ class SM {
                 `\tunrecognised keys: ${newEntries}`
             ].join("\n"));
         }
-        console.debug("changing: "+JSON.stringify(values))
-        console.debug("before: "+JSON.stringify(this.variables))
+        console.debug("changing: " + JSON.stringify(values))
+        console.debug("before: " + JSON.stringify(this.variables))
         Object.assign(
             this.variables,
             ...values.keys()
@@ -92,7 +92,7 @@ function sendPage(res, page) {
 }
 
 function sendJson(res, obj) {
-    send200(res, JSON.stringify(obj), "application/json");
+    send200(res, JSON.stringify(obj), "application/json; charset=utf-8");
 }
 
 function loadFile(res, url, utf8=0) {
@@ -133,7 +133,7 @@ const server = http.createServer(async (req, res) => {
         /**/
         case "/preview":
             if (req.method === "GET") {
-                loadPage(res, "buttons_preview.html")
+                loadPage(res, path.join("dev", "buttons_preview.html"))
                 .then(page => sendPage(res, page));
             }
             break;
@@ -145,10 +145,31 @@ const server = http.createServer(async (req, res) => {
             }
             break;
         
+        case "/shelf":
+            if (req.method === "GET") {
+                loadPage(res, "shelf.html")
+                .then(page => sendPage(res, page));
+            }
+            break;
+        
+        case "/quickbrownfoxjumpsoverthelazydog":
+            if (req.method === "GET") {
+                loadPage(res, "arg.html")
+                .then(page => sendPage(res, page));
+            }
+            break;
+        
         
         case "/get/variables":
             if (req.method === "GET") {
                 sendJson(res, SM.variables);
+            }
+            break;
+        
+        case "/get/mcolor": //обрабатывать фулл mdata в будущем
+            if (req.method === "GET") {
+                return await loadFile(res, path.join("res", "databases", "mdata.json"))
+                .then(mdata => sendJson(res, JSON.parse(mdata)[SM.variables.i]?.hsl ?? [0, 0, 80]));
             }
             break;
         
@@ -163,13 +184,24 @@ const server = http.createServer(async (req, res) => {
             }
             break;
             
+        case "/get/classes":
+            if (req.method === "GET") {
+                if (meta.toString()) {
+                    send404(res, adr.href);
+                    return;
+                }
+                fs.readdir(path.join(PROJECT_ROOT, "scripts", "classes"))
+                .then(classes => sendJson(res, classes));
+            }
+            break;
+            
         case "/get/character_random_sprite":
             if (req.method === "GET") {
                 if (meta.size !== 1) { 
                     send404(res, adr.href);
                     return;
                 }
-                const [char, state] = meta.entries();
+                const [char, state] = [...meta.entries()][0];
                 const folder = path.join("res", "images", "characters", char, state);
                 
                 fs.readdir(path.join(PROJECT_ROOT, folder))
@@ -192,7 +224,15 @@ const server = http.createServer(async (req, res) => {
             break;
         
         
-        case "/get/replicas"
+        case "/get/replicas":
+            if (req.method === "GET") {
+                if (meta.keys().some(key => !"pct".includes(key)) && meta.keys().length !== 3) {
+                    send404(res, adr.href);
+                    return;
+                }
+                const { p: page, c: character, t: cursor } = meta;
+            }
+            break;
         
         
         case "/set":
@@ -210,9 +250,10 @@ const server = http.createServer(async (req, res) => {
         
         
         case "/close":
-            console.log("$ Сервер завершил свою работу\n"); 
-            sendPage(res, "<h1>Сервер выключен!</h1>")
-            .then(process.exit());
+            console.log("\n\n$ Сервер завершил свою работу"); 
+            fs.readFile(path.join(PROJECT_ROOT, "pages", "server", "shutdown.html"), "utf-8")
+            .then((shutdownPage) => sendPage(res, shutdownPage));
+            setTimeout(() => { process.exit() }, 1200);
             break;
             
         default:
@@ -220,7 +261,7 @@ const server = http.createServer(async (req, res) => {
             switch (path.extname(adr.pathname)) {
                 case ".css": contentType = "text/css; charset=utf-8"; break;
                 case ".js": contentType = "application/javascript; charset=utf-8"; break;
-                case ".json": contentType = "application/json"; break;
+                case ".json": contentType = "application/json; charset=utf-8"; break;
                 case ".png": contentType = "image/png"; break;
                 case ".svg": contentType = "image/svg+xml; charset=utf-8"; break;
                 case ".mp3": contentType = "audio/mp3"; break;
@@ -241,9 +282,5 @@ const server = http.createServer(async (req, res) => {
 });
 
 SM.init()
-.then(
-    () => server.listen(7148)
-)
-.then(
-    () => console.log("\n\n$ Сервер запустился на http://localhost:7148/25285")
-);
+.then(() => server.listen(7148))
+.then(() => console.log("\n\n$ Сервер запустился на http://localhost:7148/25285"));

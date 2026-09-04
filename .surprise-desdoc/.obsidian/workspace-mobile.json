@@ -36,24 +36,21 @@
             }
           },
           {
-            "id": "51106cb9a3271f9e",
+            "id": "d0a81e0648009291",
             "type": "leaf",
             "state": {
-              "type": "canvas",
+              "type": "markdown",
               "state": {
-                "file": "web/layout/website-plan.canvas",
-                "viewState": {
-                  "x": -1157.8635025921806,
-                  "y": 305.91326748757706,
-                  "zoom": -2.0942806645608605
-                }
+                "file": "chronology/stage2.md",
+                "mode": "source",
+                "source": false
               },
-              "icon": "lucide-layout-dashboard",
-              "title": "website-plan"
+              "icon": "lucide-file",
+              "title": "stage2"
             }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -149,6 +146,7 @@
         "state": {
           "type": "backlink",
           "state": {
+            "file": "stage1.md",
             "collapseAll": false,
             "extraContext": false,
             "sortOrder": "alphabetical",
@@ -203,13 +201,31 @@
       "obsidian-importer:Open Importer": false
     }
   },
-  "active": "259aefd359c04a34",
+  "active": "d0a81e0648009291",
   "lastOpenFiles": [
+    "chronology/stage3.md",
+    "chronology/stage4.md",
+    "chronology/stage5.md",
+    "web/elements/elements.md",
+    "chronology",
+    "web/elements/header.md",
+    "web/web-design.md",
+    "surprise.md",
+    "presentation/presentation.md",
+    "web/characters/virko.md",
+    "web/characters/characters.md",
+    "web/elements/blocks/images.md",
+    "web/elements/blocks/buttons.md",
+    "web/elements/blocks/pages-blocks.md",
+    "web/elements/blocks/shelves.md",
+    "chronology/script.md",
+    "chronology/stage6.md",
+    "chronology/stage2.md",
     "web/layout/website-plan.canvas",
+    "chronology/stage1.md",
+    "index.md",
     "web/layout/navigation.md",
     "web/layout/main-page.md",
-    "index.md",
-    "surprise.md",
     "ideas.md",
     "games/secret-arg.md"
   ]

@@ -1,6 +1,38 @@
-class PM {
+class Initable {
+    static __initialised = 0;
+    static get initiated() { return this.__initialised }
+    
+    static async init(func) {
+        if (this.__initialised) { return }
+        func();
+        this.__initialised = 1;
+    }
+}
+
+
+class PM extends Initable {
+    
+    static #globalVariables = {};
+    static get globalVariables() { return this.#globalVariables }
+    
+    static async #loadGlobalVariables() {
+        this.#globalVariables = await fetch("http://localhost:7148/get/variables")
+        .then(async response => await response.json());
+        this.setColor();
+    }
+    
+    static async setColor(values=null) {
+        let [h, s, l] = values ?? await fetch(`http://localhost:7148/get/mcolor`)
+        .then(async response => await response.json());
+        const root = document.querySelector(":root");
+        root.style.setProperty('--m-hue', `${h}`);
+        root.style.setProperty('--m-sat', `${s}%`);
+        root.style.setProperty('--m-lum', `${l}%`);
+    }
+    
     
     static async #addMeta() {
+        // STYLES
         const headElement = document.querySelector("head");
         const commonStyles = await fetch("http://localhost:7148/get/common_styles")
         .then(async response => await response.json());
@@ -15,22 +47,21 @@ class PM {
                 ])
                 .join("")
         );
-    }
-    
-    
-    static async #loadGlobalVariables() {
-        this.variables = await fetch("http://localhost:7148/get/variables");
-    }
-    
-    static async setColor([h, s, l]) {
-        const root = document.querySelector(":root");
-        root.style.setProperty('--m-hue', `${h}`);
-        root.style.setProperty('--m-sat', `${s}%`);
-        root.style.setProperty('--m-lum', `${l}%`);
-    }
-    
-    
-    static async #addSVGGradients() {
+        
+        // CLASSES
+        fetch("http://localhost:7148/get/classes")
+        .then(async response => await response.json())
+        .then(classes => document.addEventListener("DOMContentLoaded", () => {
+            const scripts = document.querySelector("#scripts");
+            classes.forEach(url => {
+                const script = document.createElement("script");
+                script.src = `../scripts/classes/${url}`;
+                scripts.appendChild(script);
+                window[url.split(".").shift()].init();
+            });
+        }));
+        
+        // GRADS
         const grads = document.createElementNS("http://www.w3.org/2000/svg", "svg");
         grads.setAttribute("xmlns", "http://www.w3.org/2000/svg");
         grads.setAttribute("id", "grads");
@@ -83,42 +114,28 @@ class PM {
     
 
     static async #loadSVG() {
-    
         document.querySelectorAll(".icon").forEach(
             async iconElement => {
-                
+                if (iconElement.textContent) {
+                    iconElement.innerHTML = `<div class="text">${iconElement.textContent}</div>`;
+                }
                 const filename = iconElement.getAttribute("icon");
+                if (filename == null) { return }
                 const url = `../res/icons/${filename}.svg`;
-                
+                const file = await fetch(url)
+                .then(async response => await response.text());
+                    
                 try {
-                    
-                    if (iconElement.textContent) {
-                        iconElement.innerHTML = `
-<div class="text">
-    ${iconElement.textContent}
-</div>
-`;
-                    }
-                    if (filename == null) { return }
-                    
-                    const file = await fetch(url);
-                    const svg = await file.text();
-                    if (svg === "Not Found") {
+                    if (file === "Not Found") {
                         throw new Error(`File not found: "${url}"`);
                     }
-                    iconElement.innerHTML = svg;
-                    
-                    const svgElement = iconElement.querySelector("svg");
-                    svgElement.style.setProperty("width", "var(--icon-size)");
-                    svgElement.style.setProperty("height", "var(--icon-size)");
-                    
+                    iconElement.innerHTML = file;
                 } catch (e) {
                     
                     console.error(e);
                     iconElement.textContent = iconElement.textContent
                         ? iconElement.textContent
-                        : url.split("/").splice(-1);
-                    
+                        : filename;
                 }
             }
         );
@@ -138,37 +155,15 @@ class PM {
     }
     
 
-    static #initiated = 0;
-    static get initiated() {
-        return this.#initiated;
-    }
-    
-    static get globalVariables() {
-        return this.#globalVariables;
-    }
-
     static async init() {
-        if (this.#initiated) { return }
-        let ready = 0;
-        this.#globalVariables = await fetch("http://localhost:7148/get/variables")
-        .then((variables) => {
-            ready++;
-            return JSON.parse(variables);
-        });
-        this.#loadGlobalVariables()
-        .then(() => this.setColor([149, 80, 90]))
-        .then(() => ready++);
-        this.#addMeta()
-        .then(() => ready++);
-        this.#addSVGGradients()
-        .then(() => ready++);
-        this.#developBlocks()
-        .then(() => this.#loadSVG())
-        .then(() => this.#breakLines())
-        .then(() => ready++);
-        await new Promise(() => {
-            while (ready < 5) {}
-            this.#initiated = 1;
+        super.init(() => {
+            this.#loadGlobalVariables();
+            this.#addMeta();
+            this.#developBlocks();
+            this.#loadSVG()
+            /*.then(() => this.#breakLines())*/;
+            document.querySelector("html").setAttribute("style", "")
+            document.querySelector("#cover")?.style.setProperty("height", "0");
         });
     }
 }
@@ -180,19 +175,6 @@ document.addEventListener(
     () => {
         //*/
         PM.init()
-        .then(() => document.querySelectorAll(".character").forEach(async el => {
-            el.addEventListener("pointerenter", async () => {
-                el.src = await fetch(`http://localhost:7148/get/random_sprite?${el.id}=active`);
-            });
-            el.addEventListener("pointerleave", async () => {
-                el.src = await fetch(`http://localhost:7148/get/random_sprite?${el.id}=idle`);
-            });
-            el.addEventListener("click", async () => {
-                if (!DM.active) {
-                    DM.dialogue(el.id);
-                }
-            });
-        }));
         /**/
     }
 );

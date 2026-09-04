@@ -1,6 +1,15 @@
 #index #arg #music #presentation #web 
 
-# [[surprise|Surprise]] - [[ideas]]
+# [[surprise|Surprise]]
+* ###  [[ideas]]
+* ###  [[script]]
+    *  [[stage1]]
+    *  [[stage2]]
+    *  [[stage3]]
+    *  [[stage4]]
+    *  [[stage5]]
+    *  [[stage6]]
+
 ---
 
 * ###  [[web-design]]
