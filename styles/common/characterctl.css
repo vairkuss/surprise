@@ -1,16 +1,20 @@
 .character {
+    z-index: 90;
+    display: grid;
+    place-content: center;
+    user-select: none;
     position: fixed;
-    bottom: 5vh;
-    height: 5rem;
-    width: auto;
+    bottom: 10vh;
+    height: min(35vh, 35vw);
+    width: min(35vh, 35vw);
 }
 
 #infi {
-    left: 8vh;
+    left: min(10vh, 10vw);
     background: yellow;
 }
 
 #virko {
-    right: 8vh;
+    right: min(10vh, 10vw);
     background: brown;
 }

@@ -1,0 +1,9 @@
+.hidden {
+    transform: opacity(0%) scale(20%);
+    will-change: transform;
+    transition: 0.4s transform;
+}
+
+.masked {
+    
+}

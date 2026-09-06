@@ -1,3 +1,15 @@
+class Initable {
+    static __initialised = 0;
+    static get initiated() { return this.__initialised }
+    
+    static async init(func) {
+        if (this.__initialised) { return }
+        func();
+        this.__initialised = 1;
+    }
+}
+
+
 class DH extends Initable {
     
     static #cursor = {};
@@ -5,7 +17,7 @@ class DH extends Initable {
     static get active() {
         return this.#page != null;
     }
-    
+    /*
     static async startDialogue(charId) {
         this.#page = 0;
         console.log("starting the dialogue for " + charId);
@@ -28,55 +40,65 @@ class DH extends Initable {
         }
         if (this.#cursor[charId] < max) { this.#cursor[charId]++ }
         // post cursor to server save it in progression.json
-    }
+    }*/
     
-    static async readPage({ before, replicas, choice}) {
+    /**/
+    static async readPage(/*{ before, replicas, choice}*/) {
         /*before?.forEach(({ id, pose, animation }) => {
-            if (animation != null) { this.animation(id, animation) }
+            if (animation != null) { AH.animation(id, animation) }
             if (pose != null) { document.getElementById(id).src = pose; }
-        });*/
-        replicas?.slice(0, replicas.length - 1).forEach(({ id, text, pose, animation, pause }, i, a) => {
-            this.spawnBubble();
+        });
+        replicas?.forEach(({ id, text, pose, animation, pause }, i, a) => {*/
+            // start animation or change pose with blink
+            // await animation end, duration is pause ?? 0.2s
+            //alert(`${id} (${pose ?? animation}): ${text}`);
+            const el = document.getElementById(id);
+            
+            // change pose to 1.png
+            const bubble = this.spawnBubble(el);
+            this.writeText(bubble);
+            // to 0.png
             this.proceed(replica)
         });
-        this.#page = this.choice(choice || null, replicas[replicas.length - 1]);
+        this.#page = this.choice(choice || null, replicas.length ? replicas[replicas.length - 1] : null);
     }
     
-    static spawnBubble({ id, text, pose, animation }) {
-        const el = document.getElementById(id);
-        // change pose to 1.png
-        const bubble = document.createElement("div");
+    /*static pause() {
+            
+        }*/
+    
+    static async spawnBubble(parent) {
+        parent.querySelectorAll(".bubble").forEach(bub => bub.remove());
+        const bubble = document.createElement("pre");
+        console.debug(bubble);
+        parent.appendChild(bubble);
+        console.debug(parent);
         bubble.className = "hidden bubble block";
-        el.appendChild(bubble);
-        const randRad = Math.PI / 8 + Math.random() * 6 * Math.PI / 8;
-        const randVec = [Math.cos(randRad), Math.sin(randRad)];
-        const aBubble = -2;
-        let vBubble = 10;
-        let last = 0;
-        //alert(`${id} (${pose}): ${text}`);
+        const randRad = Math.PI / 8 + Math.random() * 5 * Math.PI / 8;
+        const a = -1;
+        let v = 8;
+        let s = 0;
         bubble.className = "bubble block";
-            
-        while (vBubble > 0) {
-            const now = Date.now();
-            if (now - last >= 1000/24) {
-                bubble.style.setProperty("bottom", `calc(${vBubble * randVec[0]} * min(1vh, 1vw))`);
-                bubble.style.setProperty("left", `calc(${vBubble * randVec[1]} * min(1vh, 1vw))`);
-                vBubble += aBubble;
-                last = now;
-            }
+        
+        async function glide() {
+            bubble.style.setProperty("bottom", `calc(${s * Math.sin(randRad)} * min(1vh, 1vw))`);
+            bubble.style.setProperty("left", `calc(${s * Math.cos(randRad)} * ${parent.id === "infi" ? 1 : -1} * min(1vh, 1vw))`);
+            s += v;
+            v += a;
+            if (v > 0) { AH.delay(glide, 1/60) };
         }
-            
-        bubble.textContent = text;
-        // animate text output with correct style, depending on character speaking
-        // click speeds up the animation
-        // change pose to 0.png
+        
+        glide();
+        
         return bubble;
     }
     
-    static writeText(bubble) {
-        
+    static writeText(bubble, text) {
+        bubble.textContent = text;
+        // animate text output with correct style, depending on character speaking
+        // click speeds up the animation
     }
-    
+    /**
     static proceed(replica) {
         // resolve previous bubble
         const bubble = AH.delay(this.spawnBubble, (replica["pause"] || 0), replica);
@@ -108,7 +130,7 @@ class DH extends Initable {
         // swiping left and right moves image cursor untill pointerup
         // end animation
     }
-    
+    /**/
     // make a class for animation handling
     
     static async init() {
@@ -116,18 +138,21 @@ class DH extends Initable {
             // get gursor from server
             document.querySelectorAll(".character").forEach(el => {
                 if (this.active) { return }
-                fetch(`http://localhost:7148/get/character_random_sprite?${el.id}=idle`)
-                .then(async response => el.src = await response.text());
+                //fetch(`http://localhost:7148/get/character_random_sprite?${el.id}=idle`)
+                //.then(async response => el.src = await response.text());
+                el.src = "../res/images/artbook/bad-pet.png"
                 
                 el.addEventListener("pointerout", async () => {
                     if (this.active) { return }
-                    el.src = await fetch(`http://localhost:7148/get/character_random_sprite?${el.id}=idle`)
-                    .then(async response => await response.text());
+                    //el.src = await fetch(`http://localhost:7148/get/character_random_sprite?${el.id}=idle`)
+                    //.then(async response => await response.text());
+                    el.src = "../res/images/artbook/bad-pet.png"
                 });
-                el.addEventListener("pointermove", async () => {
+                el.addEventListener("pointerover", async () => {
                     if (this.active) { return }
-                    el.src = await fetch(`http://localhost:7148/get/character_random_sprite?${el.id}=hover`)
-                    .then(async response => await response.text());
+                    //el.src = await fetch(`http://localhost:7148/get/character_random_sprite?${el.id}=hover`)
+                    //.then(async response => await response.text());
+                    el.src = "../res/images/artbook/good-pet.png"
                 });
                 el.addEventListener("contextmenu", e => {
                     e.preventDefault();
@@ -135,7 +160,9 @@ class DH extends Initable {
                 
                 el.addEventListener("click", () => {
                     if (this.active) { return }
-                    this.dialogue(el.id); 
+                    //this.dialogue(el.id); 
+                    console.log(el.id + " clicked");
+                    this.spawnBubble(el);
                 });
             });
         });

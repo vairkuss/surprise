@@ -48,9 +48,23 @@
               "icon": "lucide-file",
               "title": "stage2"
             }
+          },
+          {
+            "id": "61f9ab375ac3a27c",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "web/characters/virko.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "virko"
+            }
           }
         ],
-        "currentTab": 2
+        "currentTab": 3
       }
     ],
     "direction": "vertical"
@@ -201,26 +215,27 @@
       "obsidian-importer:Open Importer": false
     }
   },
-  "active": "d0a81e0648009291",
+  "active": "61f9ab375ac3a27c",
   "lastOpenFiles": [
+    "web/characters/infi.md",
+    "web/characters/characters.md",
+    "web/elements/elements.md",
+    "web/elements/blocks/images.md",
+    "chronology/stage2.md",
     "chronology/stage3.md",
     "chronology/stage4.md",
     "chronology/stage5.md",
-    "web/elements/elements.md",
     "chronology",
     "web/elements/header.md",
     "web/web-design.md",
     "surprise.md",
     "presentation/presentation.md",
     "web/characters/virko.md",
-    "web/characters/characters.md",
-    "web/elements/blocks/images.md",
     "web/elements/blocks/buttons.md",
     "web/elements/blocks/pages-blocks.md",
     "web/elements/blocks/shelves.md",
     "chronology/script.md",
     "chronology/stage6.md",
-    "chronology/stage2.md",
     "web/layout/website-plan.canvas",
     "chronology/stage1.md",
     "index.md",

@@ -1,0 +1,19 @@
+:root {
+    --bub-size: min(10vh, 10vw)
+}
+
+.bubble {
+    z-index: 100;
+    position: relative;
+    background: #fff;
+    color: #000;
+    border: 2px solid #000;
+    border-radius: var(--bub-size);
+    min-width: var(--bub-size);
+    min-height: var(--bub-size);
+    height: fit-content;
+    width: fit-content;
+    transform: opacity(100%) scale(100%);
+    will-change: transform;
+    transition: 0.4s transform;
+}

@@ -5,7 +5,7 @@ const { URL } = require("url");
 const PROJECT_ROOT = path.dirname(__dirname);
 
 
-class SM {
+class SM { // divide saves in separate files
     
     static #savePath = path.join(PROJECT_ROOT, "res", "databases", "save.json");
     static #initialised = 0;
@@ -110,6 +110,10 @@ function loadFile(res, url, utf8=0) {
 
 function loadPage(res, name) {
     return loadFile(res, path.join("pages", name), "utf-8");
+}
+
+function loadJson(res, name) {
+    return loadFile(res, path.join("res", "databases", name), "utf-8");
 }
 
 
@@ -226,11 +230,19 @@ const server = http.createServer(async (req, res) => {
         
         case "/get/replicas":
             if (req.method === "GET") {
-                if (meta.keys().some(key => !"pct".includes(key)) && meta.keys().length !== 3) {
+                if ([...meta.keys()].every(k => "pnc".includes(k)) && [...meta].length == 2) {
+                    loadJson(res, "dialogues.json")
+                    .then(async rawData => JSON.parse(rawData))
+                    .then(dialogues => {
+                        const p = meta.get("p") || "25285";
+                        const n = meta.get("n");
+                        const c = meta.get("c");
+                        const current = dialogues[`${p}:${SM.variables.s}`]
+                        sendJson(res, [current[`${n}:${c}`], current.max[n]]);
+                    });
+                } else {
                     send404(res, adr.href);
-                    return;
                 }
-                const { p: page, c: character, t: cursor } = meta;
             }
             break;
         

@@ -14,6 +14,8 @@ class PM extends Initable {
     
     static #globalVariables = {};
     static get globalVariables() { return this.#globalVariables }
+    static #lastClick = 0;
+    static #dtl = 500; //double tap latency
     
     static async #loadGlobalVariables() {
         this.#globalVariables = await fetch("http://localhost:7148/get/variables")
@@ -49,17 +51,16 @@ class PM extends Initable {
         );
         
         // CLASSES
-        fetch("http://localhost:7148/get/classes")
+        const classes = await fetch("http://localhost:7148/get/classes")
         .then(async response => await response.json())
-        .then(classes => document.addEventListener("DOMContentLoaded", () => {
+        .then(classes => {
             const scripts = document.querySelector("#scripts");
             classes.forEach(url => {
                 const script = document.createElement("script");
                 script.src = `../scripts/classes/${url}`;
                 scripts.appendChild(script);
-                window[url.split(".").shift()].init();
             });
-        }));
+        });
         
         // GRADS
         const grads = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -164,6 +165,11 @@ class PM extends Initable {
             /*.then(() => this.#breakLines())*/;
             document.querySelector("html").setAttribute("style", "")
             document.querySelector("#cover")?.style.setProperty("height", "0");
+            document.addEventListener("click", e => {
+                const now = Date.now();
+                if (now - this.#lastClick < this.#dtl) { e.preventDefault() }
+                this.#lastClick = now;
+            });
         });
     }
 }
