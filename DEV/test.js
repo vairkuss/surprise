@@ -19,13 +19,14 @@ class SBT {
         svg.setAttribute("xmlns", xmlns);
         svg.setAttribute("width", parent.offsetWidth);
         svg.setAttribute("height", parent.offsetHeight);
-        svg.setAttribute("viewBox", `0 0 ${parent.offsetWidth} ${parent.offsetHeight*2}`);
+        svg.setAttribute("viewBox", `0 0 ${parent.offsetWidth} ${parent.offsetHeight}`);
         svg.setAttribute("class", "tail");
         svg.style.top = parent.offsetHeight - bordBias;
         //svg.style.top = getComputedStyle(parent).height - getComputedStyle(parent).minHeight/2;
         parent.appendChild(svg);
         
         const path = document.createElementNS(xmlns, "path");
+        path.style.strokeWidth = getComputedStyle(parent);
         svg.appendChild(path);
         
         document.body.addEventListener("resize", ()=> {
@@ -33,22 +34,19 @@ class SBT {
             new SBT(parent, direction);
         })
         
-        this.char = parent.parentElement.id;
+        this.parent = parent;
         this.svg = svg;
         this.path = path;
-        this.setPath(50);
-        //AH.delay(this.setPath.bind(50), 1/60);
+        this.setPath(0);
+        AH.delay(() => { this.setPath(20) }, 1/60);
+        //AH.animate(this.setPath, 50, 1);
     }
     
     setPath(s) {
-        let parent = document.querySelector(`#${this.char} > .bubble`);
-        console.log(parent);
-        const w = parent.offsetWidth;
-        const r = parseInt(getComputedStyle(parent).borderRadius) / 2;
-        parent = document.querySelector(`#${this.char} > .bubble`);
-        console.log(parent);
+        const w = this.parent.offsetWidth;
+        const r = parseInt(getComputedStyle(this.parent).borderRadius) / 2;
         const [x, y] = this.direction.map(x => x * s);
-        this.path.setAttribute("d", `M${r} 0C${r} 0 ${w/2} 0 ${x + w/2} ${y}C${w/2} 0 ${w - r} 0 ${w - r} 0`);
+        this.path.setAttribute("d", `M${r} 0C${r} 0 ${w/2} 0 ${x + w/2} ${y}C${w/2} 0 ${w-r} 0 ${w-r} 0`);
     }
 }
 
@@ -125,7 +123,7 @@ class DH extends Initable {
             
             AH.delay(() => {
                 new SBT(bubble, direction);
-            }, 0.5);
+            }, 0.4);
         }, 1/60);
         
         return bubble;

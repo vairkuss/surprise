@@ -31,10 +31,9 @@
 
 .tail {
     position: absolute;
-    /*top: calc(var(--bub-size));*/
     fill: #fff;
     stroke: #000;
-    stroke-width: calc(var(--bub-size) * 0.2);
+    stroke-width: calc(var(--bub-size) * 0.1);
     path {
         stroke-linecap: round;
         stroke-linejoin: round;
