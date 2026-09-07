@@ -1,7 +1,8 @@
 .hidden {
-    transform: opacity(0%) scale(20%);
-    will-change: transform;
-    transition: 0.4s transform;
+    transform: scale(20%);
+    filter: opacity(0%);
+    will-change: transform, filter;
+    transition: all 0.3s ease-in;
 }
 
 .masked {

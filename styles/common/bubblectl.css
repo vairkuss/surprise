@@ -1,19 +1,42 @@
 :root {
-    --bub-size: min(10vh, 10vw)
+    --bub-size: min(10vh, 10vw);
 }
 
 .bubble {
     z-index: 100;
     position: relative;
+    left: 0;
+    bottom: 0;
+    
     background: #fff;
-    color: #000;
-    border: 2px solid #000;
+    padding: calc(var(--bub-size) * 0.2) calc(var(--bub-size) * 0.5);
+    border: calc(var(--bub-size) * 0.1) solid #000;
     border-radius: var(--bub-size);
+    
     min-width: var(--bub-size);
+    width: max-content;
+    max-width: calc(var(--bub-size) * 7);
     min-height: var(--bub-size);
     height: fit-content;
-    width: fit-content;
-    transform: opacity(100%) scale(100%);
-    will-change: transform;
-    transition: 0.4s transform;
+    
+    color: #000;
+    font-size: calc(var(--bub-size) * 0.4);
+    white-space: pre-line;
+    
+    transform: scale(100%);
+    filter: opacity(100%);
+    will-change: transform, filter;
+    transition: all 0.3s ease-out;
+}
+
+.tail {
+    position: absolute;
+    /*top: calc(var(--bub-size));*/
+    fill: #fff;
+    stroke: #000;
+    stroke-width: calc(var(--bub-size) * 0.2);
+    path {
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
 }

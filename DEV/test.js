@@ -10,6 +10,49 @@ class Initable {
 }
 
 
+class SBT {
+    constructor(parent, direction) {
+        this.direction = [direction[0], direction[1]];
+        const bordBias = parseInt(getComputedStyle(parent).borderWidth) * 2;
+        const xmlns = "http://www.w3.org/2000/svg";
+        const svg = document.createElementNS(xmlns, "svg");
+        svg.setAttribute("xmlns", xmlns);
+        svg.setAttribute("width", parent.offsetWidth);
+        svg.setAttribute("height", parent.offsetHeight);
+        svg.setAttribute("viewBox", `0 0 ${parent.offsetWidth} ${parent.offsetHeight*2}`);
+        svg.setAttribute("class", "tail");
+        svg.style.top = parent.offsetHeight - bordBias;
+        //svg.style.top = getComputedStyle(parent).height - getComputedStyle(parent).minHeight/2;
+        parent.appendChild(svg);
+        
+        const path = document.createElementNS(xmlns, "path");
+        svg.appendChild(path);
+        
+        document.body.addEventListener("resize", ()=> {
+            parent.querySelectorAll(".tail").forEach(tail => tail.remove());
+            new SBT(parent, direction);
+        })
+        
+        this.char = parent.parentElement.id;
+        this.svg = svg;
+        this.path = path;
+        this.setPath(50);
+        //AH.delay(this.setPath.bind(50), 1/60);
+    }
+    
+    setPath(s) {
+        let parent = document.querySelector(`#${this.char} > .bubble`);
+        console.log(parent);
+        const w = parent.offsetWidth;
+        const r = parseInt(getComputedStyle(parent).borderRadius) / 2;
+        parent = document.querySelector(`#${this.char} > .bubble`);
+        console.log(parent);
+        const [x, y] = this.direction.map(x => x * s);
+        this.path.setAttribute("d", `M${r} 0C${r} 0 ${w/2} 0 ${x + w/2} ${y}C${w/2} 0 ${w - r} 0 ${w - r} 0`);
+    }
+}
+
+
 class DH extends Initable {
     
     static #cursor = {};
@@ -43,7 +86,7 @@ class DH extends Initable {
     }*/
     
     /**/
-    static async readPage(/*{ before, replicas, choice}*/) {
+    static async readPage(id/*{ before, replicas, choice}*/) {
         /*before?.forEach(({ id, pose, animation }) => {
             if (animation != null) { AH.animation(id, animation) }
             if (pose != null) { document.getElementById(id).src = pose; }
@@ -56,39 +99,34 @@ class DH extends Initable {
             
             // change pose to 1.png
             const bubble = this.spawnBubble(el);
-            this.writeText(bubble);
+            this.writeText(bubble, /**/"привет, я " + el.id);//*/"Моё имя - Артур пирожков. Привет. Ты, наверное, очень рад меня встретить, не так ли?");
             // to 0.png
-            this.proceed(replica)
-        });
-        this.#page = this.choice(choice || null, replicas.length ? replicas[replicas.length - 1] : null);
+            //this.proceed(replica)
+        //});
+        //this.#page = this.choice(choice || null, replicas.length ? replicas[replicas.length - 1] : null);
     }
     
     /*static pause() {
             
         }*/
     
-    static async spawnBubble(parent) {
-        parent.querySelectorAll(".bubble").forEach(bub => bub.remove());
-        const bubble = document.createElement("pre");
-        console.debug(bubble);
-        parent.appendChild(bubble);
-        console.debug(parent);
+    static spawnBubble(parent) {
+        [...parent.querySelectorAll(".bubble"), ...parent.querySelectorAll(".tail")].forEach(bub => bub.remove());
+        const bubble = document.createElement("div");
         bubble.className = "hidden bubble block";
-        const randRad = Math.PI / 8 + Math.random() * 5 * Math.PI / 8;
-        const a = -1;
-        let v = 8;
-        let s = 0;
-        bubble.className = "bubble block";
+        parent.appendChild(bubble);
+        AH.delay(() => {
+            const randRad = Math.PI / 8 + Math.random() * 5 * Math.PI / 8;
+            const direction = [Math.cos(randRad), Math.sin(randRad)]//*0.5 + 0.5]
+            bubble.className = "bubble block";
         
-        async function glide() {
-            bubble.style.setProperty("bottom", `calc(${s * Math.sin(randRad)} * min(1vh, 1vw))`);
-            bubble.style.setProperty("left", `calc(${s * Math.cos(randRad)} * ${parent.id === "infi" ? 1 : -1} * min(1vh, 1vw))`);
-            s += v;
-            v += a;
-            if (v > 0) { AH.delay(glide, 1/60) };
-        }
-        
-        glide();
+            bubble.style.left =`calc(${-direction[0]} * min(30vh, 30vw))`;
+            bubble.style.bottom =`calc(${direction[1]} * min(30vh, 30vw))`;
+            
+            AH.delay(() => {
+                new SBT(bubble, direction);
+            }, 0.5);
+        }, 1/60);
         
         return bubble;
     }
@@ -160,9 +198,8 @@ class DH extends Initable {
                 
                 el.addEventListener("click", () => {
                     if (this.active) { return }
-                    //this.dialogue(el.id); 
-                    console.log(el.id + " clicked");
-                    this.spawnBubble(el);
+                    //this.dialogue(el.id);
+                    this.readPage(el.id);
                 });
             });
         });
