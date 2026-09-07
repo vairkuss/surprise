@@ -11,44 +11,40 @@ class Initable {
 
 
 class SBT {
-    constructor(parent, direction) {
-        this.direction = [direction[0], direction[1]];
+    constructor(parent) {
         const bordBias = parseInt(getComputedStyle(parent).borderWidth) * 2;
         const xmlns = "http://www.w3.org/2000/svg";
         const svg = document.createElementNS(xmlns, "svg");
+        const path = document.createElementNS(xmlns, "path");
         svg.setAttribute("xmlns", xmlns);
         svg.setAttribute("width", parent.offsetWidth);
         svg.setAttribute("height", parent.offsetHeight);
-        svg.setAttribute("viewBox", `0 0 ${parent.offsetWidth} ${parent.offsetHeight*2}`);
+        svg.setAttribute("viewBox", `0 0 ${parent.offsetWidth} ${parent.offsetHeight * 2}`);
         svg.setAttribute("class", "tail");
         svg.style.top = parent.offsetHeight - bordBias;
-        //svg.style.top = getComputedStyle(parent).height - getComputedStyle(parent).minHeight/2;
         parent.appendChild(svg);
-        
-        const path = document.createElementNS(xmlns, "path");
         svg.appendChild(path);
         
-        document.body.addEventListener("resize", ()=> {
+        window.addEventListener("orientationchange", ()=> {
             parent.querySelectorAll(".tail").forEach(tail => tail.remove());
             new SBT(parent, direction);
         })
         
-        this.char = parent.parentElement.id;
+        const char = parent.parentElement?.id;
+        if (char == null) { return }
         this.svg = svg;
         this.path = path;
-        this.setPath(50);
-        //AH.delay(this.setPath.bind(50), 1/60);
+        this.setPath(char, 0);
+        AH.delay(() => { this.setPath(char, 50) }, 1/60);
     }
     
-    setPath(s) {
-        let parent = document.querySelector(`#${this.char} > .bubble`);
-        console.log(parent);
+    setPath(char, direction, s) {
+        const parent = document.querySelector(`#${char} > .bubble`);
         const w = parent.offsetWidth;
         const r = parseInt(getComputedStyle(parent).borderRadius) / 2;
-        parent = document.querySelector(`#${this.char} > .bubble`);
-        console.log(parent);
-        const [x, y] = this.direction.map(x => x * s);
-        this.path.setAttribute("d", `M${r} 0C${r} 0 ${w/2} 0 ${x + w/2} ${y}C${w/2} 0 ${w - r} 0 ${w - r} 0`);
+        const [x, y] = direction.map(x => x * s);
+        //this.path.setAttribute("d", `M${r} 0C${r} 0 ${w/2} 0 ${x + w/2} ${y}C${w/2} 0 ${w - r} 0 ${w - r} 0`);
+        return `M${r} 0C${r} 0 ${w/2} 0 ${x + w/2} ${y}C${w/2} 0 ${w - r} 0 ${w - r} 0`;
     }
 }
 
@@ -123,9 +119,11 @@ class DH extends Initable {
             bubble.style.left =`calc(${-direction[0]} * min(30vh, 30vw))`;
             bubble.style.bottom =`calc(${direction[1]} * min(30vh, 30vw))`;
             
-            AH.delay(() => {
-                new SBT(bubble, direction);
-            }, 0.5);
+            //new SBT(bubble, direction);
+            const draw = new SVG().addTo(bubble).size(bubble.offsetWidth, bubble.offsetHeight).attr("class", "tail");
+            //draw.attr("class", "tail");
+            const tail = draw.path(SBT.prototype.setPath(parent.id, direction, 0));
+            tail.delay(20).animate(1200).plot(SBT.prototype.setPath(parent.id, direction, 50)).ease(">");
         }, 1/60);
         
         return bubble;
