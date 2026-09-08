@@ -21,12 +21,15 @@
     
     color: #000;
     font-size: calc(var(--bub-size) * 0.4);
+    text-align: center;
+    place-content: center;
     white-space: pre-line;
     
     transform: scale(100%);
     filter: opacity(100%);
     will-change: transform, filter;
-    transition: all 0.3s ease-out;
+    transition:
+        all 0.3s ease-out;
 }
 
 .tail {
@@ -34,8 +37,8 @@
     fill: #fff;
     stroke: #000;
     stroke-width: calc(var(--bub-size) * 0.1);
+    
     path {
-        stroke-linecap: round;
         stroke-linejoin: round;
     }
 }

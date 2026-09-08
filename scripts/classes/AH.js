@@ -1,13 +1,16 @@
 class AH {
-    static delay(func, time, ...params) {
+    
+    static delay(time, func, ...params) {
         return new Promise(res => setTimeout(res, time * 1000))
         .then(() => func?.call(...params));
     }
     
+    static holdUntill() {}
+    
     static animate(func, wantedValue, duration, fps=60, startValue=0, a=1) {
-        this.delay(() => {
+        this.delay(1/fps, () => {
             func(startValue)
-        }, 1/fps)
+        })
         .then(() => {
             startValue += a * duration / fps;
             a++;
@@ -16,12 +19,8 @@ class AH {
         });
     }
     
-    static await(el, event, func, ...params) {
+    static awaitEvent(el, event, func, ...params) {
         return new Promise(res => el.once(event, res))
         .then(() => func?.call(...params));
-    }
-    
-    static playAnim(el, frames) {
-        
     }
 }

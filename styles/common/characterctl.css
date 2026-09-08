@@ -12,9 +12,31 @@
 #infi {
     left: min(10vh, 10vw);
     background: yellow;
+    
+    & > .bubble {
+        color: #fff;
+        background: #000;
+        border-color: #fff;
+    }
+    
+    & > .bubble svg {
+        fill: #000;
+        stroke: #fff;
+    }
 }
 
 #virko {
     right: min(10vh, 10vw);
     background: brown;
+    
+    /*& > .bubble {
+        color: turquoise;
+        background: brown;
+        border-color: turquoise;
+    }
+    
+    & > .bubble svg {
+        fill: brown;
+        stroke: turquoise;
+    }*/
 }
