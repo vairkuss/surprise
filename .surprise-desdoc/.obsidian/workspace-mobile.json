@@ -36,35 +36,21 @@
             }
           },
           {
-            "id": "d0a81e0648009291",
+            "id": "de6ae6fc4b19192a",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "chronology/stage2.md",
+                "file": "web/characters/characters.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "stage2"
-            }
-          },
-          {
-            "id": "61f9ab375ac3a27c",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "web/characters/virko.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "virko"
+              "title": "characters"
             }
           }
         ],
-        "currentTab": 3
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -215,13 +201,15 @@
       "obsidian-importer:Open Importer": false
     }
   },
-  "active": "61f9ab375ac3a27c",
+  "active": "de6ae6fc4b19192a",
   "lastOpenFiles": [
+    "index.md",
+    "chronology/stage2.md",
+    "web/characters/virko.md",
     "web/characters/infi.md",
     "web/characters/characters.md",
     "web/elements/elements.md",
     "web/elements/blocks/images.md",
-    "chronology/stage2.md",
     "chronology/stage3.md",
     "chronology/stage4.md",
     "chronology/stage5.md",
@@ -230,7 +218,6 @@
     "web/web-design.md",
     "surprise.md",
     "presentation/presentation.md",
-    "web/characters/virko.md",
     "web/elements/blocks/buttons.md",
     "web/elements/blocks/pages-blocks.md",
     "web/elements/blocks/shelves.md",
@@ -238,7 +225,6 @@
     "chronology/stage6.md",
     "web/layout/website-plan.canvas",
     "chronology/stage1.md",
-    "index.md",
     "web/layout/navigation.md",
     "web/layout/main-page.md",
     "ideas.md",

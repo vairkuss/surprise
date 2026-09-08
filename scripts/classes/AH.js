@@ -2,11 +2,21 @@ class AH {
     
     static delay(time, func, ...params) {
         return new Promise(res => setTimeout(res, time * 1000))
-        .then(() => func?.call(...params));
+        .then(() => { return func(...params) });
     }
     
-    static holdUntill() {}
+    static holdUntill(frequency, awaitingValue, func, ...params) {
+        return new Promise(async res => {
+            AH.delay(1/frequency, () => { return func(...params) })
+            .then(returnValue => {
+                if (returnValue === awaitingValue) { return } else { 
+                    this.holdUntill(frequency, awaitingValue, func, ...params);
+                }
+            });
+        });
+    }
     
+    /**
     static animate(func, wantedValue, duration, fps=60, startValue=0, a=1) {
         this.delay(1/fps, () => {
             func(startValue)
@@ -18,9 +28,12 @@ class AH {
             this.animate(func, wantedValue, duration, fps, last, a);
         });
     }
+    //*/
     
+    /**
     static awaitEvent(el, event, func, ...params) {
         return new Promise(res => el.once(event, res))
         .then(() => func?.call(...params));
     }
+    //*/
 }
