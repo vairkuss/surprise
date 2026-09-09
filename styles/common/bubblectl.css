@@ -15,7 +15,7 @@
     
     min-width: var(--bub-size);
     width: max-content;
-    max-width: calc(var(--bub-size) * 7);
+    max-width: calc(var(--bub-size) * 5);
     min-height: var(--bub-size);
     height: fit-content;
     
@@ -29,7 +29,8 @@
     filter: opacity(100%);
     will-change: transform, filter;
     transition:
-        all 0.3s ease-out;
+        all 0.3s ease-out,
+        margin-top 0s;
 }
 
 .tail {

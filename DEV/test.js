@@ -11,6 +11,7 @@ class Initable {
 
 
 class SB {
+    
     static activeBubbles = {};
     
     constructor(parent) {
@@ -34,13 +35,12 @@ class SB {
             
             AH.delay(.2, () => {
                 this.beginToCollide();
-                this.updateTail();
             });
         });
     }
     
     updateTail() {
-        this.tail = new SBT(this, 25);
+        this.tail = new SBT(this);
     }
     
     async writeText(text) {
@@ -52,7 +52,6 @@ class SB {
             if (!"#§¢π∆".includes(text[cursor])) {
                 sb.face.textContent += text[cursor];
             }
-            sb.updateTail();
             const shortPause = "#!?-.,;)".includes(text[cursor]);
             const longPause = text[cursor] === "§";
             const glitch = text[cursor] === "¢";
@@ -62,7 +61,7 @@ class SB {
             AH.delay(+!skip * (+(shortPause) * 2 + 1) * (+longPause * 4 + 1) / frequency, () => {
                 if (cursor >= text.length) { sb.writing = 0; return; }
                 const sbStyle = getComputedStyle(sb.bubble);
-                sb.bubble.style.marginTop = parseInt(sbStyle.borderRadius) - sb.bubble.offsetHeight + "px";
+                sb.bubbleStyleMarginTop = parseInt(sbStyle.borderRadius) - sb.bubble.offsetHeight;
                 addToOutput(sb, cursor);
             });
             cursor++;
@@ -79,58 +78,89 @@ class SB {
     
     async beginToCollide() {
         this.v = { x: 0, y: 0 };
-        this.a = { x: 0, y: 0 };
-        
         this.colisionInterval = setInterval(() => {
             const curRect = this.bubble.getBoundingClientRect();
             const curStyle = getComputedStyle(this.bubble);
             const directionX = curRect.left < document.body.offsetWidth * .02 ? 1
                 : curRect.right > document.body.offsetWidth * .98 ? -1
                 : 0
-            this.v.x += directionX ||  -4 * this.v.x / Math.abs(this.v.x || 1);
-            if (Math.abs(this.v.x) < 1) { this.v.x = 0 }
+            this.v.x += directionX || -Math.sign(this.v.x);
+            //this.v.x = Math.trunc(this.v.x + (directionX ||  -4 * this.v.x / Math.abs(this.v.x || 1)));
             this.bubble.style.left = parseInt(curStyle.left) + this.v.x + "px";
             
-            const mrg = parseInt(curStyle.borderRadius) * 1.2;
-            this.bubble.style.marginBottom = `calc(${-Object.values(SB.activeBubbles)
-            .filter(sb => sb.bubble.getBoundingClientRect().bottom < curRect.bottom)
-            .reduce((mrgT, sb) => mrgT + sb.bubble.offsetHeight + mrg, -mrg) / 10} * var(--bub-size))`;
+            const mrg = parseInt(curStyle.borderRadius);
+            this.bubble.style.marginTop = -Object.values(SB.activeBubbles)
+            .filter(sb => sb.bubble.getBoundingClientRect().top < curRect.top)
+            .reduce((mrgT, sb) => {
+                const sbRect = sb.bubble.getBoundingClientRect();
+                const sbHeight = sbRect.bottom - sbRect.top;
+                return mrgT - sbHeight - mrg;
+            }, mrg) + this.bubbleStyleMarginTop + "px";
+            
+            this.updateTail();
         }, 1000/30);
     }
     
     remove() {
-        this.bubble.remove();
         clearInterval(this.colisionInterval);
+        const curRect = this.bubble.getBoundingClientRect();
+        const curStyle = getComputedStyle (this.bubble);
+        const parentRect = this.bubble.parentElement.getBoundingClientRect();
+        this.bubble.style.position = "fixed";
+        this.bubble.style.top = parseInt(curStyle.top) + curRect.top + "px";
+        this.bubble.style.left = parseInt(curStyle.left) + curRect.left + "px";
+        this.bubble.style.marginTop = "";
+        this.bubble.className = "hidden bubble block";
+        this.tail.svg.remove();
+        AH.delay(0.4, () => { this.bubble.remove() });
     }
 }
 
 
 class SBT {
-    constructor(sb, length) {
+    constructor(sb) {
         sb.tail?.svg.remove();
         const xmlns = "http://www.w3.org/2000/svg";
         this.svg = document.createElementNS(xmlns, "svg");
         this.svg.setAttribute("xmlns", xmlns);
         this.svg.setAttribute("width", sb.bubble.offsetWidth);
-        this.svg.setAttribute("height", sb.bubble.offsetHeight);
-        this.svg.setAttribute("viewBox", `0 0 ${sb.bubble.offsetWidth} ${sb.bubble.offsetHeight}`);
+        this.svg.setAttribute("height", sb.bubble.offsetHeight * 3);
+        this.svg.setAttribute("viewBox", `0 0 ${sb.bubble.offsetWidth} ${sb.bubble.offsetHeight * 3}`);
         this.svg.setAttribute("class", "tail");
         const bordBias = parseInt(getComputedStyle(sb.bubble).borderWidth) * 2;
         this.svg.style.top = sb.bubble.offsetHeight - bordBias - 0.5;
-        this.svg.style.left = -bordBias / 2; // why? - idk, but it works
+        this.svg.style.left = -bordBias / 2;
         sb.bubble.appendChild(this.svg);
         
         const path = document.createElementNS(xmlns, "path");
         const w = sb.bubble.offsetWidth;
-        const r = parseInt(getComputedStyle(sb.bubble).borderRadius) / 2;
-        const [x, y] = sb.direction.map(x => x * length);
-        path.setAttribute("d", `M${w*.25} 0C${w*.25} 0 ${w*.5} 0 ${x + w*.5} ${y}C${w*.5} 0 ${w*.75} 0 ${w*.75} 0`);
+        const r = parseInt(getComputedStyle(sb.bubble).borderRadius);
+        
+        const svgRect = this.svg.getBoundingClientRect();
+        const sbStyle = getComputedStyle(sb.bubble);
+        const svgRectMidX = svgRect.left + (svgRect.right - svgRect.left) / 2;
+        
+        const char = sb.bubble.parentElement;
+        const charRect = char.getBoundingClientRect();
+        const charMidX = charRect.left + char.offsetWidth / 2;
+        const charMidY = charRect.top + char.offsetHeight / 2;
+        const charSide = Math.sign(charMidX - document.body.offsetWidth / 2);
+        
+        const a = charMidX - svgRect.left;
+        //console.debug(parseInt(sbStyle.marginTop));
+        const b = charMidY - svgRect.bottom - parseInt(sbStyle.marginTop);
+        const c = Math.sqrt(a**2 + b**2);
+        
+        const rad = Math.atan2(b, a);
+        const direction = [Math.cos(rad), Math.sin(rad)];
+        console.debug(`  c,svx,svy\n${[c, svgRectMidX, svgRect.bottom].map(v => Math.trunc(v))}`);
+        const [x, y] = direction.map(v => c - v * r);
+        
+        //console.debug(`мид: ${[charMidX, charMidY]}\nсвг: ${svgRectMidX}\nбок: ${charSide}\nабс: ${[a, b, c]}\nрад: ${rad}\nдир: ${direction}\nху: ${[x, y]}`);
+        path.setAttribute("d", `M${w*.25} 0C${w*.25} 0 ${w*.5} 0 ${x} ${y}C${w*.5} 0 ${w*.75} 0 ${w*.75} 0`);
         this.svg.appendChild(path);
         
-        /*document.body.addEventListener("resize", ()=> {
-            parent.querySelectorAll(".tail").forEach(tail => tail.remove());
-            new SBT(parent, direction);
-        })*/
+        // add window resize handling document.body.addEventListener("resize" () => { ... });
     }
 }
 
@@ -150,9 +180,11 @@ class DH extends Initable {
         console.debug("current page: " + curPage);
         if (this.#cursor[charId] == null) { this.#cursor[charId] = 0 }
         console.debug("current cursor state: " + Object.entries(this.#cursor));
+        /*
         fetch(`http://localhost:7148/get/replicas?p=${curPage}&n=${charId}&c=${this.#cursor[charId]}`)
         .then(async response => await response.json())
         .then(([current, max]) => this.readDialogue(current, max));
+        *//*
     }
     
     static async readDialogue(current, max) {
@@ -167,7 +199,6 @@ class DH extends Initable {
         // post cursor to server save it in progression.json
     }*/
     
-    /**/
     static async readPage(id/*{ before, replicas, choice}*/) {
         /*before?.forEach(({ id, pose, animation }) => {
             if (animation != null) { AH.animation(id, animation) }
@@ -182,16 +213,12 @@ class DH extends Initable {
             
             // change pose to 1.png
             const bubble = new SB(el);
-            await bubble.writeText("Погоди-ка.§§.§§.§§§§\nЧто-то тут# не# так...§§§\nЭто§ ты§ скушал§ сосиску§§§§ Дениса Армянова?§§...");
-            // to .png
+            await bubble.writeText("Погоди-ка.§§.§§.§§§§\nЧто-то тут# не# так...§§§\nЭто§ ты§ скушал§ сосиску§§§§ Дениса Армянова?§§...");//text);
+            // to 0.png
             //this.proceed(replica)
         //});
         //this.#page = this.choice(choice || null, replicas.length ? replicas[replicas.length - 1] : null);
     }
-    
-    /*static pause() {
-            
-        }*/
     
     /**
     static proceed(replica) {
