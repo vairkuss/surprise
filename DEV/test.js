@@ -44,7 +44,7 @@ class SB {
     }
     
     async writeText(text) {
-        if (!text.length) { return }
+        if (!text?.length) { return }
         this.writing = 1;
         let frequency = 20; 
         
@@ -111,7 +111,7 @@ class SB {
         this.bubble.style.left = parseInt(curStyle.left) + curRect.left + "px";
         this.bubble.style.marginTop = "";
         this.bubble.className = "hidden bubble block";
-        this.tail.svg.remove();
+        this.tail?.svg.remove();
         AH.delay(0.4, () => { this.bubble.remove() });
     }
 }
@@ -133,27 +133,28 @@ class SBT {
         sb.bubble.appendChild(this.svg);
         
         const path = document.createElementNS(xmlns, "path");
-        const w = sb.bubble.offsetWidth;
-        const r = parseInt(getComputedStyle(sb.bubble).borderRadius);
         
         const svgRect = this.svg.getBoundingClientRect();
+        const svgMidX = svgRect.left + (svgRect.right - svgRect.left) / 2;
+        
         const sbStyle = getComputedStyle(sb.bubble);
-        const svgRectMidX = svgRect.left + (svgRect.right - svgRect.left) / 2;
+        const r = parseInt(sbStyle.borderRadius);
+        const w = sb.bubble.offsetWidth;
         
         const char = sb.bubble.parentElement;
+        if (char == null) { return }
         const charRect = char.getBoundingClientRect();
         const charMidX = charRect.left + char.offsetWidth / 2;
         const charMidY = charRect.top + char.offsetHeight / 2;
         const charSide = Math.sign(charMidX - document.body.offsetWidth / 2);
         
-        const a = charMidX - svgRect.left;
-        //console.debug(parseInt(sbStyle.marginTop));
+        const a = charMidX - svgMidX;
         const b = charMidY - svgRect.bottom - parseInt(sbStyle.marginTop);
         const c = Math.sqrt(a**2 + b**2);
         
         const rad = Math.atan2(b, a);
-        const direction = [Math.cos(rad), Math.sin(rad)];
-        console.debug(`  c,svx,svy\n${[c, svgRectMidX, svgRect.bottom].map(v => Math.trunc(v))}`);
+        const direction = [-Math.cos(rad), Math.sin(rad)];
+        //////console.debug(`  c,  b,svy,dbsmt\n${[c, b, svgRect.bottom].map(v => Math.trunc(v))},${sbStyle.marginTop}`);
         const [x, y] = direction.map(v => c - v * r);
         
         //console.debug(`мид: ${[charMidX, charMidY]}\nсвг: ${svgRectMidX}\nбок: ${charSide}\nабс: ${[a, b, c]}\nрад: ${rad}\nдир: ${direction}\nху: ${[x, y]}`);
@@ -213,7 +214,7 @@ class DH extends Initable {
             
             // change pose to 1.png
             const bubble = new SB(el);
-            await bubble.writeText("Погоди-ка.§§.§§.§§§§\nЧто-то тут# не# так...§§§\nЭто§ ты§ скушал§ сосиску§§§§ Дениса Армянова?§§...");//text);
+            await bubble.writeText()//"Погоди-ка.§§.§§.§§§§\nЧто-то тут# не# так...§§§\nЭто§ ты§ скушал§ сосиску§§§§ Дениса Армянова?§§...");//text);
             // to 0.png
             //this.proceed(replica)
         //});
