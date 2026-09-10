@@ -3,8 +3,12 @@
     filter: opacity(0%);
     will-change: transform, filter;
     transition: all 0.3s ease-in;
+    svg {
+        fill: transparent;
+        stroke: transparent;
+    }
 }
 
 .masked {
-    
+    filter: opacity(10%);
 }

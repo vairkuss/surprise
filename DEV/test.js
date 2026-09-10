@@ -11,27 +11,30 @@ class Initable {
 
 
 class SB {
-    
     static activeBubbles = {};
     
     constructor(parent) {
         this.writing = 0;
+        this.lifes = 2;
+        
         SB.activeBubbles[parent.id]?.remove();
         SB.activeBubbles[parent.id] = this;
-        const bubble = document.createElement("div");
-        bubble.className = "hidden bubble block";
-        parent.appendChild(bubble);
-        this.bubble = bubble;
-        const face = document.createElement("div");
-        bubble.appendChild(face);
-        this.face = face;
+        
+        this.bubble = document.createElement("div");
+        this.bubble.className = "hidden bubble block";
+        parent.appendChild(this.bubble);
+        
+        this.face = document.createElement("div");
+        this.bubble.appendChild(this.face);
+        
         const randRad = Math.PI * .25 + Math.random() * Math.PI * .5; // make it prefer the middle area
         this.direction = [Math.cos(randRad), Math.sin(randRad) * .5 + .5];
-        AH.delay(1/60, () => {
-            bubble.className = "bubble";
         
-            bubble.style.left =`calc(${-this.direction[0]} * min(30vh, 30vw))`;
-            bubble.style.bottom =`calc(${this.direction[1]} * min(30vh, 30vw))`;
+        AH.delay(1/60, () => {
+            this.bubble.className = "bubble";
+        
+            this.bubble.style.left =`calc(${-this.direction[0]} * min(30vh, 30vw))`;
+            this.bubble.style.bottom =`calc(${this.direction[1]} * min(30vh, 30vw))`;
             
             AH.delay(.2, () => {
                 this.beginToCollide();
@@ -93,8 +96,7 @@ class SB {
             .filter(sb => sb.bubble.getBoundingClientRect().top < curRect.top)
             .reduce((mrgT, sb) => {
                 const sbRect = sb.bubble.getBoundingClientRect();
-                const sbHeight = sbRect.bottom - sbRect.top;
-                return mrgT - sbHeight - mrg;
+                return mrgT - sbRect.height - mrg;
             }, mrg) + this.bubbleStyleMarginTop + "px";
             
             this.updateTail();
@@ -103,13 +105,16 @@ class SB {
     
     remove() {
         clearInterval(this.colisionInterval);
+        delete SB.activeBubbles[this.bubble.parentElement.id];
+        // if (this.bubble == null) { console.log("no body"); return }
         const curRect = this.bubble.getBoundingClientRect();
-        const curStyle = getComputedStyle (this.bubble);
-        const parentRect = this.bubble.parentElement.getBoundingClientRect();
-        this.bubble.style.position = "fixed";
-        this.bubble.style.top = parseInt(curStyle.top) + curRect.top + "px";
-        this.bubble.style.left = parseInt(curStyle.left) + curRect.left + "px";
+        const curStyle = getComputedStyle(this.bubble);
+        const parentRect = this.bubble.parentElement?.getBoundingClientRect();
+        // if (parentRect == null) { console.log("no parent"); return }
+        this.bubble.style.top = curRect.top - parseInt(curStyle.borderWidth) - parseInt(curStyle.height) + "px";
+        this.bubble.style.left = curRect.left + "px";
         this.bubble.style.marginTop = "";
+        AH.delay(1/60, () => { this.bubble.style.position = "fixed" });
         this.bubble.className = "hidden bubble block";
         this.tail?.svg.remove();
         AH.delay(0.4, () => { this.bubble.remove() });
@@ -120,46 +125,43 @@ class SB {
 class SBT {
     constructor(sb) {
         sb.tail?.svg.remove();
+        
+        const charRect = sb.bubble.parentElement.getBoundingClientRect();
+        const charMidX = charRect.left + charRect.width / 2;
+        const charMidY = charRect.top + charRect.height / 2;
+        
+        const sbStyle = getComputedStyle(sb.bubble);
+        const bordBias = parseInt(sbStyle.borderWidth);
+        const r = parseInt(sbStyle.borderRadius);
+        const sbRect = sb.bubble.getBoundingClientRect();
+        const w = sbRect.width;
+        const sbMidX = sbRect.left + w / 2;
+        const a = charMidX - sbMidX;
+        const b = charMidY - sbRect.bottom;
+        //console.debug(`${charMidY} - ${svgRect.bottom} = ${b}`);
+        const c = Math.sqrt(a**2 + b**2);
+        
         const xmlns = "http://www.w3.org/2000/svg";
         this.svg = document.createElementNS(xmlns, "svg");
         this.svg.setAttribute("xmlns", xmlns);
-        this.svg.setAttribute("width", sb.bubble.offsetWidth);
-        this.svg.setAttribute("height", sb.bubble.offsetHeight * 3);
-        this.svg.setAttribute("viewBox", `0 0 ${sb.bubble.offsetWidth} ${sb.bubble.offsetHeight * 3}`);
+        this.svg.setAttribute("width", w);
+        this.svg.setAttribute("height", b);
+        this.svg.setAttribute("viewBox", `0 0 ${w} ${b}`);
         this.svg.setAttribute("class", "tail");
-        const bordBias = parseInt(getComputedStyle(sb.bubble).borderWidth) * 2;
-        this.svg.style.top = sb.bubble.offsetHeight - bordBias - 0.5;
-        this.svg.style.left = -bordBias / 2;
+        this.svg.style.top = sbRect.height - bordBias * 2 - 1; // idk why -1, it just works
+        this.svg.style.left = -bordBias;
         sb.bubble.appendChild(this.svg);
         
-        const path = document.createElementNS(xmlns, "path");
-        
-        const svgRect = this.svg.getBoundingClientRect();
-        const svgMidX = svgRect.left + (svgRect.right - svgRect.left) / 2;
-        
-        const sbStyle = getComputedStyle(sb.bubble);
-        const r = parseInt(sbStyle.borderRadius);
-        const w = sb.bubble.offsetWidth;
-        
-        const char = sb.bubble.parentElement;
-        if (char == null) { return }
-        const charRect = char.getBoundingClientRect();
-        const charMidX = charRect.left + char.offsetWidth / 2;
-        const charMidY = charRect.top + char.offsetHeight / 2;
-        const charSide = Math.sign(charMidX - document.body.offsetWidth / 2);
-        
-        const a = charMidX - svgMidX;
-        const b = charMidY - svgRect.bottom - parseInt(sbStyle.marginTop);
-        const c = Math.sqrt(a**2 + b**2);
-        
         const rad = Math.atan2(b, a);
-        const direction = [-Math.cos(rad), Math.sin(rad)];
-        //////console.debug(`  c,  b,svy,dbsmt\n${[c, b, svgRect.bottom].map(v => Math.trunc(v))},${sbStyle.marginTop}`);
-        const [x, y] = direction.map(v => c - v * r);
+        const direction = [Math.cos(rad), Math.sin(rad)];
+        const [x, y] = direction.map(v => v * (c - r * 1.5));
         
-        //console.debug(`мид: ${[charMidX, charMidY]}\nсвг: ${svgRectMidX}\nбок: ${charSide}\nабс: ${[a, b, c]}\nрад: ${rad}\nдир: ${direction}\nху: ${[x, y]}`);
-        path.setAttribute("d", `M${w*.25} 0C${w*.25} 0 ${w*.5} 0 ${x} ${y}C${w*.5} 0 ${w*.75} 0 ${w*.75} 0`);
+        const path = document.createElementNS(xmlns, "path");
+        path.setAttribute("d", `M${(w-r)/2} 0C${(w-r)/2} 0 ${w*.5} 0 ${x+w*.5} ${y}C${w*.5} 0 ${(w+r)/2} 0 ${(w+r)/2} 0`);
+        
         this.svg.appendChild(path);
+        
+        // у меня фигура в свг, да, сложная. и начало линии не входит в эту фигуру, мне нужно от этой линии только точка-результат-вычисления, чтобы добавить посреди пути. я правильно сказал про линию, просто рисую я не её
         
         // add window resize handling document.body.addEventListener("resize" () => { ... });
     }
@@ -209,12 +211,12 @@ class DH extends Initable {
             // start animation or change pose with blink
             // await animation end, duration is pause ?? .2s
             //alert(`${id} (${pose ?? animation}): ${text}`);
-            if (Object.values(SB.activeBubbles).filter(sb => sb.writing).length) { return }
+            if (Object.values(SB.activeBubbles).some(sb => sb.writing)) { return }
             const el = document.getElementById(id);
             
             // change pose to 1.png
             const bubble = new SB(el);
-            await bubble.writeText()//"Погоди-ка.§§.§§.§§§§\nЧто-то тут# не# так...§§§\nЭто§ ты§ скушал§ сосиску§§§§ Дениса Армянова?§§...");//text);
+            await bubble.writeText("Погоди-ка.§§.§§.§§§§\nЧто-то тут# не# так...§§§\nЭто§ ты§ скушал§ сосиску§§§§ Дениса Армянова?§§...");//text);
             // to 0.png
             //this.proceed(replica)
         //});
@@ -257,8 +259,11 @@ class DH extends Initable {
     // make a class for animation handling
     
     static async init() {
+        
         super.init(() => {
+            
             // get cursor from server
+            
             document.querySelectorAll(".character").forEach(el => {
                 if (this.active) { return }
                 //fetch(`http://localhost:7148/get/character_random_sprite?${el.id}=idle`)
@@ -287,6 +292,18 @@ class DH extends Initable {
                     this.readPage(el.id);
                 });
             });
+            
+            document.body.addEventListener("click", () => {
+                if (Object.values(SB.activeBubbles).some(sb => sb.writing)) { return }
+                Object.values(SB.activeBubbles).forEach(sb => {
+                    if (sb == null) { return }
+                    sb.lifes -= 1;
+                    if (!sb.lifes) {
+                        sb.remove();
+                    }
+                });
+            });
+            
         });
     }
 }
