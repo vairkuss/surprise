@@ -1,11 +1,11 @@
 class Initable {
-    static __initialised = 0;
-    static get initiated() { return this.__initialised }
+    static __initiated = 0;
+    static get initiated() { return this.__initiated }
     
-    static async init(init) {
-        if (this.__initialised) { return }
-        init();
-        this.__initialised = 1;
+    static init(func) {
+        if (this.__initiated) { return }
+        func();
+        this.__initiated = 1;
     }
 }
 
@@ -14,32 +14,51 @@ class SB {
     static activeBubbles = {};
     
     constructor(parent) {
-        this.writing = 0;
-        this.lifes = 2;
-        
         SB.activeBubbles[parent.id]?.remove();
         SB.activeBubbles[parent.id] = this;
         
+        this.writing = 0;
+        this.lifes = 2;
+        
         this.bubble = document.createElement("div");
-        this.bubble.className = "hidden bubble block";
+        this.bubble.className = "hidden bubble";
         parent.appendChild(this.bubble);
         
         this.face = document.createElement("div");
         this.bubble.appendChild(this.face);
         
-        const randRad = Math.PI * .25 + Math.random() * Math.PI * .5; // make it prefer the middle area
-        this.direction = [Math.cos(randRad), Math.sin(randRad) * .5 + .5];
-        
+        // fly out
+        const randRad = Math.PI * .25 + Math.random() * Math.PI * .5;
+        const direction = [Math.cos(randRad), Math.sin(randRad) * .5 + .5];
         AH.delay(1/60, () => {
             this.bubble.className = "bubble";
-        
-            this.bubble.style.left =`calc(${-this.direction[0]} * min(30vh, 30vw))`;
-            this.bubble.style.bottom =`calc(${this.direction[1]} * min(30vh, 30vw))`;
-            
-            AH.delay(.2, () => {
-                this.beginToCollide();
-            });
+            this.bubble.style.left = `calc(${-direction[0]} * min(30vh, 30vw))`;
+            this.bubble.style.bottom = `calc(${direction[1]} * min(30vh, 30vw))`;
         });
+        
+        // begin to collide
+        this.v = { x: 0, y: 0 };
+        this.colisionInterval = setInterval(() => {
+            const curRect = this.bubble.getBoundingClientRect();
+            const curStyle = getComputedStyle(this.bubble);
+            const directionX = (
+                curRect.left < document.body.offsetWidth * .02 ? 1
+                : curRect.right > document.body.offsetWidth * .98 ? -1
+                : 0
+            );
+            this.v.x += directionX || -Math.sign(this.v.x);
+            this.bubble.style.left = parseInt(curStyle.left) + this.v.x + "px";
+            
+            const mrg = parseInt(curStyle.borderRadius);
+            this.bubble.style.marginTop = -Object.values(SB.activeBubbles)
+            .filter(sb => sb.bubble.getBoundingClientRect().top < curRect.top)
+            .reduce((mrgT, sb) => {
+                const sbRect = sb.bubble.getBoundingClientRect();
+                return mrgT - sbRect.height - mrg;
+            }, mrg) + this.mrgComp + "px";
+            
+            this.updateTail();
+        }, 1000/30);
     }
     
     updateTail() {
@@ -50,74 +69,44 @@ class SB {
         if (!text?.length) { return }
         this.writing = 1;
         let frequency = 20; 
-        
-        async function addToOutput(sb, cursor=0) {
-            if (!"#§¢π∆".includes(text[cursor])) {
-                sb.face.textContent += text[cursor];
-            }
-            const shortPause = "#!?-.,;)".includes(text[cursor]);
-            const longPause = text[cursor] === "§";
-            const glitch = text[cursor] === "¢";
-            const shake = text[cursor] === "π";
-            const jump = text[cursor] === "∆";
-            const skip = " \n\t".includes(text[cursor]) || glitch || shake || jump;
-            AH.delay(+!skip * (+(shortPause) * 2 + 1) * (+longPause * 4 + 1) / frequency, () => {
-                if (cursor >= text.length) { sb.writing = 0; return; }
-                const sbStyle = getComputedStyle(sb.bubble);
-                sb.bubbleStyleMarginTop = parseInt(sbStyle.borderRadius) - sb.bubble.offsetHeight;
-                addToOutput(sb, cursor);
-            });
-            cursor++;
-        }
-        
         AH.delay(1/60, () => {
             document.body.addEventListener("click", () => { frequency *= 20 }, { once: 1 });
         });
         
-        await AH.delay(0.3, () => {
-            addToOutput(this);
-        });
-    }
-    
-    async beginToCollide() {
-        this.v = { x: 0, y: 0 };
-        this.colisionInterval = setInterval(() => {
-            const curRect = this.bubble.getBoundingClientRect();
-            const curStyle = getComputedStyle(this.bubble);
-            const directionX = curRect.left < document.body.offsetWidth * .02 ? 1
-                : curRect.right > document.body.offsetWidth * .98 ? -1
-                : 0
-            this.v.x += directionX || -Math.sign(this.v.x);
-            //this.v.x = Math.trunc(this.v.x + (directionX ||  -4 * this.v.x / Math.abs(this.v.x || 1)));
-            this.bubble.style.left = parseInt(curStyle.left) + this.v.x + "px";
-            
-            const mrg = parseInt(curStyle.borderRadius);
-            this.bubble.style.marginTop = -Object.values(SB.activeBubbles)
-            .filter(sb => sb.bubble.getBoundingClientRect().top < curRect.top)
-            .reduce((mrgT, sb) => {
-                const sbRect = sb.bubble.getBoundingClientRect();
-                return mrgT - sbRect.height - mrg;
-            }, mrg) + this.bubbleStyleMarginTop + "px";
-            
-            this.updateTail();
-        }, 1000/30);
+        async function addToOutput(c=0) {
+            if (!"•§¢π∆".includes(text[c])) {
+                this.face.textContent += text[c];
+            }
+            const shortPause = "•!?-.,;)".includes(text[c]);
+            const longPause = text[c] === "§";
+            const glitch = text[c] === "¢";
+            const shake = text[c] === "π";
+            const jump = text[c] === "∆";
+            const skip = " \n\t".includes(text[c]) || glitch || shake || jump;
+            c++;
+            AH.delay(+!skip * (+shortPause * 2 + 1) * (+longPause * 4 + 1) / frequency, () => {
+                if (c >= text.length) { this.writing = 0; return; }
+                const style = getComputedStyle(this.bubble);
+                const rect = this.bubble.getBoundingClientRect();
+                this.mrgComp = parseInt(style.borderRadius) - rect.height;
+                addToOutput.call(this, c);
+            });
+        }
+        
+        addToOutput.call(this);
     }
     
     remove() {
         clearInterval(this.colisionInterval);
         delete SB.activeBubbles[this.bubble.parentElement.id];
-        // if (this.bubble == null) { console.log("no body"); return }
-        const curRect = this.bubble.getBoundingClientRect();
-        const curStyle = getComputedStyle(this.bubble);
-        const parentRect = this.bubble.parentElement?.getBoundingClientRect();
-        // if (parentRect == null) { console.log("no parent"); return }
-        this.bubble.style.top = curRect.top - parseInt(curStyle.borderWidth) - parseInt(curStyle.height) + "px";
-        this.bubble.style.left = curRect.left + "px";
+        const rect = this.bubble.getBoundingClientRect();
+        const style = getComputedStyle(this.bubble);
+        this.bubble.style.top = rect.top - rect.height - parseInt(style.borderWidth) + "px";
+        this.bubble.style.left = rect.left + "px";
         this.bubble.style.marginTop = "";
-        AH.delay(1/60, () => { this.bubble.style.position = "fixed" });
-        this.bubble.className = "hidden bubble block";
-        this.tail?.svg.remove();
-        AH.delay(0.4, () => { this.bubble.remove() });
+        this.bubble.style.position = "fixed";
+        this.bubble.className = "hidden bubble";
+        AH.delay(.4, this.bubble.remove);
     }
 }
 
@@ -133,12 +122,13 @@ class SBT {
         const sbStyle = getComputedStyle(sb.bubble);
         const bordBias = parseInt(sbStyle.borderWidth);
         const r = parseInt(sbStyle.borderRadius);
+        
         const sbRect = sb.bubble.getBoundingClientRect();
         const w = sbRect.width;
         const sbMidX = sbRect.left + w / 2;
+        
         const a = charMidX - sbMidX;
-        const b = charMidY - sbRect.bottom;
-        //console.debug(`${charMidY} - ${svgRect.bottom} = ${b}`);
+        const b = Math.max(charMidY - sbRect.bottom, 0);
         const c = Math.sqrt(a**2 + b**2);
         
         const xmlns = "http://www.w3.org/2000/svg";
@@ -158,12 +148,7 @@ class SBT {
         
         const path = document.createElementNS(xmlns, "path");
         path.setAttribute("d", `M${(w-r)/2} 0C${(w-r)/2} 0 ${w*.5} 0 ${x+w*.5} ${y}C${w*.5} 0 ${(w+r)/2} 0 ${(w+r)/2} 0`);
-        
         this.svg.appendChild(path);
-        
-        // у меня фигура в свг, да, сложная. и начало линии не входит в эту фигуру, мне нужно от этой линии только точка-результат-вычисления, чтобы добавить посреди пути. я правильно сказал про линию, просто рисую я не её
-        
-        // add window resize handling document.body.addEventListener("resize" () => { ... });
     }
 }
 
@@ -172,10 +157,8 @@ class DH extends Initable {
     
     static #cursor = {};
     static #page = null;
-    static get active() {
-        return this.#page != null;
-    }
-    /*
+    static get active() { return this.#page != null }
+    
     static async startDialogue(charId) {
         this.#page = 0;
         console.log("starting the dialogue for " + charId);
@@ -187,7 +170,7 @@ class DH extends Initable {
         fetch(`http://localhost:7148/get/replicas?p=${curPage}&n=${charId}&c=${this.#cursor[charId]}`)
         .then(async response => await response.json())
         .then(([current, max]) => this.readDialogue(current, max));
-        *//*
+        */
     }
     
     static async readDialogue(current, max) {
@@ -200,7 +183,7 @@ class DH extends Initable {
         }
         if (this.#cursor[charId] < max) { this.#cursor[charId]++ }
         // post cursor to server save it in progression.json
-    }*/
+    }
     
     static async readPage(id/*{ before, replicas, choice}*/) {
         /*before?.forEach(({ id, pose, animation }) => {
@@ -216,14 +199,14 @@ class DH extends Initable {
             
             // change pose to 1.png
             const bubble = new SB(el);
-            await bubble.writeText("Погоди-ка.§§.§§.§§§§\nЧто-то тут# не# так...§§§\nЭто§ ты§ скушал§ сосиску§§§§ Дениса Армянова?§§...");//text);
+            await bubble.writeText(/*);//*/"Погоди-ка.§§.§§.§§§§\nЧто-то тут# не# так...§§§\nЭто§ ты§ скушал§ сосиску§§§§ Дениса Армянова?§§...");//text);
             // to 0.png
             //this.proceed(replica)
         //});
         //this.#page = this.choice(choice || null, replicas.length ? replicas[replicas.length - 1] : null);
     }
     
-    /**
+    
     static proceed(replica) {
         // resolve previous bubble
         const bubble = AH.delay(this.spawnBubble, (replica["pause"] || 0), replica);
@@ -245,7 +228,6 @@ class DH extends Initable {
         // return button value
         const input = parseInt(prompt(Object.keys(choice).map(v => `${choice[v]}: ${v}`).join("\n")));
         return `${input}` === "NaN" ? null : input;
-        //resolve bubble
     }
     
     static patpat(charId) {
@@ -255,13 +237,9 @@ class DH extends Initable {
         // swiping left and right moves image cursor untill pointerup
         // end animation
     }
-    /**/
-    // make a class for animation handling
     
-    static async init() {
-        
+    static init() {
         super.init(() => {
-            
             // get cursor from server
             
             document.querySelectorAll(".character").forEach(el => {
@@ -296,11 +274,8 @@ class DH extends Initable {
             document.body.addEventListener("click", () => {
                 if (Object.values(SB.activeBubbles).some(sb => sb.writing)) { return }
                 Object.values(SB.activeBubbles).forEach(sb => {
-                    if (sb == null) { return }
-                    sb.lifes -= 1;
-                    if (!sb.lifes) {
-                        sb.remove();
-                    }
+                    sb.lifes--;
+                    if (!sb.lifes) { sb.remove() }
                 });
             });
             
