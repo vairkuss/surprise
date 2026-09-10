@@ -56,7 +56,6 @@ class SB {
                 const sbRect = sb.bubble.getBoundingClientRect();
                 return mrgT - sbRect.height - mrg;
             }, mrg) + this.mrgComp + "px";
-            
             this.updateTail();
         }, 1000/30);
     }
@@ -106,7 +105,7 @@ class SB {
         this.bubble.style.marginTop = "";
         this.bubble.style.position = "fixed";
         this.bubble.className = "hidden bubble";
-        AH.delay(.4, this.bubble.remove);
+        AH.delay(.4, () => { this.bubble.remove() });
     }
 }
 
@@ -277,7 +276,7 @@ class DH extends Initable {
                     sb.lifes--;
                     if (!sb.lifes) { sb.remove() }
                 });
-            });
+            }, true);
             
         });
     }

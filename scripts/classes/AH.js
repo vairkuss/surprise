@@ -1,13 +1,13 @@
 class AH {
     
-    static delay(time, func, ...params) {
+    static delay(time, func = () => {}) {
         return new Promise(res => setTimeout(res, time * 1000))
-        .then(() => { return func.call(...params) });
+        .then(() => func());
     }
     
     static holdUntill(frequency, awaitingValue, func, ...params) {
         return new Promise(async res => {
-            AH.delay(1/frequency, () => { return func.call(...params) })
+            AH.delay(1 / frequency, () => func(...params))
             .then(returnValue => {
                 if (returnValue === awaitingValue) { return } else { 
                     this.holdUntill(frequency, awaitingValue, func, ...params);
