@@ -9,33 +9,35 @@
     width: min(35vh, 35vw);
 }
 
+
 #infi {
     left: min(10vh, 10vw);
     background: yellow;
     
-    & > .bubble {
+    & .face {
         color: #fff;
         background: #000;
         border-color: #fff;
     }
     
-    & > .bubble svg {
+    & .tail {
         fill: #000;
         stroke: #fff;
     }
 }
 
+
 #virko {
     right: min(10vh, 10vw);
     background: brown;
     
-    /*& > .bubble {
+    /*& .face {
         color: turquoise;
         background: brown;
         border-color: turquoise;
     }
     
-    & > .bubble svg {
+    & .tail {
         fill: brown;
         stroke: turquoise;
     }*/

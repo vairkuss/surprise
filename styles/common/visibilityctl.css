@@ -1,13 +1,15 @@
 .hidden {
-    transform: scale(20%);
-    filter: opacity(0%);
+    transform: scale(20%) !important;
+    filter: opacity(0%) !important;
     will-change: transform, filter;
     transition: all 0.3s ease-in;
-    svg {
-        fill: transparent;
-        stroke: transparent;
-    }
 }
+
+.hidden .tail {
+    fill: transparent !important;
+    stroke: transparent !important;
+}
+
 
 .masked {
     filter: opacity(10%);

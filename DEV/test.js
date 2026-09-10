@@ -13,7 +13,7 @@ class Initable {
 class SB {
     static activeBubbles = {};
     
-    constructor(parent) {
+    constructor(parent, text="...") {
         SB.activeBubbles[parent.id]?.remove();
         SB.activeBubbles[parent.id] = this;
         
@@ -25,9 +25,16 @@ class SB {
         parent.appendChild(this.bubble);
         
         this.face = document.createElement("div");
+        this.face.className = "face";
         this.bubble.appendChild(this.face);
         
-        // fly out
+        this.#flyOut();
+        this.#startDrawing();
+        this.#startColliding();
+        this.#writeText(text);
+    }
+    
+    #flyOut () {
         const randRad = Math.PI * .25 + Math.random() * Math.PI * .5;
         const direction = [Math.cos(randRad), Math.sin(randRad) * .5 + .5];
         AH.delay(1/60, () => {
@@ -35,37 +42,44 @@ class SB {
             this.bubble.style.left = `calc(${-direction[0]} * min(30vh, 30vw))`;
             this.bubble.style.bottom = `calc(${direction[1]} * min(30vh, 30vw))`;
         });
-        
-        // begin to collide
-        this.v = { x: 0, y: 0 };
-        this.colisionInterval = setInterval(() => {
-            const curRect = this.bubble.getBoundingClientRect();
-            const curStyle = getComputedStyle(this.bubble);
-            const directionX = (
-                curRect.left < document.body.offsetWidth * .02 ? 1
-                : curRect.right > document.body.offsetWidth * .98 ? -1
-                : 0
-            );
-            this.v.x += directionX || -Math.sign(this.v.x);
-            this.bubble.style.left = parseInt(curStyle.left) + this.v.x + "px";
-            
-            const mrg = parseInt(curStyle.borderRadius);
-            this.bubble.style.marginTop = -Object.values(SB.activeBubbles)
-            .filter(sb => sb.bubble.getBoundingClientRect().top < curRect.top)
-            .reduce((mrgT, sb) => {
-                const sbRect = sb.bubble.getBoundingClientRect();
-                return mrgT - sbRect.height - mrg;
-            }, mrg) + this.mrgComp + "px";
-            this.updateTail();
+    }
+    
+    #startDrawing() {
+        this.drawInterval = setInterval(() => {
+            const rect = this.face.getBoundingClientRect();
+            const style = getComputedStyle(this.face);
+            this.tail = new SBT(this);
+            this.bubble.parentElement.style.zIndex = this.lifes + 90;
+            this.mrgComp = parseInt(style.borderRadius) - rect.height;
         }, 1000/30);
     }
     
-    updateTail() {
-        this.tail = new SBT(this);
+     #startColliding() {
+        this.v = { x: 0, y: 0 };
+        AH.delay(0.4, () => {
+            this.collisionInterval = setInterval(() => {
+                const curRect = this.bubble.getBoundingClientRect();
+                const curStyle = getComputedStyle(this.bubble);
+                const directionX =
+                    curRect.left < document.body.offsetWidth * .02 ? 1
+                    : curRect.right > document.body.offsetWidth * .98 ? -1
+                    : 0
+                this.v.x += directionX || -Math.sign(this.v.x);
+                this.bubble.style.left = parseInt(curStyle.left) + this.v.x + "px";
+            
+                const mrg = parseInt(getComputedStyle(this.face).borderRadius);
+                this.bubble.style.marginTop = Object.values(SB.activeBubbles)
+                .filter(sb => sb.bubble.getBoundingClientRect().top > curRect.top)
+                .reduce((mrgT, sb) => {
+                    return mrgT - sb.face.getBoundingClientRect().height - mrg;
+                }, mrg) + this.mrgComp + "px";
+            }, 1000/30);
+        });
     }
     
-    async writeText(text) {
+    #writeText(text) {
         if (!text?.length) { return }
+        this.face.textContent = "";
         this.writing = 1;
         let frequency = 20; 
         AH.delay(1/60, () => {
@@ -85,25 +99,34 @@ class SB {
             c++;
             AH.delay(+!skip * (+shortPause * 2 + 1) * (+longPause * 4 + 1) / frequency, () => {
                 if (c >= text.length) { this.writing = 0; return; }
-                const style = getComputedStyle(this.bubble);
-                const rect = this.bubble.getBoundingClientRect();
-                this.mrgComp = parseInt(style.borderRadius) - rect.height;
+                const style = getComputedStyle(this.face);
+                const rect = this.face.getBoundingClientRect();
                 addToOutput.call(this, c);
             });
         }
-        
         addToOutput.call(this);
     }
     
+    hit() {
+        this.lifes--;
+        if (!this.lifes) { this.remove() }
+    }
+    
     remove() {
-        clearInterval(this.colisionInterval);
+        clearInterval(this.collisionInterval);
+        clearInterval(this.drawInterval);
         delete SB.activeBubbles[this.bubble.parentElement.id];
-        const rect = this.bubble.getBoundingClientRect();
+        const rect = this.face.getBoundingClientRect();
         const style = getComputedStyle(this.bubble);
-        this.bubble.style.top = rect.top - rect.height - parseInt(style.borderWidth) + "px";
+        this.bubble.style.top = rect.top + "px";
         this.bubble.style.left = rect.left + "px";
         this.bubble.style.marginTop = "";
-        this.bubble.style.position = "fixed";
+        this.bubble.style.transition = ""
+        AH.delay(1/60, () => {
+            this.bubble.style.top = rect.top - rect.height + "px";
+            this.bubble.style.transition = "all 0.3s ease-out"
+            this.bubble.style.position = "fixed";
+        });
         this.bubble.className = "hidden bubble";
         AH.delay(.4, () => { this.bubble.remove() });
     }
@@ -118,16 +141,14 @@ class SBT {
         const charMidX = charRect.left + charRect.width / 2;
         const charMidY = charRect.top + charRect.height / 2;
         
-        const sbStyle = getComputedStyle(sb.bubble);
-        const bordBias = parseInt(sbStyle.borderWidth);
-        const r = parseInt(sbStyle.borderRadius);
+        const r = parseInt(getComputedStyle(sb.face).borderRadius);
         
-        const sbRect = sb.bubble.getBoundingClientRect();
-        const w = sbRect.width;
-        const sbMidX = sbRect.left + w / 2;
+        const faceRect = sb.face.getBoundingClientRect();
+        const w = faceRect.width;
+        const faceMidX = faceRect.left + w / 2;
         
-        const a = charMidX - sbMidX;
-        const b = Math.max(charMidY - sbRect.bottom, 0);
+        const a = charMidX - faceMidX;
+        const b = Math.max(charMidY - faceRect.bottom, 0);
         const c = Math.sqrt(a**2 + b**2);
         
         const xmlns = "http://www.w3.org/2000/svg";
@@ -137,16 +158,14 @@ class SBT {
         this.svg.setAttribute("height", b);
         this.svg.setAttribute("viewBox", `0 0 ${w} ${b}`);
         this.svg.setAttribute("class", "tail");
-        this.svg.style.top = sbRect.height - bordBias * 2 - 1; // idk why -1, it just works
-        this.svg.style.left = -bordBias;
         sb.bubble.appendChild(this.svg);
         
         const rad = Math.atan2(b, a);
         const direction = [Math.cos(rad), Math.sin(rad)];
-        const [x, y] = direction.map(v => v * (c - r * 1.5));
+        const [x, y] = direction.map(v => v * (c - r * 2));
         
         const path = document.createElementNS(xmlns, "path");
-        path.setAttribute("d", `M${(w-r)/2} 0C${(w-r)/2} 0 ${w*.5} 0 ${x+w*.5} ${y}C${w*.5} 0 ${(w+r)/2} 0 ${(w+r)/2} 0`);
+        path.setAttribute("d", `M${(w-r)/2} 0C${(w-r)/2} 0 ${w*.5} 0 ${x+w*.5} ${y+r}C${w*.5} 0 ${(w+r)/2} 0 ${(w+r)/2} 0`);
         this.svg.appendChild(path);
     }
 }
@@ -197,10 +216,11 @@ class DH extends Initable {
             const el = document.getElementById(id);
             
             // change pose to 1.png
-            const bubble = new SB(el);
-            await bubble.writeText(/*);//*/"Погоди-ка.§§.§§.§§§§\nЧто-то тут# не# так...§§§\nЭто§ ты§ скушал§ сосиску§§§§ Дениса Армянова?§§...");//text);
+            const bubble = new SB(el,/*);//*/"Погоди-ка.§§.§§.§§§§\nЧто-то тут# не# так...§§§\nЭто§ ты§ скушал§ сосиску§§§§ Дениса Армянова?§§...");//text);
             // to 0.png
-            //this.proceed(replica)
+            //document.addEventListener("click", () => {
+            //    SB.activeBubbles.forEach(sb => sb.hit());
+            //}, {capture: 1, once: 1})
         //});
         //this.#page = this.choice(choice || null, replicas.length ? replicas[replicas.length - 1] : null);
     }

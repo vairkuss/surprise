@@ -5,12 +5,12 @@ class AH {
         .then(() => func());
     }
     
-    static holdUntill(frequency, awaitingValue, func, ...params) {
+    static holdUntill(frequency, statement, after) {
         return new Promise(async res => {
-            AH.delay(1 / frequency, () => func(...params))
-            .then(returnValue => {
-                if (returnValue === awaitingValue) { return } else { 
-                    this.holdUntill(frequency, awaitingValue, func, ...params);
+            AH.delay(1 / frequency)
+            .then(() => {
+                if (statement) { after() } else {
+                    this.holdUntill(frequency, statement);
                 }
             });
         });

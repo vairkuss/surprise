@@ -3,43 +3,47 @@
 }
 
 .bubble {
-    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    
     position: relative;
+    z-index: 100;
     left: 0;
     bottom: 0;
+    
+    transform: scale(100%);
+    filter: opacity(100%);
+    will-change: transform, filter;
+    transition:
+        all 0.4s ease-out;
+}
+
+.face {
+    min-width: var(--bub-size);
+    width: max-content;
+    max-width: calc(var(--bub-size) * 5);
+    min-height: var(--bub-size);
+    height: fit-content;
+    margin-bottom: calc(var(--bub-size) * -0.1);
     
     background: #fff;
     padding: calc(var(--bub-size) * 0.2) calc(var(--bub-size) * 0.5);
     border: calc(var(--bub-size) * 0.1) solid #000;
     border-radius: var(--bub-size);
     
-    min-width: var(--bub-size);
-    width: max-content;
-    max-width: calc(var(--bub-size) * 5);
-    min-height: var(--bub-size);
-    height: fit-content;
-    
     color: #000;
     font-size: calc(var(--bub-size) * 0.4);
     text-align: center;
     place-content: center;
     white-space: pre-line;
-    
-    transform: scale(100%);
-    filter: opacity(100%);
-    will-change: transform, filter;
-    transition:
-        all 0.3s ease-out,
-        margin-top 0s;
 }
 
 .tail {
-    position: absolute;
     fill: #fff;
     stroke: #000;
     stroke-width: calc(var(--bub-size) * 0.1);
-    
-    path {
-        stroke-linejoin: round;
-    }
+}
+
+.tail > path {
+    stroke-linejoin: round;
 }
