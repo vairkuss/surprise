@@ -1,5 +1,6 @@
 class Dialogue {
     static data = JSON.parse(`
+
 {
   "25285:0": {
     "max": { "virko": 1, "infi": 0 },
@@ -62,6 +63,8 @@ class Dialogue {
       
     ]
   }
-}`);
+}
+
+    `);
 
 }
