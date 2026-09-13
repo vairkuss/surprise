@@ -7,8 +7,8 @@ class AH {
     
     static holdUntill(frequency, statement, callback) {
         return this.delay(1 / frequency, () => {
-            if (statement()) { callback() }
-            else { this.holdUntill(frequency, statement, callback) }
+            if (!statement()) { this.holdUntill(frequency, statement, callback) }
+            else if (callback) { return callback() }
         });
     }
     

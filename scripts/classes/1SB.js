@@ -1,18 +1,18 @@
 class SB {
     static pairs = {};
+    static get chars() {
+        return Object.keys(this.pairs);
+    }
     static get bubbles() {
         return Object.values(this.pairs);
     }
     static get bubblesActive() {
         return this.bubbles.some(sb => sb.writing);
     }
-    static get chars() {
-        return Object.keys(this.pairs);
-    }
     
-    constructor(parent, text) {
-        SB.pairs[parent.id]?.remove();
-        SB.pairs[parent.id] = this;
+    constructor(char, text, pose) {
+        SB.pairs[char.id]?.remove();
+        SB.pairs[char.id] = this;
         
         this.writing = 0;
         if (text == null) { return this }
@@ -20,7 +20,7 @@ class SB {
         
         this.bubble = document.createElement("div");
         this.bubble.className = "hidden bubble";
-        parent.appendChild(this.bubble);
+        char.appendChild(this.bubble);
         
         this.face = document.createElement("div");
         this.face.className = "face";
@@ -29,7 +29,7 @@ class SB {
         this.#flyOut();
         this.#startDrawing();
         this.#startColliding();
-        this.#writeText(text);
+        this.#writeText(char, text, pose);
     }
     
     #flyOut () {
@@ -37,7 +37,7 @@ class SB {
         const direction = [Math.cos(randRad), Math.sin(randRad) * .5 + .5];
         AH.delay(1/60, () => {
             this.bubble.className = "bubble";
-            this.bubble.style.left = `calc(${-direction[0]} * min(30vh, 30vw))`;
+            this.bubble.style.left = `calc(${direction[0]} * min(30vh, 30vw))`;
             this.bubble.style.bottom = `calc(${direction[1]} * min(30vh, 30vw))`;
         });
     }
@@ -66,7 +66,7 @@ class SB {
                 this.bubble.style.left = parseFloat(curStyle.left) + this.v.x + "px";
             
                 const mrg = parseFloat(getComputedStyle(this.face).borderRadius) / 2;
-                this.bubble.style.marginTop = Object.values(SB.pairs)
+                this.bubble.style.marginTop = SB.bubbles
                 .filter(sb => sb.bubble.getBoundingClientRect().top > curRect.top)
                 .reduce((mrgT, sb) => {
                     const faceRect = sb.face.getBoundingClientRect();
@@ -76,7 +76,7 @@ class SB {
         });
     }
     
-    #writeText(text) {
+    #writeText(char, text, pose) {
         if (!text?.length) { return }
         this.face.textContent = "";
         this.writing = 1;
@@ -86,26 +86,66 @@ class SB {
         });
         
         async function addToOutput(c=0) {
-            if (!"×•§¢π∆".includes(text[c])) {
-                this.face.textContent += text[c];
+            if (
+                c && text[c-1] === "\\"
+                || !"\\•§¢π∆×√|®".includes(text[c])
+            ) { this.face.textContent += text[c] }
+            
+            if (text[c] === "®") {
+                this.remove()
+                return;
             }
-            const shortPause = "•!?-.,;)".includes(text[c]);
+            
+            const shortPause = "•!?-.,);3".includes(text[c]);
             const longPause = text[c] === "§";
             const glitch = text[c] === "¢";
             const shake = text[c] === "π";
             const jump = text[c] === "∆";
-            const skip = " \n\t".includes(text[c])
-                || c && text.length > 1 && text[c-1] === "×"
-                || glitch || shake || jump;
+            const skip = ": \n\t".includes(text[c])
+                || glitch
+                || shake
+                || jump
+                || c && text[c-1] === "×"
+                || ": \n\t|".split("").reduce((last, sep) => {
+                    return last.split(sep).at(-1);
+                }, this.face.textContent).startsWith("√");
+            
+            if (longPause) {
+                char.src = `res/images/characters/${char.id}/${pose}0.png`;
+            }
+            if (glitch) {
+                this.bubble.className = this.bubble.className.startsWith("glitch")
+                    ? this.bubble.className.split(" ").filter(cn => cn !== "glitch").join(" ")
+                    : "glitch " + this.bubble.className;
+                this.bubble.parentElement.className = this.bubble.className.startsWith("glitch")
+                    ? this.bubble.parentElement.className.split(" ").filter(cn => cn !== "glitch").join(" ")
+                    : "glitch " + this.bubble.parentElement.className;
+            }
+            if (shake) {
+                this.bubble.className = this.bubble.className.startsWith("shake")
+                    ? this.bubble.className.split(" ").filter(cn => cn !== "shake").join(" ")
+                    : "shake " + this.bubble.className;
+            }
+            if (jump) {
+                const h = parseFloat(getComputedStyle(this.face).borderRadius);
+                const cur = parseFloat(getComputedStyle(this.bubble).marginTop);
+                this.bubble.style.marginTop = cur - h + "px";
+            }
+            
             c++;
-            AH.delay(+!skip * (+shortPause * 2 + 1) * (+longPause * 4 + 1) / frequency, () => {
+            AH.delay(+!skip * (+shortPause * 2 + 1) * (+longPause * 9 + 1) / frequency, () => {
                 if (c >= text.length) {
+                    this.className = "bubble";
                     this.writing = 0;
                     return;
+                }
+                if (c < text.length - 1 && text[c+1] !== "§") {
+                    char.src = `res/images/characters/${char.id}/${pose}1.png`
                 }
                 addToOutput.call(this, c);
             });
         }
+        
         addToOutput.call(this);
     }
     
@@ -119,7 +159,6 @@ class SB {
         clearInterval(this.drawInterval);
         delete SB.pairs[this.bubble.parentElement.id];
         const faceRect = this.face.getBoundingClientRect();
-        const style = getComputedStyle(this.bubble);
         const tailRect = this.tail.svg.getBoundingClientRect();
         const charRect = this.bubble.parentElement.getBoundingClientRect();
         this.bubble.style.top = -(charRect.bottom - charRect.height / 2 - faceRect.bottom);
@@ -127,12 +166,12 @@ class SB {
         this.tail.svg.style.transition = this.bubble.style.transition;
         this.tail.svg.style.marginTop = 0;
         this.tail.svg.style.height = 0;
-        setTimeout(() => {
+        AH.delay(1/60, () => {
             this.bubble.className = "hidden bubble";
-        }, 1000/60);
-        setTimeout(() => {
+        });
+        AH.delay(.4, () => {
             this.bubble.remove();
-        }, 400);
+        });
     }
 }
 
@@ -182,6 +221,10 @@ class SBT {
             p.id = "todelete";
             document.body.appendChild(p);
         }
+        //createPoint(faceMidX, faceRect.bottom - faceRect.height);
+        //createPoint(charMidX, charMidY);
+        //createPoint(faceMidX + x, faceRect.bottom + y - faceRect.height);
+        /**/
         const createLine = (x1, y1, x2, y2) => {
             const w = Math.abs(x1 - x2);
             const h = Math.abs(y1 - y2);
@@ -199,6 +242,11 @@ class SBT {
             p.setAttribute("d", `M${x1-bx} ${y1-by}L${x2-bx} ${y2-by}`);
             svg.appendChild(p);
         }
+        //createLine(faceMidX, faceRect.bottom - faceRect.height, charMidX, charMidY);
+        SB.bubbles
+        .filter(sb => sb.bubble.getBoundingClientRect().top > curRect.top)
+        .reduce((sb) => , )
+        /**
         const createCircle = (x, y, r) => {
             const svg = document.createElementNS(xmlns, "svg");
             svg.setAttribute("xmlns", xmlns);
@@ -214,11 +262,7 @@ class SBT {
             c.setAttribute("cy", r);
             svg.appendChild(c);
         }
-        createPoint(faceMidX, faceRect.bottom - faceRect.height);
-        createPoint(charMidX, charMidY);
-        createLine(faceMidX, faceRect.bottom - faceRect.height, charMidX, charMidY);
-        createCircle(charMidX, charMidY, r);
-        createPoint(faceMidX + x, faceRect.bottom + y - faceRect.height);
+        //createCircle(charMidX, charMidY, r);
         //*/
     }
 }

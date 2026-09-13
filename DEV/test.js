@@ -66,45 +66,46 @@ class DH extends Initable {
             AH.holdUntill(30, () => i === this.clicked, () => {
                 // start animation or change pose with blink (fast drop of transparency back and forth)
                 // await animation end, duration is pause ?? .2s
-                //console.log(`${i}. spawning ${id} (${pose}):  ${text}`);
-                const el = document.getElementById(id);
-                // el.src = "res/images/characters/${id}/talk/${pose}1.png";
-                const bubble = new SB(el, text);
-                // await writing end
-                // el.src = "res/images/characters/${id}/talk/${pose}0.png";
+                const char = document.getElementById(id);
+                new SB(char, text, pose);
             });
         });
         AH.repeatOnClicksUntill(30,
             () => this.clicked === replicas.length - 1 && !SB.bubblesActive,
             () => { this.moveNext() },
             () => {
-                //console.log("about to give choice");
                 this.#page = this.choice(choice);
                 this.clicked = null;
+                /**
+                this.choice(choice)
+                AH.holdUntill(1/60, () => CC.chosen !== undefined, () => {
+                    this.#page = CC.chosen;
+                    this.clicked = null;
+                });
+                /**/
             }
         );
     }
     
     static moveNext() {
         if (SB.bubblesActive) { return }
-        //console.log("clicked " + this.clicked);
         SB.bubbles.forEach(sb => sb.hit());
         this.clicked++;
     }
     
-    static choice(choice) {
+    static async choice(choice) {
         if (choice == null) {
             SB.bubbles.forEach(sb => sb.hit());
             return null;
         } else if (typeof(choice) != "object") {
             return choice;
         }
-        //console.log("giving choice");
+        /**
         CC.setChoice(choice);
-        
-        // return button value
+        /**/
         const input = parseInt(prompt(Object.keys(choice).map(v => `${choice[v]}: ${v}`).join("\n")));
         return `${input}` === "NaN" ? null : input;
+        //*/
     }
     
     static patpat(charId) {
