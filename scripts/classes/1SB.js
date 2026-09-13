@@ -10,11 +10,12 @@ class SB {
         return Object.keys(this.pairs);
     }
     
-    constructor(parent, text="...") {
+    constructor(parent, text) {
         SB.pairs[parent.id]?.remove();
         SB.pairs[parent.id] = this;
         
         this.writing = 0;
+        if (text == null) { return this }
         this.lifes = 2;
         
         this.bubble = document.createElement("div");
@@ -47,7 +48,7 @@ class SB {
             const style = getComputedStyle(this.face);
             this.tail = new SBT(this);
             this.bubble.parentElement.style.zIndex = this.lifes + 90;
-            this.mrgComp = parseInt(style.borderRadius) - rect.height;
+            this.mrgComp = parseFloat(style.borderRadius) - rect.height;
         }, 1000/30);
     }
     
@@ -62,9 +63,9 @@ class SB {
                     : curRect.right > document.body.offsetWidth * .98 ? -1
                     : 0
                 this.v.x += directionX || -Math.sign(this.v.x);
-                this.bubble.style.left = parseInt(curStyle.left) + this.v.x + "px";
+                this.bubble.style.left = parseFloat(curStyle.left) + this.v.x + "px";
             
-                const mrg = parseInt(getComputedStyle(this.face).borderRadius);
+                const mrg = parseFloat(getComputedStyle(this.face).borderRadius);
                 this.bubble.style.marginTop = Object.values(SB.pairs)
                 .filter(sb => sb.bubble.getBoundingClientRect().top > curRect.top)
                 .reduce((mrgT, sb) => {
@@ -84,7 +85,7 @@ class SB {
         });
         
         async function addToOutput(c=0) {
-            if (!"•§¢π∆".includes(text[c])) {
+            if (!"×•§¢π∆".includes(text[c])) {
                 this.face.textContent += text[c];
             }
             const shortPause = "•!?-.,;)".includes(text[c]);
@@ -92,12 +93,15 @@ class SB {
             const glitch = text[c] === "¢";
             const shake = text[c] === "π";
             const jump = text[c] === "∆";
-            const skip = " \n\t".includes(text[c]) || glitch || shake || jump;
+            const skip = " \n\t".includes(text[c])
+                || c && text.length > 1 && text[c-1] === "×"
+                || glitch || shake || jump;
             c++;
             AH.delay(+!skip * (+shortPause * 2 + 1) * (+longPause * 4 + 1) / frequency, () => {
-                if (c >= text.length) { this.writing = 0; return; }
-                const style = getComputedStyle(this.face);
-                const rect = this.face.getBoundingClientRect();
+                if (c >= text.length) {
+                    this.writing = 0;
+                    return;
+                }
                 addToOutput.call(this, c);
             });
         }
@@ -115,16 +119,27 @@ class SB {
         delete SB.pairs[this.bubble.parentElement.id];
         const rect = this.face.getBoundingClientRect();
         const style = getComputedStyle(this.bubble);
+        const tailRect = this.tail.svg.getBoundingClientRect();
+        /**/
+        this.bubble.style.marginTop = parseInt(style.marginTop) * 2 - rect.height;
+        this.bubble.style.marginBottom = parseInt(style.marginTop) - rect.height;
+        this.tail.svg.style.marginTop = -tailRect.height / 2 + "px";
+        this.tail.svg.style.height = 0;
+        /**
+        this.bubble.style.marginTop = "";
+        this.bubble.style.position = "fixed";
         this.bubble.style.top = rect.top + "px";
         this.bubble.style.left = rect.left + "px";
-        this.bubble.style.marginTop = "";
-        this.bubble.style.transition = ""
-        AH.delay(1/60, () => {
-            this.bubble.style.top = rect.top - rect.height + "px";
-            this.bubble.style.transition = "all 0.3s ease-out"
-            this.bubble.style.position = "fixed";
-        });
-        this.bubble.className = "hidden bubble";
+        const transitionBuffer = this.bubble.style.transition;
+        this.bubble.style.transition = "";
+        this.bubble.offsetHeight;
+        //*/
+        setTimeout(() => {
+            /**
+            this.bubble.style.transition = transitionBuffer;
+            //*/
+            this.bubble.className = "hidden bubble";
+        }, 1000/60);
         AH.delay(.4, () => { this.bubble.remove() });
     }
 }
@@ -133,19 +148,22 @@ class SB {
 class SBT {
     constructor(sb) {
         sb.tail?.svg.remove();
+        document.body.querySelectorAll("#todelete").forEach(e => e.remove());
         
         const charRect = sb.bubble.parentElement.getBoundingClientRect();
         const charMidX = charRect.left + charRect.width / 2;
         const charMidY = charRect.top + charRect.height / 2;
         
-        const r = parseInt(getComputedStyle(sb.face).borderRadius);
+        const faceStyle = getComputedStyle(sb.face);
+        const r = parseFloat(faceStyle.borderRadius) * 1.5;
+        const mrgComp = parseFloat(faceStyle.marginTop);
         
         const faceRect = sb.face.getBoundingClientRect();
         const w = faceRect.width;
         const faceMidX = faceRect.left + w / 2;
         
         const a = charMidX - faceMidX;
-        const b = Math.max(charMidY - faceRect.bottom, 0);
+        const b = Math.max(charMidY - faceRect.bottom + faceRect.height, 0);
         const c = Math.sqrt(a**2 + b**2);
         
         const xmlns = "http://www.w3.org/2000/svg";
@@ -159,10 +177,56 @@ class SBT {
         
         const rad = Math.atan2(b, a);
         const direction = [Math.cos(rad), Math.sin(rad)];
-        const [x, y] = direction.map(v => v * (c - r * 2));
+        const [x, y] = direction.map(v => v * (c - r));
         
         const path = document.createElementNS(xmlns, "path");
-        path.setAttribute("d", `M${(w-r)/2} 0C${(w-r)/2} 0 ${w*.5} 0 ${x+w*.5} ${y+r}C${w*.5} 0 ${(w+r)/2} 0 ${(w+r)/2} 0`);
+        path.setAttribute("d", `M${(w-r)/2} 0C${(w-r)/2} 0 ${w*.5} 0 ${x+w*.5} ${y}C${w*.5} 0 ${(w+r)/2} 0 ${(w+r)/2} 0`);
         this.svg.appendChild(path);
+        
+        /**
+        const createPoint = (x, y) => {
+            const p = document.createElement("i");
+            p.style = `position: fixed; z-index: 1000; top: ${y-2.5}px; left: ${x-2.5}px; background: orange; width: 5px; height: 5px; border-radius: 5px`;
+            p.id = "todelete";
+            document.body.appendChild(p);
+        }
+        const createLine = (x1, y1, x2, y2) => {
+            const w = Math.abs(x1 - x2);
+            const h = Math.abs(y1 - y2);
+            const bx = Math.min(x1, x2);
+            const by = Math.min(y1, y2);
+            const svg = document.createElementNS(xmlns, "svg");
+            svg.setAttribute("xmlns", xmlns);
+            svg.setAttribute("width", w);
+            svg.setAttribute("height", h);
+            svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+            svg.setAttribute("id", "todelete");
+            svg.setAttribute("style", `position: fixed; z-index: 1000; stroke-width: 2px; stroke: red; top: ${by}; left: ${bx}`);
+            document.body.appendChild(svg);
+            const p = document.createElementNS(xmlns, "path");
+            p.setAttribute("d", `M${x1-bx} ${y1-by}L${x2-bx} ${y2-by}`);
+            svg.appendChild(p);
+        }
+        const createCircle = (x, y, r) => {
+            const svg = document.createElementNS(xmlns, "svg");
+            svg.setAttribute("xmlns", xmlns);
+            svg.setAttribute("width", r*2);
+            svg.setAttribute("height", r*2);
+            svg.setAttribute("viewBox", `0 0 ${r*2} ${r*2}`);
+            svg.setAttribute("id", "todelete");
+            svg.setAttribute("style", `position: fixed; z-index: 1000; stroke-width: 2px; stroke: turquoise; fill: transparent; top: ${y-r}; left: ${x-r}`);
+            document.body.appendChild(svg);
+            const c = document.createElementNS(xmlns, "circle");
+            c.setAttribute("r", r);
+            c.setAttribute("cx", r);
+            c.setAttribute("cy", r);
+            svg.appendChild(c);
+        }
+        createPoint(faceMidX, faceRect.bottom - faceRect.height);
+        createPoint(charMidX, charMidY);
+        createLine(faceMidX, faceRect.bottom - faceRect.height, charMidX, charMidY);
+        createCircle(charMidX, charMidY, r);
+        createPoint(faceMidX + x, faceRect.bottom + y - faceRect.height);
+        //*/
     }
 }

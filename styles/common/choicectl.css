@@ -1,0 +1,33 @@
+:root {
+    --cho-size: 2cm;
+}
+
+#choice {
+    user-select: none;
+    display: grid;
+    place-content: center;
+    position: fixed;
+    z-index: 100;
+    width: var(--cho-size);
+    height: var(--cho-size);
+    border-radius: var(--cho-size);
+    background: #000;
+    top: calc(-1 * var(--cho-size));
+    left: calc(50vw - var(--cho-size) / 2);
+    color: #fff;
+    font-size: 2rem;
+    transition: top 0.8s cubic-bezier(0.4, 0.2, 0.5, 1.2);
+}
+
+#chip {
+    touch-action: none;
+    position: relative;
+    width: calc(var(--cho-size) * 0.8);
+    height: calc(var(--cho-size) * 0.8);
+    border-radius: calc(var(--cho-size) * 1.3);
+    background: #555;
+    background-clip: padding-box;
+    border: calc(var(--cho-size) * 0.5) solid transparent;
+    place-content: center;
+    text-align: center;
+}

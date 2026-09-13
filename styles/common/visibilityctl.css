@@ -6,8 +6,7 @@
 }
 
 .hidden .tail {
-    fill: transparent !important;
-    stroke: transparent !important;
+    transition: all 0.3s ease-in;
 }
 
 

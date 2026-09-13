@@ -18,7 +18,7 @@ class DH extends Initable {
     
     static async startDialogue(charId) {
         this.#page = 0;
-        console.log("starting the dialogue for " + charId);
+        //console.log("starting the dialogue for " + charId);
         const curPage = window.location.href.split("/").pop();
         if (this.#cursor[charId] == null) { this.#cursor[charId] = 0 }
         /*
@@ -31,11 +31,18 @@ class DH extends Initable {
     }
     
     static readDialogue(current, char, max) {
-        console.log("reading dialogue");
+        //console.log("reading dialogue");
         this.readPage(current[this.#page]);
         AH.holdUntill(30, () => this.clicked === null, () => {
             if (this.#page < 0) {
-                this.patpat(char);
+                switch (Math.abs(this.#page)) {
+                    case 1:
+                        this.patpat(char);
+                        break;
+                    case 2:
+                        this.#cursor[char]--;
+                        break;
+                }
                 this.#page = null;
             }
             SB.bubbles.forEach(sb => { sb.remove() });
@@ -50,19 +57,19 @@ class DH extends Initable {
     
     static clicked = null;
     static readPage({ before, replicas, choice}) {
-        console.log("reading page");
+        //console.log("reading page");
         /*before?.forEach(({ id, pose, animation }) => {
             AH.animation(id, animation ?? pose, pose);
         });*/
         this.clicked = 0;
-        replicas?.forEach(async ({ id, text, pose, animation, pause }, i)=> {
+        replicas?.forEach(async ({ id, text, pose, animation, pause }, i) => {
             AH.holdUntill(30, () => i === this.clicked, () => {
                 // start animation or change pose with blink (fast drop of transparency back and forth)
                 // await animation end, duration is pause ?? .2s
-                console.log(`${i}. spawning ${id} (${pose}):  ${text}`);
+                //console.log(`${i}. spawning ${id} (${pose}):  ${text}`);
                 const el = document.getElementById(id);
                 // el.src = "res/images/characters/${id}/talk/${pose}1.png";
-                const bubble = new SB(el,/**/text);//*/"Погоди-ка.§§.§§.§§§§\nЧто-то тут# не# так...§§§\nЭто§ ты§ скушал§ сосиску§§§§ Дениса Армянова?§§...");
+                const bubble = new SB(el, text);
                 // await writing end
                 // el.src = "res/images/characters/${id}/talk/${pose}0.png";
             });
@@ -71,7 +78,7 @@ class DH extends Initable {
             () => this.clicked === replicas.length - 1 && !SB.activeBubbles,
             () => { this.moveNext() },
             () => {
-                console.log("about to give choice");
+                //console.log("about to give choice");
                 this.#page = this.choice(choice);
                 this.clicked = null;
             }
@@ -80,7 +87,7 @@ class DH extends Initable {
     
     static moveNext() {
         if (SB.activeBubbles) { return }
-        console.log("clicked " + this.clicked);
+        //console.log("clicked " + this.clicked);
         SB.bubbles.forEach(sb => sb.hit());
         this.clicked++;
     }
@@ -92,7 +99,7 @@ class DH extends Initable {
         } else if (typeof(choice) != "object") {
             return choice;
         }
-        console.log("giving choice");
+        //console.log("giving choice");
         // await button press
         // return button value
         const input = parseInt(prompt(Object.keys(choice).map(v => `${choice[v]}: ${v}`).join("\n")));
@@ -100,7 +107,7 @@ class DH extends Initable {
     }
     
     static patpat(charId) {
-        console.info(`you've patted ${charId}`);
+        //console.info(`you've patted ${charId}`);
         // start animation tailwagging on ::before
         // await pointerdown
         // swiping left and right moves image cursor untill pointerup

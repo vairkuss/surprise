@@ -1,14 +1,14 @@
 class AH {
     
-    static delay(time, func) {
+    static delay(time, callback) {
         return new Promise(res => setTimeout(res, time * 1000))
-        .then(() => func());
+        .then(() => callback());
     }
     
-    static holdUntill(frequency, statement, func) {
+    static holdUntill(frequency, statement, callback) {
         return this.delay(1 / frequency, () => {
-            if (statement()) { func() }
-            else { this.holdUntill(frequency, statement, func) }
+            if (statement()) { callback() }
+            else { this.holdUntill(frequency, statement, callback) }
         });
     }
     
@@ -20,23 +20,19 @@ class AH {
     
     static repeatOnClicksUntill(frequency, statement, func, callback) {
         return this.holdUntillClick(frequency, () => {
-            if (statement()) { callback() } else {
-                func();
+            if (!statement()) {
+                if (func) { func() }
                 this.repeatOnClicksUntill(frequency, statement, func, callback);
-            }
+            } else if (callback) { return callback() }
         });
     }
     
-    static repeatUntill(statement, interval, func, callback) {
-        return new Promise(res => {
-            this.delay(interval, () => {
-                if (statement()) { func() }
-                res(statement());
-            });
-        })
-        .then(proceed => {
-            if (proceed) { repeatUntill(statement, func, callback) }
-            else { (callback ?? func)() }
+    static repeatUntill(interval, statement, func, callback) {
+        return this.delay(interval, () => {
+            if (!statement()) {
+                if (func) { func() }
+                this.repeatUntill(interval, statement, func, callback);
+            } else if (callback) { return callback() }
         });
     }
     

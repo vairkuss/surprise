@@ -5,11 +5,14 @@
 .bubble {
     display: flex;
     flex-direction: column;
+    align-content: top;
     
     position: relative;
     z-index: 100;
     left: 0;
     bottom: 0;
+    
+    /*border: 2px solid red;*/
     
     transform: scale(100%);
     filter: opacity(100%);
@@ -19,7 +22,7 @@
 }
 
 .face {
-    min-width: var(--bub-size);
+    min-width: calc(var(--bub-size) * 1.8);
     width: max-content;
     max-width: calc(var(--bub-size) * 5);
     min-height: var(--bub-size);
@@ -30,6 +33,7 @@
     padding: calc(var(--bub-size) * 0.2) calc(var(--bub-size) * 0.5);
     border: calc(var(--bub-size) * 0.1) solid #000;
     border-radius: var(--bub-size);
+    /*outline: 2px solid blue;*/
     
     color: #000;
     font-size: calc(var(--bub-size) * 0.4);
@@ -38,11 +42,29 @@
     white-space: pre-line;
 }
 
+/*.face::before {
+    content: "";
+    display: block;
+    position: absolute;
+    inset: 0;
+    border: 1px solid blue;
+}*/
+
 .tail {
     fill: #fff;
     stroke: #000;
     stroke-width: calc(var(--bub-size) * 0.1);
+    
+    /*border: 2px solid green;*/
 }
+
+/*.tail::before {
+    content: "";
+    display: block;
+    position: absolute;
+    inset: 0;
+    border: 1px solid green;
+}*/
 
 .tail > path {
     stroke-linejoin: round;
