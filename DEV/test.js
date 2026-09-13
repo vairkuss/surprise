@@ -75,7 +75,7 @@ class DH extends Initable {
             });
         });
         AH.repeatOnClicksUntill(30,
-            () => this.clicked === replicas.length - 1 && !SB.activeBubbles,
+            () => this.clicked === replicas.length - 1 && !SB.bubblesActive,
             () => { this.moveNext() },
             () => {
                 //console.log("about to give choice");
@@ -86,7 +86,7 @@ class DH extends Initable {
     }
     
     static moveNext() {
-        if (SB.activeBubbles) { return }
+        if (SB.bubblesActive) { return }
         //console.log("clicked " + this.clicked);
         SB.bubbles.forEach(sb => sb.hit());
         this.clicked++;
@@ -94,13 +94,14 @@ class DH extends Initable {
     
     static choice(choice) {
         if (choice == null) {
-            SB.bubbles.forEach(sb => { sb.hit() })
+            SB.bubbles.forEach(sb => sb.hit());
             return null;
         } else if (typeof(choice) != "object") {
             return choice;
         }
         //console.log("giving choice");
-        // await button press
+        CC.setChoice(choice);
+        
         // return button value
         const input = parseInt(prompt(Object.keys(choice).map(v => `${choice[v]}: ${v}`).join("\n")));
         return `${input}` === "NaN" ? null : input;

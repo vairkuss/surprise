@@ -3,7 +3,7 @@ class SB {
     static get bubbles() {
         return Object.values(this.pairs);
     }
-    static get activeBubbles() {
+    static get bubblesActive() {
         return this.bubbles.some(sb => sb.writing);
     }
     static get chars() {
@@ -65,12 +65,13 @@ class SB {
                 this.v.x += directionX || -Math.sign(this.v.x);
                 this.bubble.style.left = parseFloat(curStyle.left) + this.v.x + "px";
             
-                const mrg = parseFloat(getComputedStyle(this.face).borderRadius);
+                const mrg = parseFloat(getComputedStyle(this.face).borderRadius) / 2;
                 this.bubble.style.marginTop = Object.values(SB.pairs)
                 .filter(sb => sb.bubble.getBoundingClientRect().top > curRect.top)
                 .reduce((mrgT, sb) => {
-                    return mrgT - sb.face.getBoundingClientRect().height - mrg;
-                }, mrg) + this.mrgComp + "px";
+                    const faceRect = sb.face.getBoundingClientRect();
+                    return mrgT - faceRect.height - mrg;
+                }, -mrg) - this.mrgComp + "px";
             }, 1000/30);
         });
     }
@@ -117,30 +118,21 @@ class SB {
         clearInterval(this.collisionInterval);
         clearInterval(this.drawInterval);
         delete SB.pairs[this.bubble.parentElement.id];
-        const rect = this.face.getBoundingClientRect();
+        const faceRect = this.face.getBoundingClientRect();
         const style = getComputedStyle(this.bubble);
         const tailRect = this.tail.svg.getBoundingClientRect();
-        /**/
-        this.bubble.style.marginTop = parseInt(style.marginTop) * 2 - rect.height;
-        this.bubble.style.marginBottom = parseInt(style.marginTop) - rect.height;
-        this.tail.svg.style.marginTop = -tailRect.height / 2 + "px";
+        const charRect = this.bubble.parentElement.getBoundingClientRect();
+        this.bubble.style.top = -(charRect.bottom - charRect.height / 2 - faceRect.bottom);
+        this.bubble.style.position = "absolute";
+        this.tail.svg.style.transition = this.bubble.style.transition;
+        this.tail.svg.style.marginTop = 0;
         this.tail.svg.style.height = 0;
-        /**
-        this.bubble.style.marginTop = "";
-        this.bubble.style.position = "fixed";
-        this.bubble.style.top = rect.top + "px";
-        this.bubble.style.left = rect.left + "px";
-        const transitionBuffer = this.bubble.style.transition;
-        this.bubble.style.transition = "";
-        this.bubble.offsetHeight;
-        //*/
         setTimeout(() => {
-            /**
-            this.bubble.style.transition = transitionBuffer;
-            //*/
             this.bubble.className = "hidden bubble";
         }, 1000/60);
-        AH.delay(.4, () => { this.bubble.remove() });
+        setTimeout(() => {
+            this.bubble.remove();
+        }, 400);
     }
 }
 

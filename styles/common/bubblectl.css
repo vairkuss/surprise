@@ -3,9 +3,9 @@
 }
 
 .bubble {
-    display: flex;
+    display: grid;
     flex-direction: column;
-    align-content: top;
+    place-content: top;
     
     position: relative;
     z-index: 100;

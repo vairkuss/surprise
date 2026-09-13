@@ -1,3 +1,19 @@
+class RMF {
+    
+    constructor (text, value) {
+        
+    }
+}
+
+
+class RM {
+    
+    constructor (choices) {
+        this.fractures = Object.keys(choices).map(key => new RMF(key, choices[key]));
+    }
+}
+
+
 class CC extends Initable {
     
     static dp = null;
@@ -21,14 +37,27 @@ class CC extends Initable {
         }, () => console.log("true end"));
     }
     
-    static choice = null;
-    static setChoice(choice) {
+    static #choices = null;
+    static #chosen = undefined;
+    static get chosen() {
+        const chosen = this.#chosen;
+        this.#chosen = undefined;
+        return this.#chosen;
+    }
+    
+    static setChoice(choices) {
         this.body.style.top = "15vh";
-        this.choice = choice;
+        this.#choices = new RM(choices);
     }
     
     static startChoosing() {
-        
+        this.body.style.top = "calc((50vh - var(--cho-size)) / 2)"
+        // spawn shell
+        // show choicess in radial menu
+    }
+    
+    static endChoosing(endX, endY) {
+        // set value
     }
     
     static init() {
@@ -37,6 +66,7 @@ class CC extends Initable {
                 e.preventDefault();
                 const rect = this.chip.getBoundingClientRect();
                 this.dp = { x: e.screenX, y: e.screenY }
+                this.startChoosing();
             }, true);
             document.body.addEventListener("pointermove", e => {
                 if (this.active) {
@@ -50,6 +80,7 @@ class CC extends Initable {
                     e.preventDefault();
                     this.dp = null;
                     this.retrieve();
+                    this.endChoosing();
                 }
             });
         });

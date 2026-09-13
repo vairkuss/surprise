@@ -1,5 +1,5 @@
 :root {
-    --cho-size: 2cm;
+    --cho-size: min(20vh, 20vw);
 }
 
 #choice {
@@ -30,4 +30,12 @@
     border: calc(var(--cho-size) * 0.5) solid transparent;
     place-content: center;
     text-align: center;
+}
+
+#cho-menu {
+    
+    
+    & > *::hover {
+        
+    }
 }
