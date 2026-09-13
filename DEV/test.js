@@ -32,6 +32,7 @@ class DH extends Initable {
     
     static readDialogue(current, char, max) {
         //console.log("reading dialogue");
+        console.log(current[this.#page], this.#page);
         this.readPage(current[this.#page]);
         AH.holdUntill(30, () => this.clicked === null, () => {
             if (this.#page < 0) {
@@ -74,7 +75,7 @@ class DH extends Initable {
             () => this.clicked === replicas.length - 1 && !SB.bubblesActive,
             () => { this.moveNext() },
             () => {
-                this.#page = this.choice(choice);
+                this.#page = this.choice(choice) ?? null;
                 this.clicked = null;
                 /**
                 this.choice(choice)
@@ -93,7 +94,7 @@ class DH extends Initable {
         this.clicked++;
     }
     
-    static async choice(choice) {
+    static choice(choice) {
         if (choice == null) {
             SB.bubbles.forEach(sb => sb.hit());
             return null;
@@ -101,7 +102,7 @@ class DH extends Initable {
             return choice;
         }
         /**
-        CC.setChoice(choice);
+        return CC.setChoice(choice);
         /**/
         const input = parseInt(prompt(Object.keys(choice).map(v => `${choice[v]}: ${v}`).join("\n")));
         return `${input}` === "NaN" ? null : input;

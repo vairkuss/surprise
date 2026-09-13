@@ -16,7 +16,7 @@ class SB {
         
         this.writing = 0;
         if (text == null) { return this }
-        this.lifes = 2;
+        this.lifes = [...document.body.querySelectorAll(".character")].length;
         
         this.bubble = document.createElement("div");
         this.bubble.className = "hidden bubble";
@@ -92,7 +92,7 @@ class SB {
             ) { this.face.textContent += text[c] }
             
             if (text[c] === "®") {
-                this.remove()
+                this.remove();
                 return;
             }
             
@@ -179,21 +179,23 @@ class SB {
 class SBT {
     constructor(sb) {
         sb.tail?.svg.remove();
-        document.body.querySelectorAll("#todelete").forEach(e => e.remove());
+        //if (!SB.bubbles.filter(sbb => sbb.lifes === 1)) {
+            document.body.querySelectorAll(`#todelete${sb.bubble.parentElement.id}`).forEach(e => e.remove());
+        //}
         
         const charRect = sb.bubble.parentElement.getBoundingClientRect();
         const charMidX = charRect.left + charRect.width / 2;
         const charMidY = charRect.top + charRect.height / 2;
         
         const faceStyle = getComputedStyle(sb.face);
-        const r = parseFloat(faceStyle.borderRadius) * 1.5;
+        const r = parseFloat(faceStyle.borderRadius);
         const mrgComp = parseFloat(faceStyle.marginTop);
         
         const faceRect = sb.face.getBoundingClientRect();
         const w = faceRect.width;
-        const faceMidX = faceRect.left + w / 2;
+        const facecharMidX = faceRect.left + w / 2;
         
-        const a = charMidX - faceMidX;
+        const a = charMidX - facecharMidX;
         const b = Math.max(charMidY - faceRect.bottom + faceRect.height, 0);
         const c = Math.sqrt(a**2 + b**2);
         
@@ -211,7 +213,7 @@ class SBT {
         const [x, y] = direction.map(v => v * (c - r));
         
         const path = document.createElementNS(xmlns, "path");
-        path.setAttribute("d", `M${(w-r)/2} 0C${(w-r)/2} 0 ${w*.5} 0 ${x+w*.5} ${y}C${w*.5} 0 ${(w+r)/2} 0 ${(w+r)/2} 0`);
+        path.setAttribute("d", `M${(w-r*1.5)/2} 0C${(w-r*1.5)/2} 0 ${w*.5} 0 ${x+w*.5} ${y}C${w*.5} 0 ${(w+r*1.5)/2} 0 ${(w+r*1.5)/2} 0`);
         this.svg.appendChild(path);
         
         /**
@@ -221,31 +223,45 @@ class SBT {
             p.id = "todelete";
             document.body.appendChild(p);
         }
-        //createPoint(faceMidX, faceRect.bottom - faceRect.height);
+        //createPoint(facecharMidX, faceRect.bottom - faceRect.height);
         //createPoint(charMidX, charMidY);
-        //createPoint(faceMidX + x, faceRect.bottom + y - faceRect.height);
+        //createPoint(facecharMidX + x, faceRect.bottom + y - faceRect.height);
         /**/
-        const createLine = (x1, y1, x2, y2) => {
+        const createLine = (x1, y1, x2, y2, color="red") => {
             const w = Math.abs(x1 - x2);
             const h = Math.abs(y1 - y2);
+            console.info([x1, y1], [x2, y2], color, [w, h]);
             const bx = Math.min(x1, x2);
             const by = Math.min(y1, y2);
             const svg = document.createElementNS(xmlns, "svg");
             svg.setAttribute("xmlns", xmlns);
-            svg.setAttribute("width", w);
-            svg.setAttribute("height", h);
-            svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
-            svg.setAttribute("id", "todelete");
-            svg.setAttribute("style", `position: fixed; z-index: 1000; stroke-width: 2px; stroke: red; top: ${by}; left: ${bx}`);
+            svg.setAttribute("width", Math.max(2, w));
+            svg.setAttribute("height", Math.max(2, h));
+            svg.setAttribute("viewBox", `0 0 ${Math.max(2, w)} ${Math.max(2, h)}`);
+            svg.setAttribute("id", `todelete${sb.bubble.parentElement.id}`);
+            svg.setAttribute("style", `position: fixed; z-index: 1000; stroke-width: 2px; stroke: ${color}; top: ${by}; left: ${bx}`);
             document.body.appendChild(svg);
             const p = document.createElementNS(xmlns, "path");
             p.setAttribute("d", `M${x1-bx} ${y1-by}L${x2-bx} ${y2-by}`);
             svg.appendChild(p);
         }
-        //createLine(faceMidX, faceRect.bottom - faceRect.height, charMidX, charMidY);
-        SB.bubbles
-        .filter(sb => sb.bubble.getBoundingClientRect().top > curRect.top)
-        .reduce((sb) => , )
+        const bodyRect = document.body.getBoundingClientRect();
+        const midX = bodyRect.width / 2;
+        const midY = bodyRect.height / 2;
+        //createLine(facecharMidX, faceRect.bottom - faceRect.height, charMidX, charMidY);
+        //const faceRect = this.svg.parentElement.querySelector(".face").getBoundingClientRect();
+        
+        createLine(charMidX, faceRect.bottom - faceRect.height + y, charMidX, faceRect.bottom - faceRect.height, `#5f5`);
+        const main = SB.bubbles
+        .filter(sb => sb.bubble.getBoundingClientRect().top > this.svg.parentElement.getBoundingClientRect().top)
+        .reduce((last, sb) => {
+            const sbH = sb.face.getBoundingClientRect().height;
+            createLine(charMidX, last, charMidX, last - sbH, `blue`);
+            createLine(charMidX, last - sbH, charMidX, last - sbH - r, `#5ff`);
+            return last - r - sbH;
+        }, faceRect.bottom - faceRect.height);
+        createLine(charMidX, main, charMidX, main - faceRect.height, `#f5f`);
+        createLine(charMidX, main - faceRect.height, charMidX, main - faceRect.height - sb.mrgComp, `#f55`);
         /**
         const createCircle = (x, y, r) => {
             const svg = document.createElementNS(xmlns, "svg");
