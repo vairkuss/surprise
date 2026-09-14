@@ -68,8 +68,8 @@ class SB {
                 const directionX =
                     curRect.left < document.body.offsetWidth * .02 ? 1
                     : curRect.right > document.body.offsetWidth * .98 ? -1
-                    : 0
-                this.vx += .5 * directionX || -Math.sign(this.vx);
+                    : 0;
+                this.vx += .25 * directionX || -Math.sign(this.vx) * Math.min(1, Math.abs(this.vx));
                 this.translationX += this.vx;
                 this.bubble.style.left = this.x + this.translationX + "px";
             
@@ -194,7 +194,7 @@ class SBT {
         
         const faceStyle = getComputedStyle(sb.face);
         const r = parseFloat(faceStyle.borderRadius);
-        const w = document.body//parseFloat(faceStyle.width) + parseFloat(faceStyle.borderWidth) * 2 + parseFloat(faceStyle.paddingLeft) * 2;
+        const w = parseFloat(faceStyle.width) + parseFloat(faceStyle.borderWidth) * 2 + parseFloat(faceStyle.paddingLeft) * 2;
         
         const faceRect = sb.face.getBoundingClientRect();
         //const w = faceRect.width;
