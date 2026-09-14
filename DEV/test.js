@@ -74,6 +74,7 @@ class DH extends Initable {
             () => this.clicked === replicas.length - 1 && !SB.bubblesActive,
             () => { this.moveNext() },
             () => {
+                /**/
                 this.#page = this.choice(choice) ?? null;
                 this.clicked = null;
                 /**
@@ -109,7 +110,7 @@ class DH extends Initable {
     }
     
     static patpat(charId) {
-        //console.info(`you've patted ${charId}`);
+        console.info(`you've patted ${charId}`);
         // start animation tailwagging on ::before
         // await pointerdown
         // swiping left and right moves image cursor untill pointerup

@@ -4,7 +4,7 @@
 
 .bubble {
     display: grid;
-    grid-template-columns: 1fr;
+    /*grid-template-columns: 1fr;*/
     place-content: center;
     
     position: absolute;
@@ -12,7 +12,9 @@
     left: 0;
     bottom: 0;
     height: fit-content;
-    /*border: 2px solid red;*/
+    /**
+    border: 2px solid red;
+    /**/
     
     transform: scale(100%);
     filter: opacity(100%);
@@ -22,6 +24,7 @@
 }
 
 .face {
+    display: grid;
     min-width: calc(var(--bub-size) * 1.8);
     width: max-content;
     max-width: calc(var(--bub-size) * 5);
@@ -42,30 +45,18 @@
     white-space: pre-line;
 }
 
-/*.face::before {
-    content: "";
-    display: block;
-    position: absolute;
-    inset: 0;
-    border: 1px solid blue;
-}*/
-
 .tail {
     fill: #fff;
     stroke: #000;
     stroke-width: calc(var(--bub-size) * 0.1);
-    
-    /*border: 2px solid green;*/
+    transition: all 0.3s ease-in, width 0s;
+    /**
+    min-width: calc(var(--bub-size) * 5);
+    /**
+    border: 2px solid green;
+    /**/
 }
 
-/*.tail::before {
-    content: "";
-    display: block;
-    position: absolute;
-    inset: 0;
-    border: 1px solid green;
-}*/
-
-.tail > path {
+.tail path {
     stroke-linejoin: round;
 }

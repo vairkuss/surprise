@@ -38,7 +38,7 @@ class SB {
         AH.delay(1/60, () => {
             this.bubble.className = "bubble";
             this.bubble.style.left = `calc(${direction[0]} * min(30vh, 30vw))`;
-            this.bubble.style.bottom = `calc(${direction[1]} * min(30vh, 30vw))`;
+            this.bubble.style.top = `calc(${-direction[1]} * min(30vh, 30vw))`;
         });
     }
     
@@ -55,10 +55,13 @@ class SB {
      #startColliding() {
         this.vx = 0;
         const charRect = this.bubble.parentElement.getBoundingClientRect();
-        const charMidY = charRect.top + charRect.height/2;
+        const charMidX = charRect.left + charRect.width / 2;
+        const charMidY = charRect.top + charRect.height / 2;
         AH.delay(0.4, () => {
             const faceRect = this.face.getBoundingClientRect();
-            this.y = faceRect.top - charMidY;
+            this.y = faceRect.top + faceRect.height / 2 - charMidY;
+            this.x = faceRect.left + faceRect.width / 2 - charMidX;
+            this.translationX = 0;
             this.collisionInterval = setInterval(() => {
                 const curRect = this.bubble.getBoundingClientRect();
                 const curStyle = getComputedStyle(this.bubble);
@@ -66,10 +69,11 @@ class SB {
                     curRect.left < document.body.offsetWidth * .02 ? 1
                     : curRect.right > document.body.offsetWidth * .98 ? -1
                     : 0
-                this.vx += directionX || -Math.sign(this.vx);
-                this.bubble.style.left = parseFloat(curStyle.left) + this.vx + "px";
+                this.vx += .5 * directionX || -Math.sign(this.vx);
+                this.translationX += this.vx;
+                this.bubble.style.left = this.x + this.translationX + "px";
             
-                const mrg = parseFloat(getComputedStyle(this.face).borderRadius);
+                const mrg = .5 * parseFloat(getComputedStyle(this.face).borderRadius);
                 this.bubble.style.top = SB.bubbles
                 .filter(sb => sb.bubble.getBoundingClientRect().top > curRect.top)
                 .reduce((mrgT, sb) => {
@@ -166,10 +170,7 @@ class SB {
         const tailRect = this.tail.svg.getBoundingClientRect();
         const charRect = this.bubble.parentElement.getBoundingClientRect();
         this.bubble.style.top = -(charRect.bottom - charRect.height / 2 - faceRect.bottom);
-        this.bubble.style.position = "absolute";
-        this.tail.svg.style.transition = this.bubble.style.transition;
-        this.tail.svg.style.marginTop = 0;
-        this.tail.svg.style.height = 0;
+        this.tail.svg.setAttribute("style", "height: 0");
         AH.delay(1/60, () => {
             this.bubble.className = "hidden bubble";
         });
@@ -184,7 +185,7 @@ class SBT {
     constructor(sb) {
         sb.tail?.svg.remove();
         //if (!SB.bubbles.filter(sbb => sbb.lifes === 1)) {
-            document.body.querySelectorAll(`#todelete${sb.bubble.parentElement.id}`).forEach(e => e.remove());
+        //    document.body.querySelectorAll(`#todelete${sb.bubble.parentElement.id}`).forEach(e => e.remove());
         //}
         
         const charRect = sb.bubble.parentElement.getBoundingClientRect();
@@ -193,13 +194,13 @@ class SBT {
         
         const faceStyle = getComputedStyle(sb.face);
         const r = parseFloat(faceStyle.borderRadius);
-        const mrgComp = parseFloat(faceStyle.marginTop);
+        const w = document.body//parseFloat(faceStyle.width) + parseFloat(faceStyle.borderWidth) * 2 + parseFloat(faceStyle.paddingLeft) * 2;
         
         const faceRect = sb.face.getBoundingClientRect();
-        const w = faceRect.width;
-        const facecharMidX = faceRect.left + w / 2;
+        //const w = faceRect.width;
+        const faceMidX = faceRect.left + w / 2;
         
-        const a = charMidX - facecharMidX;
+        const a = charMidX - faceMidX;
         const b = Math.max(charMidY - faceRect.bottom, 0);
         const c = Math.sqrt(a**2 + b**2);
         
@@ -217,7 +218,7 @@ class SBT {
         const [x, y] = direction.map(v => v * (c - r));
         
         const path = document.createElementNS(xmlns, "path");
-        path.setAttribute("d", `M${(w-r*1.5)/2} 0C${(w-r*1.5)/2} 0 ${w*.5} 0 ${x+w*.5} ${y}C${w*.5} 0 ${(w+r*1.5)/2} 0 ${(w+r*1.5)/2} 0`);
+        path.setAttribute("d", `M${(w-r)/2} 0C${(w-r)/2} 0 ${w/2} 0 ${x+w/2} ${y}C${w/2} 0 ${(w+r)/2} 0 ${(w+r)/2} 0`);
         this.svg.appendChild(path);
         
         /**

@@ -32,10 +32,14 @@
     text-align: center;
 }
 
+#chip::before {
+    content: "...";
+}
+
 #cho-menu {
     
+}
+
+.cho-field {
     
-    & > *::hover {
-        
-    }
 }
