@@ -63,7 +63,7 @@ class SB {
         const charMidY = charRect.top + charRect.height / 2;
         AH.delay(0.4, () => {
             const faceRect = this.face.getBoundingClientRect();
-            this.y = faceRect.top + faceRect.height / 2 - charMidY;
+            this.y = -Math.abs(faceRect.top + faceRect.height / 2 - charMidY);
             this.x = faceRect.left + faceRect.width / 2 - charMidX;
             this.translationX = 0;
             this.collisionInterval = setInterval(() => {
@@ -73,7 +73,7 @@ class SB {
                     curRect.left < document.body.offsetWidth * .02 ? 1
                     : curRect.right > document.body.offsetWidth * .98 ? -1
                     : 0;
-                this.vx += .25 * directionX || -Math.sign(this.vx) * Math.min(1, Math.abs(this.vx));
+                this.vx += .5 * (.5 * directionX || -Math.sign(this.vx) * Math.min(1, Math.abs(this.vx)));
                 this.translationX += this.vx;
                 this.bubble.style.left = this.x + this.growCompX + this.translationX + "px";
             

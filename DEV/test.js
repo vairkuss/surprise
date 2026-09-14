@@ -75,7 +75,7 @@ class DH extends Initable {
             () => { this.moveNext() },
             () => {
                 /**/
-                this.#page = this.choice(choice) ?? null;
+                this.#page = this.choice(choice);
                 this.clicked = null;
                 /**
                 CC.setChoice(choice);
