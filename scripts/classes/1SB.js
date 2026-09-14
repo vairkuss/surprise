@@ -53,8 +53,12 @@ class SB {
     }
     
      #startColliding() {
-        this.v = { x: 0, y: 0 };
+        this.vx = 0;
+        const charRect = this.bubble.parentElement.getBoundingClientRect();
+        const charMidY = charRect.top + charRect.height/2;
         AH.delay(0.4, () => {
+            const faceRect = this.face.getBoundingClientRect();
+            this.y = faceRect.top - charMidY;
             this.collisionInterval = setInterval(() => {
                 const curRect = this.bubble.getBoundingClientRect();
                 const curStyle = getComputedStyle(this.bubble);
@@ -62,16 +66,16 @@ class SB {
                     curRect.left < document.body.offsetWidth * .02 ? 1
                     : curRect.right > document.body.offsetWidth * .98 ? -1
                     : 0
-                this.v.x += directionX || -Math.sign(this.v.x);
-                this.bubble.style.left = parseFloat(curStyle.left) + this.v.x + "px";
+                this.vx += directionX || -Math.sign(this.vx);
+                this.bubble.style.left = parseFloat(curStyle.left) + this.vx + "px";
             
-                const mrg = parseFloat(getComputedStyle(this.face).borderRadius) / 2;
-                this.bubble.style.marginTop = SB.bubbles
+                const mrg = parseFloat(getComputedStyle(this.face).borderRadius);
+                this.bubble.style.top = SB.bubbles
                 .filter(sb => sb.bubble.getBoundingClientRect().top > curRect.top)
                 .reduce((mrgT, sb) => {
-                    const faceRect = sb.face.getBoundingClientRect();
-                    return mrgT - faceRect.height - mrg;
-                }, -mrg) - this.mrgComp + "px";
+                    const sbHeight = sb.face.getBoundingClientRect().height;
+                    return mrgT - sbHeight - mrg;
+                }, this.y) + faceRect.height + this.mrgComp + "px";
             }, 1000/30);
         });
     }
@@ -196,7 +200,7 @@ class SBT {
         const facecharMidX = faceRect.left + w / 2;
         
         const a = charMidX - facecharMidX;
-        const b = Math.max(charMidY - faceRect.bottom + faceRect.height, 0);
+        const b = Math.max(charMidY - faceRect.bottom, 0);
         const c = Math.sqrt(a**2 + b**2);
         
         const xmlns = "http://www.w3.org/2000/svg";
@@ -226,11 +230,11 @@ class SBT {
         //createPoint(facecharMidX, faceRect.bottom - faceRect.height);
         //createPoint(charMidX, charMidY);
         //createPoint(facecharMidX + x, faceRect.bottom + y - faceRect.height);
-        /**/
+        /**
         const createLine = (x1, y1, x2, y2, color="red") => {
             const w = Math.abs(x1 - x2);
             const h = Math.abs(y1 - y2);
-            console.info([x1, y1], [x2, y2], color, [w, h]);
+            //console.info([x1, y1], [x2, y2], color, [w, h]);
             const bx = Math.min(x1, x2);
             const by = Math.min(y1, y2);
             const svg = document.createElementNS(xmlns, "svg");
@@ -251,17 +255,32 @@ class SBT {
         //createLine(facecharMidX, faceRect.bottom - faceRect.height, charMidX, charMidY);
         //const faceRect = this.svg.parentElement.querySelector(".face").getBoundingClientRect();
         
-        createLine(charMidX, faceRect.bottom - faceRect.height + y, charMidX, faceRect.bottom - faceRect.height, `#5f5`);
+        const bordBias = 2 * parseFloat(getComputedStyle(sb.face).borderWidth);
+        createLine(charMidX, faceRect.bottom + y, charMidX, faceRect.bottom, `#5f5`);
         const main = SB.bubbles
         .filter(sb => sb.bubble.getBoundingClientRect().top > this.svg.parentElement.getBoundingClientRect().top)
         .reduce((last, sb) => {
             const sbH = sb.face.getBoundingClientRect().height;
-            createLine(charMidX, last, charMidX, last - sbH, `blue`);
-            createLine(charMidX, last - sbH, charMidX, last - sbH - r, `#5ff`);
-            return last - r - sbH;
-        }, faceRect.bottom - faceRect.height);
-        createLine(charMidX, main, charMidX, main - faceRect.height, `#f5f`);
-        createLine(charMidX, main - faceRect.height, charMidX, main - faceRect.height - sb.mrgComp, `#f55`);
+            const x = charMidX;
+            const y1 = last;
+            const y2 = last - sbH;
+            const y3 = last - sbH - r;
+            return y3;
+        }, faceRect.bottom);
+        SB.bubbles
+        .filter(sb => sb.bubble.getBoundingClientRect().top > this.svg.parentElement.getBoundingClientRect().top)
+        .reduce((last, sb) => {
+            const sbH = sb.face.getBoundingClientRect().height;
+            const x = charMidX;
+            const y1 = last;
+            const y2 = last + sbH + r;
+            const y3 = last + r;
+            createLine(x, y3, x, y2, `blue`);
+            createLine(x, y2, x, y1, `#5ff`);
+            return y3;
+        }, faceRect.bottom);
+        createLine(charMidX, faceRect.bottom, charMidX, faceRect.bottom - faceRect.height, `#f5f`);
+        createLine(charMidX, faceRect.bottom, charMidX, faceRect.bottom - faceRect.height - sb.mrgComp, `#f55`);
         /**
         const createCircle = (x, y, r) => {
             const svg = document.createElementNS(xmlns, "svg");

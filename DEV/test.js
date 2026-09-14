@@ -32,7 +32,6 @@ class DH extends Initable {
     
     static readDialogue(current, char, max) {
         //console.log("reading dialogue");
-        console.log(current[this.#page], this.#page);
         this.readPage(current[this.#page]);
         AH.holdUntill(30, () => this.clicked === null, () => {
             if (this.#page < 0) {

@@ -4,14 +4,14 @@
 
 .bubble {
     display: grid;
-    flex-direction: column;
-    place-content: top;
+    grid-template-columns: 1fr;
+    place-content: center;
     
-    position: relative;
+    position: absolute;
     z-index: 100;
     left: 0;
     bottom: 0;
-    
+    height: fit-content;
     /*border: 2px solid red;*/
     
     transform: scale(100%);
