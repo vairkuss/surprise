@@ -40,14 +40,20 @@ class CC extends Initable {
     static #choices = null;
     static #chosen = undefined;
     static get chosen() {
-        const chosen = this.#chosen;
-        this.#chosen = undefined;
         return this.#chosen;
     }
     
     static setChoice(choices) {
-        this.body.style.top = "15vh";
-        this.#choices = new RM(choices);
+        if (choice == null) {
+            SB.hit();
+            this.#chosen = null;
+        } else if (typeof(choice) != "object") {
+            this.#chosen = choice;
+        } else {
+            this.#chosen = undefined;
+            this.body.style.top = "15vh";
+            this.#choices = new RM(choices);
+        }
     }
     
     static startChoosing() {
@@ -57,6 +63,7 @@ class CC extends Initable {
     }
     
     static endChoosing(endX, endY) {
+        this.body.style.top = "-var(--cho-size)";
         // set value
     }
     

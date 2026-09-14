@@ -78,7 +78,7 @@ class DH extends Initable {
                 this.#page = this.choice(choice) ?? null;
                 this.clicked = null;
                 /**
-                this.choice(choice)
+                CC.setChoice(choice);
                 AH.holdUntill(1/60, () => CC.chosen !== undefined, () => {
                     this.#page = CC.chosen;
                     this.clicked = null;
@@ -90,23 +90,19 @@ class DH extends Initable {
     
     static moveNext() {
         if (SB.bubblesActive) { return }
-        SB.bubbles.forEach(sb => sb.hit());
+        SB.hit();
         this.clicked++;
     }
     
     static choice(choice) {
         if (choice == null) {
-            SB.bubbles.forEach(sb => sb.hit());
+            SB.hit();
             return null;
         } else if (typeof(choice) != "object") {
             return choice;
         }
-        /**
-        return CC.setChoice(choice);
-        /**/
         const input = parseInt(prompt(Object.keys(choice).map(v => `${choice[v]}: ${v}`).join("\n")));
         return `${input}` === "NaN" ? null : input;
-        //*/
     }
     
     static patpat(charId) {

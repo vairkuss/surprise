@@ -9,6 +9,9 @@ class SB {
     static get bubblesActive() {
         return this.bubbles.some(sb => sb.writing);
     }
+    static hit() {
+        this.bubbles.forEach(sb => sb.hit());
+    }
     
     constructor(char, text, pose) {
         SB.pairs[char.id]?.remove();
@@ -48,7 +51,8 @@ class SB {
             const style = getComputedStyle(this.face);
             this.tail = new SBT(this);
             this.bubble.parentElement.style.zIndex = this.lifes + 90;
-            this.mrgComp = parseFloat(style.borderRadius) - rect.height;
+            this.growCompX = (parseFloat(style.minWidth) + parseFloat(style.paddingLeft) * 2 - rect.width) / 2;
+            this.growCompY = parseFloat(style.borderRadius) - rect.height;
         }, 1000/30);
     }
     
@@ -71,7 +75,7 @@ class SB {
                     : 0;
                 this.vx += .25 * directionX || -Math.sign(this.vx) * Math.min(1, Math.abs(this.vx));
                 this.translationX += this.vx;
-                this.bubble.style.left = this.x + this.translationX + "px";
+                this.bubble.style.left = this.x + this.growCompX + this.translationX + "px";
             
                 const mrg = .5 * parseFloat(getComputedStyle(this.face).borderRadius);
                 this.bubble.style.top = SB.bubbles
@@ -79,7 +83,7 @@ class SB {
                 .reduce((mrgT, sb) => {
                     const sbHeight = sb.face.getBoundingClientRect().height;
                     return mrgT - sbHeight - mrg;
-                }, this.y) + faceRect.height + this.mrgComp + "px";
+                }, this.y) + faceRect.height + this.growCompY + "px";
             }, 1000/30);
         });
     }
