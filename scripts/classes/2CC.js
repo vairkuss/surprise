@@ -1,15 +1,42 @@
-class RMF {
+class CF {
+    constructor(text, value) {
+        this.field = document.createElement("div");
+        this.field.className = "cho-field";
+        this.field.textContent = text;
+        this.field.id = value;
+    }
     
-    constructor (text, value) {
-        
+    activate() {
+        if (this.field.className.includes("active")) { return }
+        this.field.className = "active " + this.field.className;
+    }
+    
+    deactivate() {
+        this.field.className = this.field.className.split(" ").filter(cn => cn !== "active").join(" ");
     }
 }
 
 
-class RM {
+class CM {
+    constructor(choices, setter) {
+        this.menu = document.createElement("div");
+        this.menu.id = "cho-menu";
+        this.fields = Object.fromEntries(Object.keys(choices).map(key => {
+            const cf = new CF(key, "" + choices[key]);
+            this.menu.appendChild(cf.field);
+            return ["" + choices[key], cf];
+        }));
+        this.hide();
+        document.body.querySelector("#choice").appendChild(this.menu);
+    }
     
-    constructor (choices) {
-        this.fractures = Object.keys(choices).map(key => new RMF(key, choices[key]));
+    show() {
+        this.menu.className = this.menu.className.split(" ").filter(cn => cn !== "hidden").join(" ");
+    }
+    
+    hide() {
+        if (this.menu.className.includes("hidden")) { return }
+        this.menu.className = "hidden " + this.menu.className;
     }
 }
 
@@ -34,37 +61,22 @@ class CC extends Initable {
             const [x, y] = [a(), b()].map((v, i) => v - direction()[i] * c / 10);
             this.chip.style.left = Math.abs(x) < .5 ? 0 : x + "px";
             this.chip.style.top = Math.abs(y) < .5 ? 0 : y + "px";
-        }, () => console.log("true end"));
+        });
     }
     
-    static #choices = null;
-    static #chosen = undefined;
-    static get chosen() {
-        return this.#chosen;
-    }
+    static chosen = undefined;
     
     static setChoice(choices) {
-        if (choice == null) {
+        if (choices == null) {
             SB.hit();
-            this.#chosen = null;
-        } else if (typeof(choice) != "object") {
-            this.#chosen = choice;
+            this.chosen = null;
+        } else if (typeof(choices) != "object") {
+            this.chosen = choices;
         } else {
-            this.#chosen = undefined;
+            this.chosen = undefined;
             this.body.style.top = "15vh";
-            this.#choices = new RM(choices);
+            this.cm = new CM(choices, value => this.chosen = value);
         }
-    }
-    
-    static startChoosing() {
-        this.body.style.top = "calc((50vh - var(--cho-size)) / 2)"
-        // spawn shell
-        // show choicess in radial menu
-    }
-    
-    static endChoosing(endX, endY) {
-        this.body.style.top = "-var(--cho-size)";
-        // set value
     }
     
     static init() {
@@ -73,21 +85,36 @@ class CC extends Initable {
                 e.preventDefault();
                 const rect = this.chip.getBoundingClientRect();
                 this.dp = { x: e.screenX, y: e.screenY }
-                this.startChoosing();
+                this.cm.show();
             }, true);
             document.body.addEventListener("pointermove", e => {
                 if (this.active) {
                     e.preventDefault();
                     this.chip.style.left = e.screenX - this.dp.x + "px";
                     this.chip.style.top = e.screenY - this.dp.y + "px";
+                    const rect = this.body.getBoundingClientRect();
+                    const field = document.elementsFromPoint(e.screenX, e.screenY - rect.top).find(el => el.matches(".cho-field"));
+                    const cf = this.cm.fields[field?.id];
+                    cf?.activate();
+                    Object.values(this.cm.fields).filter(x => x !== cf).forEach(x => x.deactivate());
                 }
             });
             document.body.addEventListener("pointerup", e => {
                 if (this.active) {
                     e.preventDefault();
+                    this.cm.hide();
                     this.dp = null;
                     this.retrieve();
-                    this.endChoosing();
+                    const rect = this.body.getBoundingClientRect();
+                    const id = document.elementsFromPoint(e.screenX, e.screenY - rect.top).find(el => el.matches(".cho-field"))?.id;
+                    AH.delay(.4, () => {
+                        if (id === "null") { this.chosen = null }
+                        else if (id != null) { this.chosen = parseInt(id) }
+                        if (this.chosen !== undefined) {
+                            this.body.style.top = "calc(-2 * var(--cho-size))";
+                            this.cm.menu.remove();
+                        }
+                    });
                 }
             });
         });

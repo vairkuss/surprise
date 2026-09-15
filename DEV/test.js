@@ -74,16 +74,12 @@ class DH extends Initable {
             () => this.clicked === replicas.length - 1 && !SB.bubblesActive,
             () => { this.moveNext() },
             () => {
-                /**/
-                this.#page = this.choice(choice);
-                this.clicked = null;
-                /**
                 CC.setChoice(choice);
-                AH.holdUntill(1/60, () => CC.chosen !== undefined, () => {
+                AH.holdUntill(60, () => CC.chosen !== undefined, () => {
                     this.#page = CC.chosen;
+                    console.log(this.#page);
                     this.clicked = null;
                 });
-                /**/
             }
         );
     }
