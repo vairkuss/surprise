@@ -1,18 +1,25 @@
 class CF {
-    constructor(text, value) {
-        this.field = document.createElement("div");
-        this.field.className = "cho-field";
-        this.field.textContent = text;
-        this.field.id = value;
+    constructor(text, value, path) {
+        this.text = text;
+        
+        this.field = path;
+        this.field.setAttribute("id", value);
+        this.color = "#cafeba"; // generate from hexdump of text in big endian
+        
+        this.icon = document.createElement("div"); // fetch bla bla bla
+        this.icon.className = "load-svg icon";
+        this.icon.setAttribute("icon", "arrow");
     }
     
     activate() {
         if (this.field.className.includes("active")) { return }
-        this.field.className = "active " + this.field.className;
+        const className = this.field.getAttribute("class");
+        this.field.setAttribute("class", "active " + (className ?? "\b"));
     }
     
     deactivate() {
-        this.field.className = this.field.className.split(" ").filter(cn => cn !== "active").join(" ");
+        const className = this.field.getAttribute("class");
+        this.field.setAttribute("class", className?.split(" ").filter(cn => cn !== "active").join(" ") ?? "");
     }
 }
 
@@ -21,13 +28,44 @@ class CM {
     constructor(choices, setter) {
         this.menu = document.createElement("div");
         this.menu.id = "cho-menu";
-        this.fields = Object.fromEntries(Object.keys(choices).map(key => {
-            const cf = new CF(key, "" + choices[key]);
-            this.menu.appendChild(cf.field);
+        
+        const textEl = document.createElement("pre");
+        textEl.id = "cho-text";
+        this.menu.appendChild(textEl);
+        
+        const baseSize = parseFloat(getComputedStyle(CC.base).height);
+        const sepW = baseSize / 5;
+        const inR = baseSize / 2 + sepW;
+        const outR = baseSize * 2;
+        const xmlns = "http://www.w3.org/2000/svg";
+        console.debug();
+        
+        this.wheel = document.createElementNS(xmlns, "svg");
+        this.wheel.setAttribute("xmlns", xmlns);
+        this.wheel.setAttribute("id", "cho-wheel");
+        this.wheel.setAttribute("width", outR * 2);
+        this.wheel.setAttribute("height", outR);
+        this.menu.appendChild(this.wheel);
+        
+        this.fields = Object.fromEntries(Object.keys(choices).map((key, i, a) => {
+            const path = document.createElementNS(xmlns, "path");
+            const rad0 = Math.PI * i / a.length;
+            const rad1 = Math.PI * (i + 1) / a.length;
+            const direction = dir => [-Math.cos(dir), Math.sin(dir)];
+            const cords = (dir, l)  => direction(dir).map(v => v * l);
+            const [ox0, oy0] = cords(rad0, outR);
+            const [ox1, oy1] = cords(rad1, outR);
+            const [ix1, iy1] = cords(rad1, inR);
+            const [ix0, iy0] = cords(rad0, inR);
+            path.setAttribute("d", `M${ox0} ${oy0}L${ox1} ${oy1}L${ix1} ${iy1}L${ix0}${iy0}z`);
+        
+            const cf = new CF(key, "" + choices[key], path);
+            this.wheel.appendChild(cf.field);
             return ["" + choices[key], cf];
         }));
+        
         this.hide();
-        document.body.querySelector("#choice").appendChild(this.menu);
+        CC.base.appendChild(this.menu);
     }
     
     show() {
@@ -36,7 +74,7 @@ class CM {
     
     hide() {
         if (this.menu.className.includes("hidden")) { return }
-        this.menu.className = "hidden " + this.menu.className;
+        this.menu.className = this.menu.className ? "hidden " + this.menu.className : "hidden";
     }
 }
 
@@ -47,8 +85,8 @@ class CC extends Initable {
     static get active() {
         return this.dp != null;
     }
-    static body = document.querySelector("#choice");
-    static chip = this.body.firstElementChild;
+    static base = document.querySelector("#choice");
+    static chip = this.base.firstElementChild;
     
     static retrieve() {
         const style = () => getComputedStyle(this.chip);
@@ -74,7 +112,7 @@ class CC extends Initable {
             this.chosen = choices;
         } else {
             this.chosen = undefined;
-            this.body.style.top = "15vh";
+            this.base.style.top = "15vh";
             this.cm = new CM(choices, value => this.chosen = value);
         }
     }
@@ -92,7 +130,7 @@ class CC extends Initable {
                     e.preventDefault();
                     this.chip.style.left = e.screenX - this.dp.x + "px";
                     this.chip.style.top = e.screenY - this.dp.y + "px";
-                    const rect = this.body.getBoundingClientRect();
+                    const rect = this.base.getBoundingClientRect();
                     const field = document.elementsFromPoint(e.screenX, e.screenY - rect.top).find(el => el.matches(".cho-field"));
                     const cf = this.cm.fields[field?.id];
                     cf?.activate();
@@ -105,13 +143,13 @@ class CC extends Initable {
                     this.cm.hide();
                     this.dp = null;
                     this.retrieve();
-                    const rect = this.body.getBoundingClientRect();
+                    const rect = this.base.getBoundingClientRect();
                     const id = document.elementsFromPoint(e.screenX, e.screenY - rect.top).find(el => el.matches(".cho-field"))?.id;
                     AH.delay(.4, () => {
                         if (id === "null") { this.chosen = null }
                         else if (id != null) { this.chosen = parseInt(id) }
                         if (this.chosen !== undefined) {
-                            this.body.style.top = "calc(-2 * var(--cho-size))";
+                            this.base.style.top = "calc(-2 * var(--cho-size))";
                             this.cm.menu.remove();
                         }
                     });

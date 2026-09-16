@@ -9,7 +9,7 @@
     place-content: center;
     
     position: fixed;
-    z-index: 2000;
+    z-index: 2010;
     top: calc(-1 * var(--cho-size));
     left: calc(50vw - var(--cho-size) / 2);
     
@@ -46,11 +46,9 @@
 }
 
 #cho-menu {
-    display: grid;
-    place-content: space-evenly;
-    
+    display: block;
     position: fixed;
-    z-index: 2010;
+    z-index: 2000;
     top: 0;
     left: 0;
     
@@ -60,6 +58,19 @@
     
     transform: none;
     transition: all 0.3s ease-in;
+}
+
+.cho-wheel {
+    position: fixed;
+    z-index: 2010;
+    
+    border: 2px solid red;
+    
+    /**/
+    fill: white;
+    stroke: red;
+    stroke-width: 2px;
+    /**/
 }
 
 .cho-field {
