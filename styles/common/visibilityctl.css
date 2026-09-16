@@ -10,6 +10,7 @@
 }
 
 .active {
+    fill: #fff;
     text-shadow: 0 0 10px #f55;
     will-change: text-shadow;
     transition: all 0.3s ease-out;

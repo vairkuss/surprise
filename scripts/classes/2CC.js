@@ -6,14 +6,14 @@ class CF {
         this.field.setAttribute("id", value);
         this.color = "#cafeba"; // generate from hexdump of text in big endian
         
-        this.icon = document.createElement("div"); // fetch bla bla bla
+        this.icon = document.createElement("div"); // fetch random icon bla bla bla
         this.icon.className = "load-svg icon";
         this.icon.setAttribute("icon", "arrow");
     }
     
     activate() {
-        if (this.field.className.includes("active")) { return }
         const className = this.field.getAttribute("class");
+        if (className.includes("active")) { return }
         this.field.setAttribute("class", "active " + (className ?? "\b"));
     }
     
@@ -34,37 +34,52 @@ class CM {
         this.menu.appendChild(textEl);
         
         const baseSize = parseFloat(getComputedStyle(CC.base).height);
-        const sepW = baseSize / 5;
+        const sepW = baseSize / 3;
         const inR = baseSize / 2 + sepW;
-        const outR = baseSize * 2;
+        const outR = baseSize * 2.5 + sepW;
+        const docW = document.body.getBoundingClientRect().width;
         const xmlns = "http://www.w3.org/2000/svg";
-        console.debug();
         
         this.wheel = document.createElementNS(xmlns, "svg");
         this.wheel.setAttribute("xmlns", xmlns);
         this.wheel.setAttribute("id", "cho-wheel");
         this.wheel.setAttribute("width", outR * 2);
-        this.wheel.setAttribute("height", outR);
+        this.wheel.setAttribute("height", outR + sepW);
+        this.wheel.setAttribute("style", `left: ${docW / 2 - outR}px`);
         this.menu.appendChild(this.wheel);
-        
+        /**
+        const testCircle = document.createElementNS(xmlns, "circle");
+        testCircle.setAttribute("r", outR);
+        testCircle.setAttribute("cx", outR - sepW);
+        testCircle.setAttribute("cy", sepW);
+        testCircle.setAttribute("fill-opacity", .5);
+        this.wheel.appendChild(testCircle);
+        //*/
         this.fields = Object.fromEntries(Object.keys(choices).map((key, i, a) => {
             const path = document.createElementNS(xmlns, "path");
+            path.setAttribute("class", "cho-field");
+            
             const rad0 = Math.PI * i / a.length;
             const rad1 = Math.PI * (i + 1) / a.length;
-            const direction = dir => [-Math.cos(dir), Math.sin(dir)];
-            const cords = (dir, l)  => direction(dir).map(v => v * l);
+            const fieldDir = Math.PI * (i + .5) / a.length;
+            
+            const direction = rad => [Math.cos(rad), Math.sin(rad)];
+            const bias = direction(fieldDir).map(v => v * sepW);
+            
+            const cords = (dir, l) => direction(dir).map((v, i) => v * l + bias[i] + (i ? 0 : outR - sepW));
             const [ox0, oy0] = cords(rad0, outR);
             const [ox1, oy1] = cords(rad1, outR);
             const [ix1, iy1] = cords(rad1, inR);
             const [ix0, iy0] = cords(rad0, inR);
-            path.setAttribute("d", `M${ox0} ${oy0}L${ox1} ${oy1}L${ix1} ${iy1}L${ix0}${iy0}z`);
+            
+            path.setAttribute("d", `M${ox0} ${oy0}L${ox1} ${oy1}L${ix1} ${iy1}L${ix0} ${iy0}z`);
         
             const cf = new CF(key, "" + choices[key], path);
             this.wheel.appendChild(cf.field);
             return ["" + choices[key], cf];
         }));
         
-        this.hide();
+        //this.hide();
         CC.base.appendChild(this.menu);
     }
     
@@ -112,7 +127,7 @@ class CC extends Initable {
             this.chosen = choices;
         } else {
             this.chosen = undefined;
-            this.base.style.top = "15vh";
+            this.base.style.top = "1vh";
             this.cm = new CM(choices, value => this.chosen = value);
         }
     }
@@ -131,7 +146,7 @@ class CC extends Initable {
                     this.chip.style.left = e.screenX - this.dp.x + "px";
                     this.chip.style.top = e.screenY - this.dp.y + "px";
                     const rect = this.base.getBoundingClientRect();
-                    const field = document.elementsFromPoint(e.screenX, e.screenY - rect.top).find(el => el.matches(".cho-field"));
+                    const field = document.elementsFromPoint(e.screenX, e.screenY - rect.bottom).find(el => el.matches(".cho-field"));
                     const cf = this.cm.fields[field?.id];
                     cf?.activate();
                     Object.values(this.cm.fields).filter(x => x !== cf).forEach(x => x.deactivate());
@@ -144,7 +159,7 @@ class CC extends Initable {
                     this.dp = null;
                     this.retrieve();
                     const rect = this.base.getBoundingClientRect();
-                    const id = document.elementsFromPoint(e.screenX, e.screenY - rect.top).find(el => el.matches(".cho-field"))?.id;
+                    const id = document.elementsFromPoint(e.screenX, e.screenY - rect.bottom).find(el => el.matches(".cho-field"))?.id;
                     AH.delay(.4, () => {
                         if (id === "null") { this.chosen = null }
                         else if (id != null) { this.chosen = parseInt(id) }
