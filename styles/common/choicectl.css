@@ -10,7 +10,7 @@
     
     position: fixed;
     z-index: 2010;
-    top: calc(-1 * var(--cho-size));
+    bottom: calc(-1 * var(--cho-size));
     left: calc(50vw - var(--cho-size) / 2);
     
     width: var(--cho-size);
@@ -60,24 +60,34 @@
     transition: all 0.3s ease-in;
 }
 
-.cho-wheel {
+#cho-wheel {
     position: fixed;
     z-index: 2010;
+    bottom: calc(var(--cho-size) / 2 + 1vh);
     
     border: 2px solid red;
     
     /**/
-    fill: white;
+    fill: fill: rgba(128, 128, 128, 0.5);
     stroke: red;
     stroke-width: 2px;
     /**/
 }
 
 .cho-field {
+    /**
     height: var(--cho-size);
     width: calc(var(--cho-size) * 2);
     
     color: #fff;
+    place-content: center;
+    text-align: center;
+    /**/
+}
+
+#cho-text {
+    position: fixed;
+    inset: 0;
     place-content: center;
     text-align: center;
 }

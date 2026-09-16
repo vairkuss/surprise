@@ -1,23 +1,24 @@
 class CF {
     constructor(text, value, path) {
         this.text = text;
-        
+        path.setAttribute("id", value);
         this.field = path;
-        this.field.setAttribute("id", value);
         this.color = "#cafeba"; // generate from hexdump of text in big endian
         
-        this.icon = document.createElement("div"); // fetch random icon bla bla bla
+        this.icon = document.createElement("div");
         this.icon.className = "load-svg icon";
-        this.icon.setAttribute("icon", "arrow");
+        this.icon.setAttribute("icon", "arrow"); // if not < 0 or null fetch unique random icon bla bla bla else patpat or end dialogue
     }
     
     activate() {
+        CC.cm.text.textContent = this.text;
         const className = this.field.getAttribute("class");
         if (className.includes("active")) { return }
         this.field.setAttribute("class", "active " + (className ?? "\b"));
     }
     
     deactivate() {
+        CC.cm.text.textContent = "";
         const className = this.field.getAttribute("class");
         this.field.setAttribute("class", className?.split(" ").filter(cn => cn !== "active").join(" ") ?? "");
     }
@@ -29,13 +30,13 @@ class CM {
         this.menu = document.createElement("div");
         this.menu.id = "cho-menu";
         
-        const textEl = document.createElement("pre");
-        textEl.id = "cho-text";
-        this.menu.appendChild(textEl);
+        this.text = document.createElement("pre");
+        this.text.id = "cho-text";
+        this.menu.appendChild(this.text);
         
         const baseSize = parseFloat(getComputedStyle(CC.base).height);
         const sepW = baseSize / 3;
-        const inR = baseSize / 2 + sepW;
+        const inR = baseSize / 2;
         const outR = baseSize * 2.5 + sepW;
         const docW = document.body.getBoundingClientRect().width;
         const xmlns = "http://www.w3.org/2000/svg";
@@ -45,7 +46,6 @@ class CM {
         this.wheel.setAttribute("id", "cho-wheel");
         this.wheel.setAttribute("width", outR * 2);
         this.wheel.setAttribute("height", outR + sepW);
-        this.wheel.setAttribute("style", `left: ${docW / 2 - outR}px`);
         this.menu.appendChild(this.wheel);
         /**
         const testCircle = document.createElementNS(xmlns, "circle");
@@ -61,25 +61,35 @@ class CM {
             
             const rad0 = Math.PI * i / a.length;
             const rad1 = Math.PI * (i + 1) / a.length;
-            const fieldDir = Math.PI * (i + .5) / a.length;
+            const radF = Math.PI * (i + .5) / a.length;
             
-            const direction = rad => [Math.cos(rad), Math.sin(rad)];
-            const bias = direction(fieldDir).map(v => v * sepW);
+            const direction = rad => [Math.cos(rad), -Math.sin(rad)];
+            const bias = direction(radF).map(v => v * sepW);
             
-            const cords = (dir, l) => direction(dir).map((v, i) => v * l + bias[i] + (i ? 0 : outR - sepW));
+            const cords = (dir, l) => direction(dir).map((v, i) => v * l + bias[i] + (i ? outR + sepW : outR - sepW));
             const [ox0, oy0] = cords(rad0, outR);
+            const [oxF, oyF] = cords(radF, outR);
             const [ox1, oy1] = cords(rad1, outR);
             const [ix1, iy1] = cords(rad1, inR);
+            const [ixF, iyF] = cords(radF, inR);
             const [ix0, iy0] = cords(rad0, inR);
             
-            path.setAttribute("d", `M${ox0} ${oy0}L${ox1} ${oy1}L${ix1} ${iy1}L${ix0} ${iy0}z`);
+            path.setAttribute("d",
+                `M${ox0} ${oy0}` +
+                `L${oxF} ${oyF}` +
+                `L${ox1} ${oy1}` +
+                `L${ix1} ${iy1}` +
+                `L${ixF} ${iyF}` +
+                `L${ix0} ${iy0}` +
+                `z`
+            );
         
             const cf = new CF(key, "" + choices[key], path);
             this.wheel.appendChild(cf.field);
             return ["" + choices[key], cf];
         }));
         
-        //this.hide();
+        /////////////this.hide();
         CC.base.appendChild(this.menu);
     }
     
@@ -127,7 +137,7 @@ class CC extends Initable {
             this.chosen = choices;
         } else {
             this.chosen = undefined;
-            this.base.style.top = "1vh";
+            this.base.style.bottom = "1vh";
             this.cm = new CM(choices, value => this.chosen = value);
         }
     }
@@ -146,10 +156,10 @@ class CC extends Initable {
                     this.chip.style.left = e.screenX - this.dp.x + "px";
                     this.chip.style.top = e.screenY - this.dp.y + "px";
                     const rect = this.base.getBoundingClientRect();
-                    const field = document.elementsFromPoint(e.screenX, e.screenY - rect.bottom).find(el => el.matches(".cho-field"));
+                    const field = document.elementsFromPoint(e.screenX, e.screenY - rect.height).find(el => el.matches(".cho-field"));
                     const cf = this.cm.fields[field?.id];
-                    cf?.activate();
                     Object.values(this.cm.fields).filter(x => x !== cf).forEach(x => x.deactivate());
+                    cf?.activate();
                 }
             });
             document.body.addEventListener("pointerup", e => {
@@ -159,12 +169,12 @@ class CC extends Initable {
                     this.dp = null;
                     this.retrieve();
                     const rect = this.base.getBoundingClientRect();
-                    const id = document.elementsFromPoint(e.screenX, e.screenY - rect.bottom).find(el => el.matches(".cho-field"))?.id;
+                    const id = document.elementsFromPoint(e.screenX, e.screenY - rect.height).find(el => el.matches(".cho-field"))?.id;
                     AH.delay(.4, () => {
                         if (id === "null") { this.chosen = null }
                         else if (id != null) { this.chosen = parseInt(id) }
                         if (this.chosen !== undefined) {
-                            this.base.style.top = "calc(-2 * var(--cho-size))";
+                            this.base.style.bottom = "calc(-2 * var(--cho-size))";
                             this.cm.menu.remove();
                         }
                     });
