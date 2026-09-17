@@ -5,18 +5,29 @@
     transition: all 0.3s ease-in;
 }
 
-.hidden .tail {
+.hidden.bubble .tail {
     transition: all 0.3s ease-in;
+}
+
+.hidden#choice {
+    bottom: calc(-1 * var(--cho-size));
 }
 
 .active {
     fill: #fff;
-    text-shadow: 0 0 10px #f55;
-    will-change: text-shadow;
     transition: all 0.3s ease-out;
+}
+
+.active * {
+    fill: initial;
+}
+
+.active#choice::before {
+    transform: scale(2000%);
 }
 
 
 .masked {
-    filter: opacity(10%);
+    filter: opacity(5%);
+    transform: scale(80%);
 }

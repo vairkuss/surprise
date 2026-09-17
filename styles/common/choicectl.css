@@ -10,18 +10,33 @@
     
     position: fixed;
     z-index: 2010;
-    bottom: calc(-1 * var(--cho-size));
+    bottom: 1vh;
     left: calc(50vw - var(--cho-size) / 2);
     
     width: var(--cho-size);
     height: var(--cho-size);
-    border-radius: var(--cho-size);
+    border-radius: calc(var(--cho-size) * 40);
     background: #000;
     
     color: #fff;
     font-size: 2rem;
     
-    transition: top 0.8s cubic-bezier(0.4, 0.2, 0.5, 1.2);
+    transition: all 0.4s ease-out, top 0.8s cubic-bezier(0.4, 0.2, 0.5, 1.2);
+}
+
+#choice::before {
+    content: "";
+    display: block;
+    position: absolute;
+    z-index: 2000;
+    width: var(--cho-size);
+    height: var(--cho-size);
+    border-radius: var(--cho-size);
+    background: #000;
+    filter: opacity(60%);
+    
+    will-change: transform;
+    transition: all 0.4s ease-out;
 }
 
 #chip {
@@ -54,21 +69,21 @@
     
     width: 100vw;
     height: 100vh;
-    background: hsla(0, 0%, 0%, 0.6);
     
-    transform: none;
     transition: all 0.3s ease-in;
 }
 
 #cho-wheel {
     position: fixed;
     z-index: 2010;
-    bottom: calc(var(--cho-size) / 2 + 1vh);
     
+    /**/
     border: 2px solid red;
+    /**/
     
     /**/
     fill: fill: rgba(128, 128, 128, 0.5);
+    /**
     stroke: red;
     stroke-width: 2px;
     /**/
@@ -88,6 +103,7 @@
 #cho-text {
     position: fixed;
     inset: 0;
+    text-shadow: 0 0 5px #f55;
     place-content: center;
     text-align: center;
 }

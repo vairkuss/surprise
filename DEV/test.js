@@ -77,7 +77,6 @@ class DH extends Initable {
                 CC.setChoice(choice);
                 AH.holdUntill(60, () => CC.chosen !== undefined, () => {
                     this.#page = CC.chosen;
-                    //console.log(this.#page);
                     this.clicked = null;
                 });
             }
