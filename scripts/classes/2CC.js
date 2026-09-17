@@ -95,7 +95,6 @@ class CM {
         this.menu.appendChild(this.text);
         
         this.choices = choices;
-        this.updateWheel();
         
         this.hide();
         CC.base.appendChild(this.menu);
@@ -151,6 +150,8 @@ class CM {
                 `L${ix0} ${iy0}` +
                 `z`
             );
+            
+            console.log(ox0);
         
             const cf = new CF(key, "" + this.choices[key], path);
             this.wheel.appendChild(cf.field);
@@ -221,7 +222,6 @@ class CC extends Initable {
         super.init(() => {
             this.chip.addEventListener("pointerdown", e => {
                 e.preventDefault();
-                //const rect = this.chip.getBoundingClientRect();
                 this.dp = { x: e.screenX, y: e.screenY }
                 this.addClass("active");
                 this.cm.show();
@@ -231,14 +231,13 @@ class CC extends Initable {
                     e.preventDefault();
                     this.chip.style.left = e.screenX - this.dp.x + "px";
                     this.chip.style.top = e.screenY - this.dp.y + "px";
-                    const rect = this.base.getBoundingClientRect();
-                    const field = document.elementsFromPoint(e.screenX, e.screenY - rect.height).find(el => el.matches(".cho-field"));
+                    const field = document.elementsFromPoint(e.clientX, e.clientY).find(el => el.matches(".cho-field"));
                     const cf = this.cm.fields[field?.id];
-                    Object.values(this.cm.fields).filter(x => x !== cf).forEach(x => x.deactivate());
+                    Object.values(this.cm.fields).filter(obj => obj !== cf).forEach(obj => obj.deactivate());
                     cf?.activate();
-                    console.log(cf?.field.getAttribute("class"))
                 }
             });
+            const chipBias = parseFloat(getComputedStyle(this.base).height);
             document.body.addEventListener("pointerup", e => {
                 if (this.active) {
                     e.preventDefault();
@@ -247,7 +246,7 @@ class CC extends Initable {
                     this.dp = null;
                     this.retrieve();
                     const rect = this.base.getBoundingClientRect();
-                    const id = document.elementsFromPoint(e.screenX, e.screenY - rect.height).find(el => el.matches(".cho-field"))?.id;
+                    const id = document.elementsFromPoint(e.clientX, e.clientY).find(el => el.matches(".cho-field"))?.id;
                     AH.delay(.4, () => {
                         if (id === "null") { this.chosen = null }
                         else if (id != null) { this.chosen = parseInt(id) }

@@ -33,7 +33,7 @@
     height: var(--cho-size);
     border-radius: var(--cho-size);
     background: #000;
-    filter: opacity(60%);
+    filter: opacity(0%);
     
     will-change: transform;
     transition: all 0.4s ease-out;

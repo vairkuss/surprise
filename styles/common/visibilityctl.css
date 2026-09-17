@@ -13,17 +13,20 @@
     bottom: calc(-1 * var(--cho-size));
 }
 
-.active {
-    fill: #fff;
-    transition: all 0.3s ease-out;
-}
 
 .active * {
     fill: initial;
 }
 
+.active {
+    fill: #fff;
+    transition: all 0.3s ease-out;
+}
+
+
 .active#choice::before {
     transform: scale(2000%);
+    filter: opacity(60%);
 }
 
 
