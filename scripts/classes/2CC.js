@@ -105,22 +105,23 @@ class CM {
         
         const baseSize = parseFloat(getComputedStyle(CC.base).height);
         const baseRect = CC.base.getBoundingClientRect();
-        const sepW = baseSize / 3;
+        const divW = baseSize / 5;
         const inR = baseSize / 2;
-        const outR = baseSize * 2 + sepW;
-        const docW = document.body.getBoundingClientRect().width;
+        const outR = baseSize * 2 + divW;
         const xmlns = "http://www.w3.org/2000/svg";
         
         this.wheel = document.createElementNS(xmlns, "svg");
         this.wheel.setAttribute("xmlns", xmlns);
         this.wheel.setAttribute("id", "cho-wheel");
-        this.wheel.setAttribute("width", (outR + sepW) * 2);
-        this.wheel.setAttribute("height", outR + sepW);
+        this.wheel.setAttribute("width", (outR + divW) * 2);
+        this.wheel.setAttribute("height", outR + divW * 1.5);
         this.wheel.setAttribute("style",
-            `top: ${baseRect.top + baseRect.height / 2 - outR - sepW};` +
-            `left: ${baseRect.left + baseRect.width / 2 - outR - sepW};`
+            `top: ${baseRect.top + baseRect.height / 2 - outR - divW};` +
+            `left: ${baseRect.left + baseRect.width / 2 - outR - divW};`
         );
         this.menu.appendChild(this.wheel);
+        
+        const direction = rad => [Math.cos(rad), -Math.sin(rad)];
         
         this.fields = Object.fromEntries(Object.keys(this.choices).map((key, i, a) => {
             const path = document.createElementNS(xmlns, "path");
@@ -130,10 +131,9 @@ class CM {
             const rad1 = Math.PI * (i + 1) / a.length;
             const radF = Math.PI * (i + .5) / a.length;
             
-            const direction = rad => [Math.cos(rad), -Math.sin(rad)];
-            const bias = direction(radF).map(v => v * sepW);
-            
-            const cords = (dir, l) => direction(dir).map((v, i) => v * l + bias[i] + outR + (i ? sepW : sepW));
+            const bias = direction(radF).map(v => v * divW);
+
+            const cords = (dir, l) => direction(dir).map((v, i) => v * l + bias[i] + outR + (i ? divW : divW));
             const [ox0, oy0] = cords(rad0, outR);
             const [oxF, oyF] = cords(radF, outR);
             const [ox1, oy1] = cords(rad1, outR);
@@ -151,12 +151,30 @@ class CM {
                 `z`
             );
             
-            console.log(ox0);
+            const divider = document.createElementNS(xmlns, "path");
+            divider.setAttribute("class", "cho-divider");
+            const [xI, yI] = direction(rad0).map(v => v * (inR + divW * 1.5) + outR + divW);
+            const [xO, yO] = direction(rad0).map(v => v * outR + outR + divW);
+            divider.setAttribute("d",
+                `M${xI} ${yI}` +
+                `L${xO} ${yO}`
+            );
+            this.wheel.appendChild(divider);
         
             const cf = new CF(key, "" + this.choices[key], path);
             this.wheel.appendChild(cf.field);
             return ["" + this.choices[key], cf];
         }));
+        
+        const lastDivider = document.createElementNS(xmlns, "path");
+        lastDivider.setAttribute("class", "cho-divider");
+        const [xI, yI] = direction(Math.PI).map(v => v * (inR + divW * 1.5) + outR + divW);
+        const [xO, yO] = direction(Math.PI).map(v => v * outR + outR + divW);
+        lastDivider.setAttribute("d",
+            `M${xI} ${yI}` +
+            `L${xO} ${yO}`
+        );
+        this.wheel.appendChild(lastDivider);
     }
     
     show() {

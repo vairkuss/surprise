@@ -80,28 +80,24 @@
     /**/
     border: 2px solid red;
     /**/
-    
-    /**/
-    fill: fill: rgba(128, 128, 128, 0.5);
-    /**
-    stroke: red;
-    stroke-width: 2px;
-    /**/
 }
 
 .cho-field {
-    /**
-    height: var(--cho-size);
-    width: calc(var(--cho-size) * 2);
-    
-    color: #fff;
-    place-content: center;
-    text-align: center;
+    fill: rgba(128, 128, 128, 0.5);
     /**/
+    fill: transparent
+    /**/
+}
+
+.cho-divider {
+    stroke: #fff;
+    stroke-width: calc(var(--cho-size) / 5);
+    stroke-linecap: round;
 }
 
 #cho-text {
     position: fixed;
+    z-index: 2015;
     inset: 0;
     text-shadow: 0 0 5px #f55;
     place-content: center;
