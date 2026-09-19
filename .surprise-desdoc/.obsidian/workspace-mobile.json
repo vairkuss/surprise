@@ -41,12 +41,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "web/characters/characters.md",
+                "file": "web/characters/infi.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "characters"
+              "title": "infi"
             }
           }
         ],
@@ -203,11 +203,11 @@
   },
   "active": "de6ae6fc4b19192a",
   "lastOpenFiles": [
+    "web/characters/virko.md",
+    "web/characters/characters.md",
     "index.md",
     "chronology/stage2.md",
-    "web/characters/virko.md",
     "web/characters/infi.md",
-    "web/characters/characters.md",
     "web/elements/elements.md",
     "web/elements/blocks/images.md",
     "chronology/stage3.md",

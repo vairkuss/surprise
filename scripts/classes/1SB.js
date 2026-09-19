@@ -173,7 +173,6 @@ class SB {
         clearInterval(this.drawInterval);
         delete SB.pairs[this.bubble.parentElement.id];
         const faceRect = this.face.getBoundingClientRect();
-        const tailRect = this.tail.svg.getBoundingClientRect();
         const charRect = this.bubble.parentElement.getBoundingClientRect();
         this.bubble.style.top = -(charRect.bottom - charRect.height / 2 - faceRect.bottom);
         this.tail.svg.setAttribute("style", "height: 0");

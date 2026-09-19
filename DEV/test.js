@@ -34,23 +34,23 @@ class DH extends Initable {
         //console.log("reading dialogue");
         this.readPage(current[this.#page]);
         AH.holdUntill(30, () => this.clicked === null, () => {
-            if (this.#page < 0) {
-                switch (Math.abs(this.#page)) {
-                    case 1:
-                        this.patpat(char);
-                        break;
-                    case 2:
-                        this.#cursor[char]--;
-                        break;
-                }
-                this.#page = null;
+            if (this.#page != null && typeof(this.#page) === "object") {
+                const { action: id } = this.#page;
+                const action = [
+                    () => this.patpat(char),
+                    () => this.wagwag(char)
+                ].at(id);
+                if (action) { action() }
+            } else if (this.#page < 0) {
+                this.#cursor[char] = ~this.#page;
+                return this.startDialogue(char);
             }
             SB.bubbles.forEach(sb => { sb.remove() });
             if (this.#page != null) {
                 this.readDialogue(current, char, max);
             } else if (this.#cursor[char] < max) {
                 this.#cursor[char]++;
-                // send signal to the server to update its cursor too and save it in json
+                // send signal to the server to update its cursor too and save it in .json
             }
         });
     }
@@ -72,10 +72,11 @@ class DH extends Initable {
         });
         AH.repeatOnClicksUntill(30,
             () => this.clicked === replicas.length - 1 && !SB.bubblesActive,
+            true,
             () => { this.moveNext() },
             () => {
                 CC.setChoice(choice);
-                AH.holdUntill(60, () => CC.chosen !== undefined, () => {
+                AH.holdUntill(30, () => CC.chosen !== undefined, () => {
                     this.#page = CC.chosen;
                     this.clicked = null;
                 });
@@ -105,6 +106,13 @@ class DH extends Initable {
         // start animation tailwagging on ::before
         // await pointerdown
         // swiping left and right moves image cursor untill pointerup
+        // end animation
+    }
+    
+    static wagwag(charId) {
+        console.info(`${charId} showed his back and wagged his tail`);
+        // turn character and start animation tailwagging on ::after
+        // await pointerdown
         // end animation
     }
     

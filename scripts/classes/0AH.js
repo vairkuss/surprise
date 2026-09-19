@@ -20,11 +20,12 @@ class AH {
         return this.holdUntill(frequency, () => clicked, func);
     }
     
-    static repeatOnClicksUntill(frequency, statement, func, callback) {
+    static repeatOnClicksUntill(frequency, statement, checkBeforeClick, func, callback) {
+        if (statement() && checkBeforeClick) { return callback == null ? undefined : callback() }
         return this.holdUntillClick(frequency, () => {
             if (!statement()) {
                 if (func) { func() }
-                this.repeatOnClicksUntill(frequency, statement, func, callback);
+                this.repeatOnClicksUntill(frequency, statement, checkBeforeClick, func, callback);
             } else if (callback) { return callback() }
         });
     }

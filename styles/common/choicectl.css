@@ -59,14 +59,9 @@
 }
 
 #chip::before {
-    content: "...";
-}
-
-#chip::after {
     content: "";
     display: block;
     position: relative;
-    /* suda pisat wneshku*/
 }
 
 #cho-menu {
@@ -108,13 +103,12 @@
 #cho-text {
     position: fixed;
     z-index: 2015;
-    width: calc(var(--cho-size) * 4);
-    left: calc(50vw - var(--cho-size) * 2);
+    width: 80vw;
+    left: 10vw;
     
-    /**/
+    /**
     outline: 2px solid red;
     /**/
-    
     color: hsl(from var(--cur-color) h 90% 50%);
     filter: drop-shadow(0.05em 0.05em 0 hsl(from var(--cur-color) h 100% 25% / 0.5));
     place-content: center;

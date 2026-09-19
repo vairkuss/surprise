@@ -44,14 +44,14 @@ class Dialogue {
         "replicas": [
           { "id": "virko", "pose": "show", "text": "Что-нибудь ещё?" }
         ],
-        "choice": { "н": null, "дай поглажу тебя": 1 }
+        "choice": { "н": null, "а пкжи хвостикс": { "action": 1 }, "г приветствие по новой, ч ты там": -1 }
       },
       
       {
         "replicas": [
           { "id": "virko", "pose": "smile", "text": "г" }
         ],
-        "choice":  -1
+        "choice": { "action": 1 }
       }
     ],
     
@@ -60,7 +60,7 @@ class Dialogue {
         "replicas": [
           { "id": "infi", "pose": "smile", "text": "Мрр~? owO" }
         ],
-        "choice": { "Расскажи о себе": 1, "Погладить": -1, "Я случайно": 2 }
+        "choice": { "Расскажи о себе": 1, "Погладить": { "action": 0 }, "Я случайно": 2 }
       },
       
       {
@@ -81,5 +81,4 @@ class Dialogue {
 }
 
     `);
-
 }

@@ -1,7 +1,7 @@
 /* Choice Handler */
 
 class CF {
-    constructor(text, value, path) {
+    constructor(text, path) {
         this.text = text;
         this.field = path;
         
@@ -65,10 +65,15 @@ class CM {
         const direction = rad => [Math.cos(rad), -Math.sin(rad)];
         const cords = (dir, l) => direction(dir).map((v, i) => v * l + outR);
         
-        this.fields = Object.fromEntries(Object.keys(this.choices).map((key, i, a) => {
+        this.fields = Object.fromEntries(Object.keys(this.choices)
+        .reduce((arr, key) => {
+            arr.splice((arr.length + 1) * Math.random(), 0, key);
+            return arr;
+        }, [])
+        .map((key, i, a) => {
             const path = document.createElementNS(xmlns, "path");
             path.setAttribute("class", "cho-field");
-            path.setAttribute("id", this.choices[key]);
+            path.setAttribute("id", JSON.stringify([this.choices[key]]));
             
             const rad0 = Math.PI * i / a.length;
             const rad1 = Math.PI * (i + 1) / a.length;
@@ -101,9 +106,9 @@ class CM {
             );
             this.wheel.appendChild(divider);
         
-            const cf = new CF(key, "" + this.choices[key], path);
+            const cf = new CF(key, path);
             this.wheel.appendChild(path);
-            return ["" + this.choices[key], cf];
+            return [JSON.stringify([this.choices[key]]), cf];
         }));
         
         const lastDivider = document.createElementNS(xmlns, "path");
@@ -214,8 +219,8 @@ class CC extends Initable {
                     this.dp = null;
                     const rect = this.base.getBoundingClientRect();
                     const id = document.elementsFromPoint(e.clientX, e.clientY).find(el => el.matches(".cho-field"))?.id;
-                    if (id === "null") { this.chosen = null }
-                    else if (id != null) { this.chosen = parseInt(id) }
+                    if (id === "[null]") { this.chosen = null }
+                    else if (id != null) { [this.chosen] = JSON.parse(id); console.log(this.chosen) }
                     else { this.retrieve() }
                     AH.delay(.4, () => {
                         this.retrieve()
