@@ -41,11 +41,12 @@ class DH extends Initable {
                     () => this.wagwag(char)
                 ].at(id);
                 if (action) { action() }
+                this.#page = null;
             } else if (this.#page < 0) {
                 this.#cursor[char] = ~this.#page;
                 return this.startDialogue(char);
             }
-            SB.bubbles.forEach(sb => { sb.remove() });
+            AH.holdUntillClick(30, () => SB.bubbles.forEach(sb => { sb.remove() }));
             if (this.#page != null) {
                 this.readDialogue(current, char, max);
             } else if (this.#cursor[char] < max) {

@@ -95,6 +95,7 @@ class CM {
                 `L${ix0} ${iy0}` +
                 `z`
             );
+            this.wheel.appendChild(path);
             
             const divider = document.createElementNS(xmlns, "path");
             divider.setAttribute("class", "cho-divider");
@@ -107,7 +108,6 @@ class CM {
             this.wheel.appendChild(divider);
         
             const cf = new CF(key, path);
-            this.wheel.appendChild(path);
             return [JSON.stringify([this.choices[key]]), cf];
         }));
         
