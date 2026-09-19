@@ -91,10 +91,6 @@ class CM {
         this.menu = document.createElement("div");
         this.menu.id = "cho-menu";
         
-        this.text = document.createElement("pre");
-        this.text.id = "cho-text";
-        this.menu.appendChild(this.text);
-        
         this.choices = choices;
         
         this.hide();
@@ -103,12 +99,13 @@ class CM {
         
     updateWheel() {
         this.wheel?.remove();
+        this.text?.remove();
         
         const baseSize = parseFloat(getComputedStyle(CC.base).height); // нарушение солид
         const baseRect = CC.base.getBoundingClientRect(); // нарушение солид
         const divW = baseSize / 5;
-        const inR = baseSize / 2 + divW;
-        const outR = baseSize * 2.5;
+        const inR = baseSize / 2 + divW * 2;
+        const outR = baseSize * 3;
         const xmlns = "http://www.w3.org/2000/svg";
         
         this.wheel = document.createElementNS(xmlns, "svg");
@@ -123,6 +120,7 @@ class CM {
         this.menu.appendChild(this.wheel);
         
         const direction = rad => [Math.cos(rad), -Math.sin(rad)];
+        const cords = (dir, l) => direction(dir).map((v, i) => v * l + outR);
         
         this.fields = Object.fromEntries(Object.keys(this.choices).map((key, i, a) => {
             const path = document.createElementNS(xmlns, "path");
@@ -133,7 +131,6 @@ class CM {
             const rad1 = Math.PI * (i + 1) / a.length;
             const radF = Math.PI * (i + .5) / a.length;
 
-            const cords = (dir, l) => direction(dir).map((v, i) => v * l + outR);
             const [ox0, oy0] = cords(rad0, outR);
             const [oxF, oyF] = cords(radF, outR);
             const [ox1, oy1] = cords(rad1, outR);
@@ -153,8 +150,8 @@ class CM {
             
             const divider = document.createElementNS(xmlns, "path");
             divider.setAttribute("class", "cho-divider");
-            const [xI, yI] = direction(rad0).map(v => v * (inR + divW * .5) + outR);
-            const [xO, yO] = direction(rad0).map(v => v * (outR - divW * .5) + outR);
+            const [xI, yI] = cords(rad0, inR + divW * .5);
+            const [xO, yO] = cords(rad0, outR - divW * .5);
             divider.setAttribute("d",
                 `M${xI} ${yI}` +
                 `L${xO} ${yO}`
@@ -168,13 +165,18 @@ class CM {
         
         const lastDivider = document.createElementNS(xmlns, "path");
         lastDivider.setAttribute("class", "cho-divider");
-        const [xI, yI] = direction(Math.PI).map(v => v * (inR + divW * .5) + outR);
-        const [xO, yO] = direction(Math.PI).map(v => v * (outR - divW * .5) + outR);
+        const [xI, yI] = cords(Math.PI, inR + divW * .5);
+        const [xO, yO] = cords(Math.PI, outR - divW * .5);
         lastDivider.setAttribute("d",
             `M${xI} ${yI}` +
             `L${xO} ${yO}`
         );
         this.wheel.appendChild(lastDivider);
+        
+        this.text = document.createElement("pre");
+        this.text.id = "cho-text";
+        this.text.style.bottom = parseFloat(getComputedStyle(this.wheel).bottom) + outR + "px";
+        this.menu.appendChild(this.text);
     }
     
     show() {
@@ -267,13 +269,14 @@ class CC extends Initable {
                     this.cm.hide();
                     this.removeClass("active");
                     this.dp = null;
-                    this.retrieve();
                     const rect = this.base.getBoundingClientRect();
                     const id = document.elementsFromPoint(e.clientX, e.clientY).find(el => el.matches(".cho-field"))?.id;
+                    if (id === "null") { this.chosen = null }
+                    else if (id != null) { this.chosen = parseInt(id) }
+                    else { this.retrieve() }
                     AH.delay(.4, () => {
+                        this.retrieve()
                         document.querySelector(":root").style.setProperty("--cur-color", "var(--m-color)");
-                        if (id === "null") { this.chosen = null }
-                        else if (id != null) { this.chosen = parseInt(id) }
                         if (this.chosen !== undefined) {
                             this.addClass("hidden");
                             this.cm.menu.remove();
