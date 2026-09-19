@@ -1,3 +1,5 @@
+/* Speech Bubble */
+
 class SB {
     static pairs = {};
     static get chars() {

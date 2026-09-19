@@ -1,3 +1,5 @@
+/* Animation Handler */
+
 class AH {
     
     static delay(time, callback) {

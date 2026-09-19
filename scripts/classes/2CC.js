@@ -1,72 +1,15 @@
-/**
-class CT {
-    static addClass(element, newClassName) {
-        const className = element.getAttribute("class");
-        if (className.includes(newClassName)) { return }
-        element.setAttribute("class", `${newClassName} ` + (className ?? "\b"));
-    }
-    
-    static removeClass(element, newClassName) {
-        const className = element.getAttribute("class");
-        element.setAttribute("class", className?.split(" ").filter(cn => cn !== "active").join(" ") ?? "");
-    }
-}
-
-
-class MSSH extends CT {
-    static show(element, callback) {
-        super.addClass(element, "hidden");
-    }
-    
-    static hide(element, callback) {
-        super.removeClass(element, "hidden");
-    }
-}
-
-
-class MOSH extends CT {
-    show(element, callback) {
-        CT.addClass(element, "hidden");
-    }
-    
-    hide() {
-        CT.removeClass(element, "hidden");
-    }
-}
-
-
-class MSAD extends CT {
-    static activate() {
-        super.addClass(element, "active");
-    }
-    
-    static deactivate() {
-        super.removeClass(element, "active");
-    }
-}
-
-
-class MOAD extends CT {
-    activate() {
-        CT.addClass(element, "active");
-    }
-    
-    deactivate() {
-        CT.removeClass(element, "active");
-    }
-}
-//////// MIXINS ARE GOING TO THEIR OWN FILE IN THE FUTURE
-//*/
+/* Choice Handler */
 
 class CF {
     constructor(text, value, path) {
         this.text = text;
         this.field = path;
         
-        this.color = text.split("").slice(0, 3).reduce((hex, sign) => {
-            const num = sign.charCodeAt(0);
-            return hex + (num % 256).toString(16).padStart(2, "0");
-        }, "#").padEnd(7, "825714"); //хешировать вместо модуляции
+        this.color = "#000";
+        const bytes = new TextEncoder().encode(text);
+        crypto.subtle.digest("SHA-256", bytes).then(hash => {
+            this.color = "#" + new Uint8Array(hash.slice(0, 3)).toHex();
+        });
         
         this.icon = document.createElement("div");
         this.icon.className = "load-svg icon";

@@ -1,3 +1,5 @@
+/* Dialogue Handler */
+
 class DH extends Initable {
     
     static #cursor = {};
