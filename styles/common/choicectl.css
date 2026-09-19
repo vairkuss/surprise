@@ -77,9 +77,10 @@
     position: fixed;
     z-index: 2010;
     
-    /**/
+    /**
     border: 2px solid red;
     /**/
+    transition: top 0.4s;
 }
 
 .cho-field {
@@ -99,7 +100,8 @@
     position: fixed;
     z-index: 2015;
     inset: 0;
-    text-shadow: 0 0 5px #f55;
+    color: hsl(from var(--cur-color) h 90% 50%);
+    text-shadow: 0 0 5px hsl(from var(--cur-color) h 25% 40% / 0.5);
     place-content: center;
     text-align: center;
 }

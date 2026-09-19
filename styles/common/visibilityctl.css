@@ -15,14 +15,17 @@
 
 
 .active * {
+    /*
     fill: initial;
+    */
 }
 
 .active {
+    /*
     fill: #fff;
     transition: all 0.3s ease-out;
+    */
 }
-
 
 .active#choice::before {
     transform: scale(2000%);

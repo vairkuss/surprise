@@ -6,4 +6,7 @@ html {
 body {
     display: grid;
     margin: 0;
+    background: var(--cur-color);
+    will-change: background;
+    transition: all 0.4s;
 }

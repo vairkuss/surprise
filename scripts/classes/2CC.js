@@ -1,12 +1,12 @@
 /**
 class CT {
-    static #addClass(element, newClassName) {
+    static addClass(element, newClassName) {
         const className = element.getAttribute("class");
         if (className.includes(newClassName)) { return }
         element.setAttribute("class", `${newClassName} ` + (className ?? "\b"));
     }
     
-    static #removeClass(element, newClassName) {
+    static removeClass(element, newClassName) {
         const className = element.getAttribute("class");
         element.setAttribute("class", className?.split(" ").filter(cn => cn !== "active").join(" ") ?? "");
     }
@@ -15,44 +15,44 @@ class CT {
 
 class MSSH extends CT {
     static show(element, callback) {
-        super.#addClass(element, "hidden");
+        super.addClass(element, "hidden");
     }
     
     static hide(element, callback) {
-        super.#removeClass(element, "hidden");
+        super.removeClass(element, "hidden");
     }
 }
 
 
 class MOSH extends CT {
     show(element, callback) {
-        CT.#addClass(element, "hidden");
+        CT.addClass(element, "hidden");
     }
     
     hide() {
-        CT.#removeClass(element, "hidden");
+        CT.removeClass(element, "hidden");
     }
 }
 
 
 class MSAD extends CT {
     static activate() {
-        super.#addClass(element, "active");
+        super.addClass(element, "active");
     }
     
     static deactivate() {
-        super.#removeClass(element, "active");
+        super.removeClass(element, "active");
     }
 }
 
 
 class MOAD extends CT {
     activate() {
-        CT.#addClass(element, "active");
+        CT.addClass(element, "active");
     }
     
     deactivate() {
-        CT.#removeClass(element, "active");
+        CT.removeClass(element, "active");
     }
 }
 //////// MIXINS ARE GOING TO THEIR OWN FILE IN THE FUTURE
@@ -61,12 +61,12 @@ class MOAD extends CT {
 class CF {
     constructor(text, value, path) {
         this.text = text;
-        path.setAttribute("id", value);
         this.field = path;
+        
         this.color = text.split("").slice(0, 3).reduce((hex, sign) => {
             const num = sign.charCodeAt(0);
             return hex + (num % 256).toString(16).padStart(2, "0");
-        }, "#").padEnd(7, "825714");
+        }, "#").padEnd(7, "825714"); //хешировать вместо модуляции
         
         this.icon = document.createElement("div");
         this.icon.className = "load-svg icon";
@@ -74,15 +74,12 @@ class CF {
     }
     
     activate() {
-        CC.cm.text.textContent = this.text;
-        CC.base;
         const className = this.field.getAttribute("class");
         if (className.includes("active")) { return }
         this.field.setAttribute("class", "active " + (className ?? "\b"));
     }
     
     deactivate() {
-        CC.cm.text.textContent = "";
         const className = this.field.getAttribute("class");
         this.field.setAttribute("class", className?.split(" ").filter(cn => cn !== "active").join(" ") ?? "");
     }
@@ -101,27 +98,27 @@ class CM {
         this.choices = choices;
         
         this.hide();
-        CC.base.appendChild(this.menu);
+        CC.base.appendChild(this.menu); // нарушение солид
     }
         
     updateWheel() {
         this.wheel?.remove();
         
-        const baseSize = parseFloat(getComputedStyle(CC.base).height);
-        const baseRect = CC.base.getBoundingClientRect();
+        const baseSize = parseFloat(getComputedStyle(CC.base).height); // нарушение солид
+        const baseRect = CC.base.getBoundingClientRect(); // нарушение солид
         const divW = baseSize / 5;
-        const inR = baseSize / 2;
-        const outR = baseSize * 2 + divW;
+        const inR = baseSize / 2 + divW;
+        const outR = baseSize * 2.5;
         const xmlns = "http://www.w3.org/2000/svg";
         
         this.wheel = document.createElementNS(xmlns, "svg");
         this.wheel.setAttribute("xmlns", xmlns);
         this.wheel.setAttribute("id", "cho-wheel");
-        this.wheel.setAttribute("width", (outR + divW) * 2);
-        this.wheel.setAttribute("height", outR + divW * 1.5);
+        this.wheel.setAttribute("width", outR * 2);
+        this.wheel.setAttribute("height", outR + divW / 2);
         this.wheel.setAttribute("style",
-            `top: ${baseRect.top + baseRect.height / 2 - outR - divW};` +
-            `left: ${baseRect.left + baseRect.width / 2 - outR - divW};`
+            `bottom: calc(${getComputedStyle(CC.base).bottom} + var(--cho-size) * 0.4);` +
+            `left: ${baseRect.left + baseRect.width / 2 - outR};`
         );
         this.menu.appendChild(this.wheel);
         
@@ -130,14 +127,13 @@ class CM {
         this.fields = Object.fromEntries(Object.keys(this.choices).map((key, i, a) => {
             const path = document.createElementNS(xmlns, "path");
             path.setAttribute("class", "cho-field");
+            path.setAttribute("id", this.choices[key]);
             
             const rad0 = Math.PI * i / a.length;
             const rad1 = Math.PI * (i + 1) / a.length;
             const radF = Math.PI * (i + .5) / a.length;
-            
-            const bias = direction(radF).map(v => v * divW);
 
-            const cords = (dir, l) => direction(dir).map((v, i) => v * l + bias[i] + outR + (i ? divW : divW));
+            const cords = (dir, l) => direction(dir).map((v, i) => v * l + outR);
             const [ox0, oy0] = cords(rad0, outR);
             const [oxF, oyF] = cords(radF, outR);
             const [ox1, oy1] = cords(rad1, outR);
@@ -157,8 +153,8 @@ class CM {
             
             const divider = document.createElementNS(xmlns, "path");
             divider.setAttribute("class", "cho-divider");
-            const [xI, yI] = direction(rad0).map(v => v * (inR + divW * 1.5) + outR + divW);
-            const [xO, yO] = direction(rad0).map(v => v * outR + outR + divW);
+            const [xI, yI] = direction(rad0).map(v => v * (inR + divW * .5) + outR);
+            const [xO, yO] = direction(rad0).map(v => v * (outR - divW * .5) + outR);
             divider.setAttribute("d",
                 `M${xI} ${yI}` +
                 `L${xO} ${yO}`
@@ -166,14 +162,14 @@ class CM {
             this.wheel.appendChild(divider);
         
             const cf = new CF(key, "" + this.choices[key], path);
-            this.wheel.appendChild(cf.field);
+            this.wheel.appendChild(path);
             return ["" + this.choices[key], cf];
         }));
         
         const lastDivider = document.createElementNS(xmlns, "path");
         lastDivider.setAttribute("class", "cho-divider");
-        const [xI, yI] = direction(Math.PI).map(v => v * (inR + divW * 1.5) + outR + divW);
-        const [xO, yO] = direction(Math.PI).map(v => v * outR + outR + divW);
+        const [xI, yI] = direction(Math.PI).map(v => v * (inR + divW * .5) + outR);
+        const [xO, yO] = direction(Math.PI).map(v => v * (outR - divW * .5) + outR);
         lastDivider.setAttribute("d",
             `M${xI} ${yI}` +
             `L${xO} ${yO}`
@@ -201,16 +197,16 @@ class CC extends Initable {
     static base = document.querySelector("#choice");
     static chip = this.base.firstElementChild;
     
-    static #removeClass(className) {
+    static removeClass(className) {
         this.base.className = this.base.className.split(" ").filter(cn => cn !== className).join(" ");
     }
     
-    static #addClass(className) {
+    static addClass(className) {
         if (this.base.className.includes(className)) { return }
         this.base.className = this.base.className ? className + " " + this.base.className : className;
     }
     
-    static #retrieve() {
+    static retrieve() {
         const style = () => getComputedStyle(this.chip);
         const a = () => parseFloat(style().left);
         const b = () => parseFloat(style().top);
@@ -224,16 +220,18 @@ class CC extends Initable {
         });
     }
     
+    // разрыв тут
+    
     static chosen = undefined;
-    static setChoice(choices) {
+    static setChoice(choices) {  // нарушение солид, сделай CH
         if (choices == null) {
-            SB.hit();
+            SB.hit(); // нарушение солид, делай это на высшем уровне
             this.chosen = null;
         } else if (typeof(choices) != "object") {
             this.chosen = choices;
         } else {
             this.chosen = undefined;
-            this.#removeClass("hidden");
+            this.removeClass("hidden");
             this.cm = new CM(choices, value => this.chosen = value);
         }
     }
@@ -244,7 +242,7 @@ class CC extends Initable {
             this.chip.addEventListener("pointerdown", e => {
                 e.preventDefault();
                 this.dp = { x: e.screenX, y: e.screenY }
-                this.#addClass("active");
+                this.addClass("active");
                 this.cm.show();
             }, true);
             
@@ -255,8 +253,10 @@ class CC extends Initable {
                     this.chip.style.top = e.screenY - this.dp.y + "px";
                     const field = document.elementsFromPoint(e.clientX, e.clientY).find(el => el.matches(".cho-field"));
                     const cf = this.cm.fields[field?.id];
-                    Object.values(this.cm.fields).filter(obj => obj !== cf).forEach(obj => obj.deactivate());
+                    Object.values(this.cm.fields).forEach(obj => obj.deactivate());
                     cf?.activate();
+                    this.cm.text.textContent = cf?.text ?? "";
+                    document.querySelector(":root").style.setProperty("--cur-color", cf?.color ?? "var(--m-color)");
                 }
             });
             
@@ -265,16 +265,17 @@ class CC extends Initable {
                 if (this.active) {
                     e.preventDefault();
                     this.cm.hide();
-                    this.#removeClass("active");
+                    this.removeClass("active");
                     this.dp = null;
-                    this.#retrieve();
+                    this.retrieve();
                     const rect = this.base.getBoundingClientRect();
                     const id = document.elementsFromPoint(e.clientX, e.clientY).find(el => el.matches(".cho-field"))?.id;
                     AH.delay(.4, () => {
+                        document.querySelector(":root").style.setProperty("--cur-color", "var(--m-color)");
                         if (id === "null") { this.chosen = null }
                         else if (id != null) { this.chosen = parseInt(id) }
                         if (this.chosen !== undefined) {
-                            this.#addClass("hidden");
+                            this.addClass("hidden");
                             this.cm.menu.remove();
                         }
                     });
