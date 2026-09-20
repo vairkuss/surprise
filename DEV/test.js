@@ -23,17 +23,17 @@ class DH extends Initable {
         /**
         fetch(`http://localhost:7148/get/replicas?p=${curPage}&n=${charId}&c=${this.#cursor[charId]}`)
         .then(async response => await response.json())
-        .then(([current, max]) => this.readDialogue(current, max));
+        .then(current => this.readDialogue(current));
         //*/
         const current = Dialogue.data["25285:0"];
-        this.readDialogue(current[`${charId}:${this.#cursor[charId]}`], charId, current.max[charId]);
+        this.readDialogue(current[charId][this.#cursor[charId]], charId);
     }
     
-    static readDialogue(current, char, max) {
+    static readDialogue(current, char) {
         this.readPage(current[this.#page]);
         AH.holdUntill(30, () => this.clicked === null, () => {
             if (this.#page != null && typeof(this.#page) === "object") {
-                const { newChar, position } = this.#page;
+                const { char: newChar, position } = this.#page;
                 if (!!position) { [this.#cursor[char], this.#page] = position };
                 return this.startDialogue(newChar ?? char, this.#page);
             } else if (this.#page < 0) {
@@ -45,8 +45,8 @@ class DH extends Initable {
                 this.#page = null;
             }
             if (this.#page != null) {
-                this.readDialogue(current, char, max);
-            } else if (this.#cursor[char] < max) {
+                this.readDialogue(current, char);
+            } else if (this.#cursor[char] < current.length - 1) {
                 /**
                 const bytes = new TextEncoder().encode(JSON.stringify(this.#cursor));
                 //*/
@@ -100,6 +100,7 @@ class DH extends Initable {
         if (SB.bubblesActive) { return }
         SB.hit();
         this.clicked++;
+        console.log(this.clicked)
     }
     
     static patpat(charId) {
