@@ -21,7 +21,7 @@ class AH {
     }
     
     static repeatOnClicksUntill(frequency, statement, checkBeforeClick, func, callback) {
-        if (statement() && checkBeforeClick) { return callback == null ? undefined : callback() }
+        if (statement() && checkBeforeClick) { return callback ? callback() : undefined }
         return this.holdUntillClick(frequency, () => {
             if (!statement()) {
                 if (func) { func() }

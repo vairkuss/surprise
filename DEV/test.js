@@ -16,69 +16,80 @@ class DH extends Initable {
     static #page = null;
     static get active() { return this.#page != null }
     
-    static async startDialogue(charId) {
-        this.#page = 0;
-        //console.log("starting the dialogue for " + charId);
+    static async startDialogue(charId, page=0) {
+        this.#page = page;
         const curPage = window.location.href.split("/").pop();
         if (this.#cursor[charId] == null) { this.#cursor[charId] = 0 }
-        /*
+        /**
         fetch(`http://localhost:7148/get/replicas?p=${curPage}&n=${charId}&c=${this.#cursor[charId]}`)
         .then(async response => await response.json())
         .then(([current, max]) => this.readDialogue(current, max));
-        */
+        //*/
         const current = Dialogue.data["25285:0"];
         this.readDialogue(current[`${charId}:${this.#cursor[charId]}`], charId, current.max[charId]);
     }
     
     static readDialogue(current, char, max) {
-        //console.log("reading dialogue");
         this.readPage(current[this.#page]);
         AH.holdUntill(30, () => this.clicked === null, () => {
             if (this.#page != null && typeof(this.#page) === "object") {
-                const { action: id } = this.#page;
+                const { newChar, position } = this.#page;
+                if (!!position) { [this.#cursor[char], this.#page] = position };
+                return this.startDialogue(newChar ?? char, this.#page);
+            } else if (this.#page < 0) {
                 const action = [
                     () => this.patpat(char),
                     () => this.wagwag(char)
-                ].at(id);
+                ].at(~this.#page);
                 if (action) { action() }
                 this.#page = null;
-            } else if (this.#page < 0) {
-                this.#cursor[char] = ~this.#page;
-                return this.startDialogue(char);
             }
-            AH.holdUntillClick(30, () => SB.bubbles.forEach(sb => { sb.remove() }));
             if (this.#page != null) {
                 this.readDialogue(current, char, max);
             } else if (this.#cursor[char] < max) {
+                /**
+                const bytes = new TextEncoder().encode(JSON.stringify(this.#cursor));
+                //*/
                 this.#cursor[char]++;
-                // send signal to the server to update its cursor too and save it in .json
+                /**
+                crypto.subtle.digest("SHA-256", bytes)
+                .then(hash => {
+                    const hashHex = new Uint8Array(hash).toHex();
+                    fetch(`http://localhost:7148/post/update_cursor?c=${hashHex}`);
+                    // set method - post
+                    // post updated cursor
+                });
+                //*/
             }
         });
     }
     
     static clicked = null;
     static readPage({ before, replicas, choice}) {
-        //console.log("reading page");
-        /*before?.forEach(({ id, pose, animation }) => {
-            AH.animation(id, animation ?? pose, pose);
-        });*/
+        /**
+        before?.forEach(({ id, pose, animation }) => {
+            AH.animation(id, animation, pose);
+        });
+        /**/
         this.clicked = 0;
         replicas?.forEach(async ({ id, text, pose, animation, pause }, i) => {
-            AH.holdUntill(30, () => i === this.clicked, () => {
+            AH.holdUntill(30, () => this.clicked === i, () => {
                 // start animation or change pose with blink (fast drop of transparency back and forth)
-                // await animation end, duration is pause ?? .2s
+                // AH.animation(id, animation, pose, pause);
+                // await animation end, duration is pause ?? .4s
                 const char = document.getElementById(id);
                 new SB(char, text, pose);
             });
         });
         AH.repeatOnClicksUntill(30,
-            () => this.clicked === replicas.length - 1 && !SB.bubblesActive,
+            () => (this.clicked >= (replicas.length - !!choice)) && !SB.bubblesActive,
             true,
             () => { this.moveNext() },
             () => {
-                CC.setChoice(choice);
-                AH.holdUntill(30, () => CC.chosen !== undefined, () => {
-                    this.#page = CC.chosen;
+                AH.delay(.4, () => CH.setChoice(choice));
+                AH.holdUntill(30, () => CH.chosen !== undefined && !SB.bubblesActive, () => {
+                    SB.bubbles.forEach(sb => { sb.remove() });
+                    this.#page = CH.chosen;
                     this.clicked = null;
                 });
             }
@@ -89,17 +100,6 @@ class DH extends Initable {
         if (SB.bubblesActive) { return }
         SB.hit();
         this.clicked++;
-    }
-    
-    static choice(choice) {
-        if (choice == null) {
-            SB.hit();
-            return null;
-        } else if (typeof(choice) != "object") {
-            return choice;
-        }
-        const input = parseInt(prompt(Object.keys(choice).map(v => `${choice[v]}: ${v}`).join("\n")));
-        return `${input}` === "NaN" ? null : input;
     }
     
     static patpat(charId) {
@@ -119,7 +119,10 @@ class DH extends Initable {
     
     static init() {
         super.init(() => {
-            // get cursor from server
+            /**
+            fetch("http://localhost:7148/get/current_cursor")
+            .then(cursor => this.#cursor = JSON.parse(cursor));
+            //*/
             
             document.querySelectorAll(".character").forEach(el => {
                 if (this.active) { return }

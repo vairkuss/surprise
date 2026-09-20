@@ -14,6 +14,9 @@ class SB {
     static hit() {
         this.bubbles.forEach(sb => sb.hit());
     }
+    static remove() {
+        this.bubbles.forEach(sb => sb.remove());
+    }
     
     constructor(char, text, pose) {
         SB.pairs[char.id]?.remove();
@@ -30,6 +33,8 @@ class SB {
         this.face = document.createElement("div");
         this.face.className = "face";
         this.bubble.appendChild(this.face);
+        
+        this.vx = 0;
         
         this.#flyOut();
         this.#startDrawing();
@@ -59,35 +64,38 @@ class SB {
     }
     
      #startColliding() {
-        this.vx = 0;
         const charRect = this.bubble.parentElement.getBoundingClientRect();
         const charMidX = charRect.left + charRect.width / 2;
         const charMidY = charRect.top + charRect.height / 2;
         AH.delay(0.4, () => {
-            const faceRect = this.face.getBoundingClientRect();
-            this.y = -Math.abs(faceRect.top + faceRect.height / 2 - charMidY);
-            this.x = faceRect.left + faceRect.width / 2 - charMidX;
+            this.initialRect = this.face.getBoundingClientRect();
+            this.y = -Math.abs(this.initialRect.top + this.initialRect.height / 2 - charMidY);
+            this.x = this.initialRect.left + this.initialRect.width / 2 - charMidX;
             this.translationX = 0;
-            this.collisionInterval = setInterval(() => {
-                const curRect = this.bubble.getBoundingClientRect();
-                const curStyle = getComputedStyle(this.bubble);
-                const directionX =
-                    curRect.left < document.body.offsetWidth * .02 ? 1
-                    : curRect.right > document.body.offsetWidth * .98 ? -1
-                    : 0;
-                this.vx += .5 * (.5 * directionX || -Math.sign(this.vx) * Math.min(1, Math.abs(this.vx)));
-                this.translationX += this.vx;
-                this.bubble.style.left = this.x + this.growCompX + this.translationX + "px";
-            
-                const mrg = .5 * parseFloat(getComputedStyle(this.face).borderRadius);
-                this.bubble.style.top = SB.bubbles
-                .filter(sb => sb.bubble.getBoundingClientRect().top > curRect.top)
-                .reduce((mrgT, sb) => {
-                    const sbHeight = sb.face.getBoundingClientRect().height;
-                    return mrgT - sbHeight - mrg;
-                }, this.y) + faceRect.height + this.growCompY + "px";
-            }, 1000/30);
+            this.#setCollisionInterval();
         });
+    }
+    
+    #setCollisionInterval() {
+        this.collisionInterval = setInterval(() => {
+            const curRect = this.bubble.getBoundingClientRect();
+            const curStyle = getComputedStyle(this.bubble);
+            const directionX =
+                curRect.left < document.body.offsetWidth * .02 ? 1
+                : curRect.right > document.body.offsetWidth * .98 ? -1
+                : 0;
+            this.vx += .5 * (.5 * directionX || -Math.sign(this.vx) * Math.min(1, Math.abs(this.vx)));
+            this.translationX += this.vx;
+            this.bubble.style.left = this.x + this.growCompX + this.translationX + "px";
+        
+            const mrg = .5 * parseFloat(getComputedStyle(this.face).borderRadius);
+            this.bubble.style.top = SB.bubbles
+            .filter(sb => sb.bubble.getBoundingClientRect().top > curRect.top)
+            .reduce((mrgT, sb) => {
+                const sbHeight = sb.face.getBoundingClientRect().height;
+                return mrgT - sbHeight - mrg;
+            }, this.y) + this.initialRect.height + this.growCompY + "px";
+        }, 1000/30);
     }
     
     #writeText(char, text, pose) {
@@ -142,8 +150,18 @@ class SB {
             }
             if (jump) {
                 const h = parseFloat(getComputedStyle(this.face).borderRadius);
-                const cur = parseFloat(getComputedStyle(this.bubble).marginTop);
-                this.bubble.style.marginTop = cur - h + "px";
+                const cur = parseFloat(getComputedStyle(this.bubble).top);
+                clearInterval(this.collisionInterval);
+                this.bubble.style.top = cur - h * 2 + "px";
+                let fall = 0;
+                AH.holdUntill(30,
+                    () => fall,
+                    () => this.#setCollisionInterval()
+                );
+                AH.delay(0.1, () => {
+                    this.bubble.style.top = cur + "px";
+                    fall = 1;
+                });
             }
             
             c++;
@@ -175,7 +193,7 @@ class SB {
         const faceRect = this.face.getBoundingClientRect();
         const charRect = this.bubble.parentElement.getBoundingClientRect();
         this.bubble.style.top = -(charRect.bottom - charRect.height / 2 - faceRect.bottom);
-        this.tail.svg.setAttribute("style", "height: 0");
+        AH.holdUntill(30, () => this.tail && this.tail.svg, () => this.tail.svg.setAttribute("style", "height: 0"));
         AH.delay(1/60, () => {
             this.bubble.className = "hidden bubble";
         });

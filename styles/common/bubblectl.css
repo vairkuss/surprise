@@ -4,7 +4,6 @@
 
 .bubble {
     display: grid;
-    /*grid-template-columns: 1fr;*/
     place-content: center;
     
     position: absolute;
@@ -12,9 +11,6 @@
     left: 0;
     bottom: 0;
     height: fit-content;
-    /**
-    border: 2px solid red;
-    /**/
     
     transform: scale(100%);
     filter: opacity(100%);
@@ -36,7 +32,6 @@
     padding: calc(var(--bub-size) * 0.2) calc(var(--bub-size) * 0.5);
     border: calc(var(--bub-size) * 0.1) solid #000;
     border-radius: var(--bub-size);
-    /*outline: 2px solid blue;*/
     
     color: #000;
     font-size: calc(var(--bub-size) * 0.4);
@@ -50,11 +45,6 @@
     stroke: #000;
     stroke-width: calc(var(--bub-size) * 0.1);
     transition: all 0.3s ease-in, width 0s;
-    /**
-    min-width: calc(var(--bub-size) * 5);
-    /**
-    border: 2px solid green;
-    /**/
 }
 
 .tail path {

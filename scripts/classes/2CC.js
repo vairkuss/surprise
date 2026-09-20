@@ -1,5 +1,48 @@
 /* Choice Handler */
 
+class CC {
+    constructor() {
+        this.dp = null;
+        this.base = document.createElement("div");
+        this.base.id = "choice";
+        this.base.className = "hidden";
+        this.chip = document.createElement("div");
+        this.chip.id = "chip";
+        this.chip.textContent = "...";
+        this.base.appendChild(this.chip);
+    }
+    
+    get active() { return this.dp != null }
+    
+    addClass(className) {
+        if (this.base.className.includes(className)) { return }
+        this.base.className = this.base.className.split(" ").filter(cn => cn).concat([className]).join(" ");
+    }
+    
+    removeClass(className) {
+        this.base.className = this.base.className.split(" ").filter(cn => cn && cn !== className).join(" ");
+    }
+    
+    setIcon(icon) {
+        // this.chip
+    }
+    
+    retrieve() {
+        const style = () => getComputedStyle(this.chip);
+        const a = () => parseFloat(style().left);
+        const b = () => parseFloat(style().top);
+        const rad = () => Math.atan2(b(), a());
+        const direction = () => [Math.cos(rad()), Math.sin(rad())];
+        AH.repeatUntill(1/60, () => !a() && !b(), () => {
+            const c = Math.sqrt(a()**2 + b()**2);
+            const [x, y] = [a(), b()].map((v, i) => v - direction()[i] * c / 10);
+            this.chip.style.left = Math.abs(x) < .5 ? 0 : x + "px";
+            this.chip.style.top = Math.abs(y) < .5 ? 0 : y + "px";
+        });
+    }
+}
+
+
 class CF {
     constructor(text, path) {
         this.text = text;
@@ -30,22 +73,20 @@ class CF {
 
 
 class CM {
-    constructor(choices, setter) {
+    constructor(choices) {
         this.menu = document.createElement("div");
         this.menu.id = "cho-menu";
-        
         this.choices = choices;
-        
         this.hide();
-        CC.base.appendChild(this.menu); // нарушение солид
     }
         
     updateWheel() {
         this.wheel?.remove();
         this.text?.remove();
         
-        const baseSize = parseFloat(getComputedStyle(CC.base).height); // нарушение солид
-        const baseRect = CC.base.getBoundingClientRect(); // нарушение солид
+        const base = this.menu.parentElement;
+        const baseSize = parseFloat(getComputedStyle(base).height);
+        const baseRect = base.getBoundingClientRect();
         const divW = baseSize / 5;
         const inR = baseSize / 2 + divW * 2;
         const outR = baseSize * 3;
@@ -57,7 +98,7 @@ class CM {
         this.wheel.setAttribute("width", outR * 2);
         this.wheel.setAttribute("height", outR + divW / 2);
         this.wheel.setAttribute("style",
-            `bottom: calc(${getComputedStyle(CC.base).bottom} + var(--cho-size) * 0.4);` +
+            `bottom: calc(${getComputedStyle(base).bottom} + var(--cho-size) * 0.4);` +
             `left: ${baseRect.left + baseRect.width / 2 - outR};`
         );
         this.menu.appendChild(this.wheel);
@@ -139,68 +180,39 @@ class CM {
 }
 
 
-class CC extends Initable {
-    
-    static dp = null;
-    static get active() { return this.dp != null }
-    
-    static base = document.querySelector("#choice");
-    static chip = this.base.firstElementChild;
-    
-    static removeClass(className) {
-        this.base.className = this.base.className.split(" ").filter(cn => cn !== className).join(" ");
-    }
-    
-    static addClass(className) {
-        if (this.base.className.includes(className)) { return }
-        this.base.className = this.base.className ? className + " " + this.base.className : className;
-    }
-    
-    static retrieve() {
-        const style = () => getComputedStyle(this.chip);
-        const a = () => parseFloat(style().left);
-        const b = () => parseFloat(style().top);
-        const rad = () => Math.atan2(b(), a());
-        const direction = () => [Math.cos(rad()), Math.sin(rad())];
-        AH.repeatUntill(1/60, () => !a() && !b(), () => {
-            const c = Math.sqrt(a()**2 + b()**2);
-            const [x, y] = [a(), b()].map((v, i) => v - direction()[i] * c / 10);
-            this.chip.style.left = Math.abs(x) < .5 ? 0 : x + "px";
-            this.chip.style.top = Math.abs(y) < .5 ? 0 : y + "px";
-        });
-    }
-    
-    // разрыв тут
+class CH extends Initable {
     
     static chosen = undefined;
-    static setChoice(choices) {  // нарушение солид, сделай CH
+    static setChoice(choices) {
         if (choices == null) {
-            SB.hit(); // нарушение солид, делай это на высшем уровне
             this.chosen = null;
         } else if (typeof(choices) != "object") {
             this.chosen = choices;
         } else {
             this.chosen = undefined;
-            this.removeClass("hidden");
-            this.cm = new CM(choices, value => this.chosen = value);
+            this.cc.removeClass("hidden");
+            this.cm = new CM(choices);
+            this.cc.base.appendChild(this.cm.menu);
         }
     }
     
     static init() {
         super.init(() => {
+            this.cc = new CC();
+            document.body.appendChild(this.cc.base);
             
-            this.chip.addEventListener("pointerdown", e => {
+            this.cc.chip.addEventListener("pointerdown", e => {
                 e.preventDefault();
-                this.dp = { x: e.screenX, y: e.screenY }
-                this.addClass("active");
+                this.cc.dp = { x: e.screenX, y: e.screenY }
+                this.cc.addClass("active");
                 this.cm.show();
             }, true);
             
             document.body.addEventListener("pointermove", e => {
-                if (this.active) {
+                if (this.cc.active) {
                     e.preventDefault();
-                    this.chip.style.left = e.screenX - this.dp.x + "px";
-                    this.chip.style.top = e.screenY - this.dp.y + "px";
+                    this.cc.chip.style.left = e.screenX - this.cc.dp.x + "px";
+                    this.cc.chip.style.top = e.screenY - this.cc.dp.y + "px";
                     const field = document.elementsFromPoint(e.clientX, e.clientY).find(el => el.matches(".cho-field"));
                     const cf = this.cm.fields[field?.id];
                     Object.values(this.cm.fields).forEach(obj => obj.deactivate());
@@ -210,23 +222,23 @@ class CC extends Initable {
                 }
             });
             
-            const chipBias = parseFloat(getComputedStyle(this.base).height);
+            const chipBias = parseFloat(getComputedStyle(this.cc.base).height);
             document.body.addEventListener("pointerup", e => {
-                if (this.active) {
+                if (this.cc.active) {
                     e.preventDefault();
                     this.cm.hide();
-                    this.removeClass("active");
-                    this.dp = null;
-                    const rect = this.base.getBoundingClientRect();
+                    this.cc.removeClass("active");
+                    this.cc.dp = null;
+                    const rect = this.cc.base.getBoundingClientRect();
                     const id = document.elementsFromPoint(e.clientX, e.clientY).find(el => el.matches(".cho-field"))?.id;
                     if (id === "[null]") { this.chosen = null }
-                    else if (id != null) { [this.chosen] = JSON.parse(id); console.log(this.chosen) }
-                    else { this.retrieve() }
+                    else if (id != null) { [this.chosen] = JSON.parse(id) }
+                    else { this.cc.retrieve() }
                     AH.delay(.4, () => {
-                        this.retrieve()
+                        this.cc.retrieve();
                         document.querySelector(":root").style.setProperty("--cur-color", "var(--m-color)");
                         if (this.chosen !== undefined) {
-                            this.addClass("hidden");
+                            this.cc.addClass("hidden");
                             this.cm.menu.remove();
                         }
                     });
@@ -238,4 +250,4 @@ class CC extends Initable {
 }
 
 
-CC.init();
+CH.init();
