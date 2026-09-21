@@ -16,7 +16,7 @@ class DH extends Initable {
     static #cursor = {};
     static #page = null;
     static #clicked = null;
-    static get active() { return this.#page != null }
+    static #ready = 1;
     
     static #updateCursor(char, newValue, relative=0) {
         const bytes = new TextEncoder().encode(JSON.stringify(this.#cursor));
@@ -32,6 +32,7 @@ class DH extends Initable {
     }
     
     static readDialogue(char) {
+        this.#ready = 0;
         this.#page = this.#page ?? 0;
         this.readPage(this.#current[char]?.at(this.#cursor[char] ?? 0)?.at(this.#page));
         AH.holdUntill(30, () => this.#clicked === null, () => {
@@ -56,6 +57,7 @@ class DH extends Initable {
                     this.readDialogue(char);
                 } else {
                     this.#updateCursor(char, 1, 1);
+                    this.#ready = 1;
                 }
             });
         });
@@ -131,19 +133,19 @@ class DH extends Initable {
             this.#current = Dialogue.data["25285:0"];
             
             document.querySelectorAll(".character").forEach(el => {
-                if (this.active) { return }
+                if (!this.#ready) { return }
                 //fetch(`http://localhost:7148/get/character_random_sprite?${el.id}=idle`)
                 //.then(async response => el.src = await response.text());
                 el.src = "../res/images/artbook/bad-pet.png"
                 
                 el.addEventListener("pointerout", async () => {
-                    if (this.active) { return }
+                    if (!this.#ready) { return }
                     //el.src = await fetch(`http://localhost:7148/get/character_random_sprite?${el.id}=idle`)
                     //.then(async response => await response.text());
                     el.src = "../res/images/artbook/bad-pet.png"
                 });
                 el.addEventListener("pointerover", async () => {
-                    if (this.active) { return }
+                    if (!this.#ready) { return }
                     //el.src = await fetch(`http://localhost:7148/get/character_random_sprite?${el.id}=hover`)
                     //.then(async response => await response.text());
                     el.src = "../res/images/artbook/good-pet.png"
@@ -153,8 +155,7 @@ class DH extends Initable {
                 });
                 
                 el.addEventListener("click", () => {
-                    if (this.active) { return }
-                    this.readDialogue(el.id);
+                    if (this.#ready) { this.readDialogue(el.id) }
                 });
             });
             
