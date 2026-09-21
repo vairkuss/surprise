@@ -77,6 +77,11 @@ class CM {
         this.menu = document.createElement("div");
         this.menu.id = "cho-menu";
         this.choices = choices;
+        this.keys = Object.keys(this.choices)
+        .reduce((arr, key) => {
+            arr.splice((arr.length + 1) * Math.random(), 0, key);
+            return arr;
+        }, []);
         this.hide();
     }
         
@@ -85,7 +90,8 @@ class CM {
         this.text?.remove();
         
         const base = this.menu.parentElement;
-        const baseSize = parseFloat(getComputedStyle(base).height);
+        if (!base) { return }
+        const baseSize = parseFloat(getComputedStyle(base).height); ////// dhjdnssjis
         const baseRect = base.getBoundingClientRect();
         const divW = baseSize / 5;
         const inR = baseSize / 2 + divW * 2;
@@ -106,12 +112,7 @@ class CM {
         const direction = rad => [Math.cos(rad), -Math.sin(rad)];
         const cords = (dir, l) => direction(dir).map((v, i) => v * l + outR);
         
-        this.fields = Object.fromEntries(Object.keys(this.choices)
-        .reduce((arr, key) => {
-            arr.splice((arr.length + 1) * Math.random(), 0, key);
-            return arr;
-        }, [])
-        .map((key, i, a) => {
+        this.fields = Object.fromEntries(this.keys.map((key, i, a) => {
             const path = document.createElementNS(xmlns, "path");
             path.setAttribute("class", "cho-field");
             path.setAttribute("id", JSON.stringify([this.choices[key]]));
@@ -202,6 +203,7 @@ class CH extends Initable {
             document.body.appendChild(this.cc.base);
             
             this.cc.chip.addEventListener("pointerdown", e => {
+                if (this.chosen !== undefined) { return }
                 e.preventDefault();
                 this.cc.dp = { x: e.screenX, y: e.screenY }
                 this.cc.addClass("active");
@@ -209,40 +211,39 @@ class CH extends Initable {
             }, true);
             
             document.body.addEventListener("pointermove", e => {
-                if (this.cc.active) {
-                    e.preventDefault();
-                    this.cc.chip.style.left = e.screenX - this.cc.dp.x + "px";
-                    this.cc.chip.style.top = e.screenY - this.cc.dp.y + "px";
-                    const field = document.elementsFromPoint(e.clientX, e.clientY).find(el => el.matches(".cho-field"));
-                    const cf = this.cm.fields[field?.id];
-                    Object.values(this.cm.fields).forEach(obj => obj.deactivate());
-                    cf?.activate();
-                    this.cm.text.textContent = cf?.text ?? "";
-                    document.querySelector(":root").style.setProperty("--cur-color", cf?.color ?? "var(--m-color)");
-                }
+                if (!this.cc.active) { return }
+                e.preventDefault();
+                this.cc.chip.style.left = e.screenX - this.cc.dp.x + "px";
+                this.cc.chip.style.top = e.screenY - this.cc.dp.y + "px";
+                const field = document.elementsFromPoint(e.clientX, e.clientY).find(el => el.matches(".cho-field"));
+                const cf = this.cm.fields[field?.id ?? ""];
+                Object.values(this.cm.fields).forEach(obj => obj.deactivate());
+                cf?.activate();
+                this.cm.text.textContent = cf?.text ?? "";
+                document.querySelector(":root").style.setProperty("--cur-color", cf?.color ?? "var(--m-color)");
             });
             
-            const chipBias = parseFloat(getComputedStyle(this.cc.base).height);
             document.body.addEventListener("pointerup", e => {
-                if (this.cc.active) {
-                    e.preventDefault();
-                    this.cm.hide();
-                    this.cc.removeClass("active");
-                    this.cc.dp = null;
-                    const rect = this.cc.base.getBoundingClientRect();
-                    const id = document.elementsFromPoint(e.clientX, e.clientY).find(el => el.matches(".cho-field"))?.id;
-                    if (id === "[null]") { this.chosen = null }
-                    else if (id != null) { [this.chosen] = JSON.parse(id) }
-                    else { this.cc.retrieve() }
-                    AH.delay(.4, () => {
-                        this.cc.retrieve();
-                        document.querySelector(":root").style.setProperty("--cur-color", "var(--m-color)");
-                        if (this.chosen !== undefined) {
-                            this.cc.addClass("hidden");
-                            this.cm.menu.remove();
-                        }
-                    });
-                }
+                if (!this.cc.active) { return }
+                e.preventDefault();
+                this.cm.hide();
+                this.cc.removeClass("active");
+                this.cc.dp = null;
+                const rect = this.cc.base.getBoundingClientRect();
+                const id = document.elementsFromPoint(e.clientX, e.clientY).find(el => el.matches(".cho-field"))?.id;
+                if (id === "[null]") { this.chosen = null }
+                else if (id != null) { [this.chosen] = JSON.parse(id) }
+                else { this.cc.retrieve() }
+                AH.delay(.4, () => {
+                    this.cc.retrieve();
+                    document.querySelector(":root").style.setProperty("--cur-color", "var(--m-color)");
+                    if (this.chosen !== undefined) {
+                        this.cc.addClass("hidden");
+                        this.cm.menu.remove();
+                        this.chosen = undefined;
+                    }
+                });
+                    
             });
             
         });

@@ -47,7 +47,7 @@ class Dialogue {
           "replicas": [
             { "id": "virko", "pose": "show", "text": "Что-нибудь ещё?" }
           ],
-          "choice": { "н": null, "а пкжи хвостикс": -2, "г приветствие по новой, ч ты там": { "position": [0, 0] } }
+          "choice": { "н": null, "а пкжи хвостикс": -2, "г приветствие по новой, ч ты там": ["virko:0"] }
         },
       
         {
@@ -80,7 +80,7 @@ class Dialogue {
       
         {
           "replicas": [
-            { "id": "infi", "pose": "wink", "text": "Холосо" }
+            { "id": "infi", "pose": "wink", "text": "Холосо  uwu" }
           ]
         }
       ]
