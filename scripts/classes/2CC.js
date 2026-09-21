@@ -190,12 +190,16 @@ class CH extends Initable {
         } else if (typeof(choices) != "object") {
             this.chosen = choices;
         } else {
-            this.chosen = undefined;
-            this.cc.removeClass("hidden");
-            this.cm = new CM(choices);
-            this.cc.base.appendChild(this.cm.menu);
+            AH.holdUntill(30, () => !SB.bubblesActive, () => {
+                this.chosen = undefined;
+                this.cc.removeClass("hidden");
+                this.cm = new CM(choices);
+                this.cc.base.appendChild(this.cm.menu);
+            });
         }
     }
+    
+    //static get active() { this.chosen === undefined && !this.cc.base.className.includes("hidden") }
     
     static init() {
         super.init(() => {
@@ -203,7 +207,7 @@ class CH extends Initable {
             document.body.appendChild(this.cc.base);
             
             this.cc.chip.addEventListener("pointerdown", e => {
-                if (this.chosen !== undefined) { return }
+                if (this.chosen !== undefined && !SB.bubblesActive) { return }
                 e.preventDefault();
                 this.cc.dp = { x: e.screenX, y: e.screenY }
                 this.cc.addClass("active");
