@@ -111,7 +111,7 @@ class DH extends Initable {
             });
         });
         
-        const skip = typeof(choice) === "number" ? choice >= 0 : choice != null
+        const skip = typeof(choice) === "number" ? choice >= 0 : choice != null;
         AH.repeatOnClicksUntill(30,
             () => this.#clicked >= replicas.length - skip && !SB.bubblesActive,
             true,

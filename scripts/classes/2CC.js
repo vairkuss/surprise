@@ -10,6 +10,19 @@ class CC {
         this.chip.id = "chip";
         this.chip.textContent = "...";
         this.base.appendChild(this.chip);
+        const xmlns = "http://www.w3.org/2000/svg";
+        this.chipBorder = document.createElementNS(xmlns, "svg");
+        this.chipBorder.setAttribute("xmlns", xmlns);
+        this.chipBorder.setAttribute("class", "chip-border");
+        this.chipBorder.setAttribute("width", "14");
+        this.chipBorder.setAttribute("height", "14");
+        this.chipBorder.setAttribute("viewBox", "0 0 14 14");
+        this.chip.appendChild(this.chipBorder);
+        const path = document.createElementNS(xmlns, "circle");
+        path.setAttribute("cx", "7");
+        path.setAttribute("cy", "7");
+        path.setAttribute("r", "6");
+        this.chipBorder.appendChild(path);
     }
     
     get active() { return this.dp != null }
@@ -115,7 +128,7 @@ class CM {
         this.fields = Object.fromEntries(this.keys.map((key, i, a) => {
             const path = document.createElementNS(xmlns, "path");
             path.setAttribute("class", "cho-field");
-            path.setAttribute("id", JSON.stringify([this.choices[key]]));
+            path.setAttribute("id", JSON.stringify([ this.choices[key] ]));
             
             const rad0 = Math.PI * i / a.length;
             const rad1 = Math.PI * (i + 1) / a.length;
@@ -198,8 +211,6 @@ class CH extends Initable {
             });
         }
     }
-    
-    //static get active() { this.chosen === undefined && !this.cc.base.className.includes("hidden") }
     
     static init() {
         super.init(() => {

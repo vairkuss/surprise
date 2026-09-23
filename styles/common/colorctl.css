@@ -4,6 +4,9 @@
     --m-lum: 82.5%;
     --m-color: hsl( var(--m-hue) var(--m-sat) var(--m-lum) );
     --cur-color: var(--m-color);
+    --cur-color2: hsl( from var(--cur-color) h calc(s * 1.2) calc(l * 0.7) );
+    --cur-color3: hsl( from var(--cur-color) h calc(s * 1.8) calc(l * 0.4) );
+    --cur-color4: hsl( from var(--cur-color) h calc(s * 2) calc(l * 0.2) );
     
     --bg-grad:
         radial-gradient(
