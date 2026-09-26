@@ -1,0 +1,18 @@
+<svg id="grads" xmlns="http://www.w3.org/2000/svg">
+<defs>
+    <linearGradient id="text-grad" x1="37%" y1="2%" x2="63%" y2="98%">
+        <stop offset="0%" stop-color="hsl(from var(--cur-color) calc(h - 5) calc(s * 0.8) calc(l * 0.75))" />
+        <stop offset="25%" stop-color="hsl(from var(--cur-color) h calc(s * 0.8) calc(l * 0.6))" />
+        <stop offset="50%" stop-color="hsl(from var(--cur-color) calc(h + 5) calc(s * 0.8) calc(l * 0.75))" />
+        <stop offset="75%" stop-color="hsl(from var(--cur-color) h calc(s * 0.8) calc(l * 0.9))" />
+        <stop offset="100%" stop-color="hsl(from var(--cur-color) calc(h - 5) calc(s * 0.8) calc(l * 0.75))" />
+    </linearGradient>
+    <linearGradient id="dis-grad" x1="37%" y1="2%" x2="63%" y2="98%">
+        <stop offset="0%" stop-color="hsl(from var(--cur-color) calc(h - 5) calc(s * 0.1) calc(l * 0.55))" />
+        <stop offset="25%" stop-color="hsl(from var(--cur-color) h calc(s * 0.05) calc(l * 0.4))" />
+        <stop offset="50%" stop-color="hsl(from var(--cur-color) calc(h + 5) calc(s * 0.1) calc(l * 0.55))" />
+        <stop offset="75%" stop-color="hsl(from var(--cur-color) h calc(s * 0.05) calc(l * 0.7))" />
+        <stop offset="100%" stop-color="hsl(from var(--cur-color) calc(h - 5) calc(s * 0.1) calc(l * 0.55))" />
+    </linearGradient>
+</defs>
+</svg>

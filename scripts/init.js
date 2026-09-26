@@ -1,3 +1,5 @@
+const xmlns = "http://www.w3.org/2000/svg";
+
 class Initable {
     static __initialised = 0;
     static get initiated() { return this.__initialised }
@@ -20,16 +22,15 @@ class PM extends Initable {
     static async #loadGlobalVariables() {
         this.#globalVariables = await fetch("http://localhost:7148/get/variables")
         .then(async response => await response.json());
-        this.setColor();
+        this.updateColor(this.globalVariables.i);
     }
     
-    static async setColor(values=null) {
-        let [h, s, l] = values ?? await fetch(`http://localhost:7148/get/mcolor`)
-        .then(async response => await response.json());
-        const root = document.querySelector(":root");
-        root.style.setProperty('--m-hue', `${h}`);
-        root.style.setProperty('--m-sat', `${s}%`);
-        root.style.setProperty('--m-lum', `${l}%`);
+    static async updateColor(id) {
+        fetch(`http://localhost:7148/get/mcolor?c=${id}`)
+        .then(async response => {
+            const root = document.querySelector(":root");
+            root.style.setProperty('--m-color', await response.text());
+        });
     }
     
     
@@ -51,11 +52,20 @@ class PM extends Initable {
         );
         
         // CLASSES
-        const classes = await fetch("http://localhost:7148/get/classes")
+        const scripts = document.querySelector("#scripts");
+        await fetch("http://localhost:7148/get/utils")
         .then(async response => await response.json())
-        .then(classes => {
-            const scripts = document.querySelector("#scripts");
-            classes.forEach(url => {
+        .then(utils => {
+            utils.forEach(url => {
+                const script = document.createElement("script");
+                script.src = `../scripts/classes/${url}`;
+                scripts.appendChild(script);
+            });
+        });
+        await fetch("http://localhost:7148/get/elements")
+        .then(async response => await response.json())
+        .then(utils => {
+            utils.forEach(url => {
                 const script = document.createElement("script");
                 script.src = `../scripts/classes/${url}`;
                 scripts.appendChild(script);
@@ -63,27 +73,8 @@ class PM extends Initable {
         });
         
         // GRADS
-        const grads = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-        grads.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-        grads.setAttribute("id", "grads");
-        grads.innerHTML = `
-<defs>
-    <linearGradient id="text-grad" x1="37%" y1="2%" x2="63%" y2="98%">
-        <stop offset="0%" stop-color="hsl(calc(var(--m-hue) - 5), calc(var(--m-sat) * 0.8), calc(var(--m-lum) * 0.75))" />
-        <stop offset="25%" stop-color="hsl(var(--m-hue), calc(var(--m-sat) * 0.8), calc(var(--m-lum) * 0.6))" />
-        <stop offset="50%" stop-color="hsl(calc(var(--m-hue) + 5), calc(var(--m-sat) * 0.8), calc(var(--m-lum) * 0.75))" />
-        <stop offset="75%" stop-color="hsl(var(--m-hue), calc(var(--m-sat) * 0.8), calc(var(--m-lum) * 0.9))" />
-        <stop offset="100%" stop-color="hsl(calc(var(--m-hue) - 5), calc(var(--m-sat) * 0.8), calc(var(--m-lum) * 0.75))" />
-    </linearGradient>
-    <linearGradient id="dis-grad" x1="37%" y1="2%" x2="63%" y2="98%">
-        <stop offset="0%" stop-color="hsl(calc(var(--m-hue) - 5), calc(var(--m-sat) * 0.1), calc(var(--m-lum) * 0.55))" />
-        <stop offset="25%" stop-color="hsl(var(--m-hue), calc(var(--m-sat) * 0.05), calc(var(--m-lum) * 0.4))" />
-        <stop offset="50%" stop-color="hsl(calc(var(--m-hue) + 5), calc(var(--m-sat) * 0.1), calc(var(--m-lum) * 0.55))" />
-        <stop offset="75%" stop-color="hsl(var(--m-hue), calc(var(--m-sat) * 0.05), calc(var(--m-lum) * 0.7))" />
-        <stop offset="100%" stop-color="hsl(calc(var(--m-hue) - 5), calc(var(--m-sat) * 0.1), calc(var(--m-lum) * 0.55))" />
-    </linearGradient>
-</defs>
-`;
+        const grads = await fetch("http://localhost:7148/get/grads")
+        .then(async res => new DOMParser().parseFromString(await res.text(), "image/svg+xml"));
         document.querySelector("body").appendChild(grads);
     }
     
@@ -118,12 +109,11 @@ class PM extends Initable {
         document.querySelectorAll(".icon").forEach(
             async iconElement => {
                 if (iconElement.textContent) {
-                    iconElement.innerHTML = `<div class="text">${iconElement.textContent}</div>`;
+                    iconElement.innerHTML = `<div class=text>${iconElement.textContent}</div>`;
                 }
                 const filename = iconElement.getAttribute("icon");
                 if (filename == null) { return }
-                const url = `../res/icons/${filename}.svg`;
-                const file = await fetch(url)
+                const file = await fetch(`../res/icons/${filename}.svg`)
                 .then(async response => await response.text());
                     
                 try {

@@ -7,12 +7,6 @@
     }
 }
 
-@property --chip-border-width {
-    syntax: "<number>";
-    inherits: false;
-    initial-value: 0;
-}
-
 
 :root {
     --cho-size: min(20vh, 20vw);
@@ -127,7 +121,7 @@
     fill: none;
     
     stroke: hsl( from var(--cur-color3) calc(h + 180) s l );
-    stroke-width: var(--chip-border-width);
+    stroke-width: 0;
     --r: 6;
     r: var(--r);
     --sectors: 7;
@@ -137,13 +131,20 @@
     animation: 4s rotate linear infinite;
     transition:
         stroke 0.5s ease-out,
-        --chip-border-width 0.3s ease-in;
+        stroke-width 0.3s ease-in;
+}
+
+.chip-icon {
+    margin: 10%;
+    width: 80%;
+    height: auto;
+    fill: currentColor;
 }
 
 #choice.active > #chip > .chip-border > circle {
     stroke: hsl( from var(--cur-color2) calc(h + 180) calc(s * 0.7) calc(l * 1.5) );
-    --chip-border-width: 1.2;
-    transition: --chip-border-width 0.6s cubic-bezier(0.2, 0.6, 0.4, 2);
+    stroke-width: 1.2;
+    transition: stroke-width 0.6s cubic-bezier(0.2, 0.6, 0.4, 2);
 }
 
 #choice.active > #chip {

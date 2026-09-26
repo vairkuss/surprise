@@ -1,15 +1,3 @@
-class Initable {
-    static __initiated = 0;
-    static get initiated() { return this.__initiated }
-    
-    static init(func) {
-        if (this.__initiated) { return }
-        func();
-        this.__initiated = 1;
-    }
-}
-
-
 class CA {
     
     static play(char, animation, pose, pause) {
@@ -115,9 +103,7 @@ class DH extends Initable {
         AH.repeatOnClicksUntill(30,
             () => this.#clicked >= replicas.length - skip && !SB.bubblesActive,
             true,
-            () => {
-                if (!SB.bubblesActive) { this.#clicked++ }
-            },
+            () =>  this.#clicked += !SB.bubblesActive,
             () => {
                 CH.setChoice(choice);
                 AH.holdUntill(30, () => CH.chosen !== undefined && !SB.bubblesActive, () => {
