@@ -1,10 +1,14 @@
 class SVGNSE { // Scalable Vector Graphics Name Space Element
     constructor(elName, options) {
-        const { id, cn } = options ?? {};
+        const { id, cn, fromString: data, parent } = options ?? {};
         const xmlns = "http://www.w3.org/2000/svg";
-        this.el = document.createElementNS(xmlns, elName);
+        this.raw = data;
+        this.el = data == null
+            ? document.createElementNS(xmlns, elName)
+            : new DOMParser().parseFromString(data, "image/svg+xml").querySelector(elName);
         if (id != null) { this.setAttribute("id", id) }
         if (cn != null) { this.addClass(cn) }
+        if (parent != null) { this.appendTo(parent) }
     }
     
     get id() {
@@ -24,6 +28,7 @@ class SVGNSE { // Scalable Vector Graphics Name Space Element
     }
     
     addClass(newClassName) {
+        if (this.className?.includes(newClassName)) { return }
         const updatedClassName = (this.className ?? "").split(" ").concat([newClassName]).join(" ");
         this.setAttribute("class", updatedClassName);
     }
@@ -48,37 +53,33 @@ class SVGNSE { // Scalable Vector Graphics Name Space Element
 
 
 class SVGE extends SVGNSE { // Scalable Vector Graphics Element
-    constructor(dimensions, options) {
-        let [w, h] = dimensions ?? []
+    constructor([w, h], options) {
         h = h ?? w;
         super("svg", options);
-        this.setAttribute("width", w);
-        this.setAttribute("height", h);
-        this.setAttribute("viewBox", `0 0 ${w} ${h}`);
-    }
-    
-    static fromString(data) {
-        const svge = new SVGE();
-        svge.el = new DOMParser().parseFromString(data, "image/svg+xml").querySelector("svg");
-        return svge;
+        if (w != null) {
+            this.setAttribute("width", w);
+            this.setAttribute("height", h);
+            this.setAttribute("viewBox", `0 0 ${w} ${h}`);
+        }
     }
 }
 
 class SVGPE extends SVGNSE { // Scalable Vector Graphics Path Element
     constructor(d, options) {
         super("path", options);
-        this.setAttribute("d", d);
+        this.setAttribute("d", d ?? "");
     }
 }
 
 class SVGCE extends SVGNSE { // Scalable Vector Graphics Circle Element
-    constructor(params, options) {
-        let [r, cx, cy] = params ?? []
-        cx = cx ?? cy ?? r;
+    constructor([r, cx, cy], options) {
+        cx = cx ?? r;
         cy = cy ?? cx;
-        super("path", options);
-        this.setAttribute("r", r);
-        this.setAttribute("cx", cx);
-        this.setAttribute("cy", cy);
+        super("circle", options);
+        if (r != null) {
+            this.setAttribute("r", r);
+            this.setAttribute("cx", cx);
+            this.setAttribute("cy", cy);
+        }
     }
 }

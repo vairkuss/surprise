@@ -10,14 +10,15 @@ class CC { // Choice Chip
         
         this.chip = document.createElement("div");
         this.chip.id = "chip";
-        this.chip.textContent = "...";
         this.base.appendChild(this.chip);
         
-        this.chipBorder = new SVGE([14], { cn: "chip-border" });
-        this.chipBorder.appendTo(this.chip);
+        this.chipText = document.createElement("span");
+        this.chipText.id = "chip-text";
+        this.chipText.textContent = "...";
+        this.chip.appendChild(this.chipText);
         
-        const chipBorderPath = new SVGCE([6, 7]);
-        chipBorderPath.appendTo(this.chipBorder.el);
+        this.chipBorder = new SVGE([14], { cn: "chip-border", parent: this.chip });
+        new SVGCE([6, 7], { parent: this.chipBorder.el });
     }
     
     get active() { return this.dp != null }
@@ -31,34 +32,37 @@ class CC { // Choice Chip
         this.base.className = this.base.className.split(" ").filter(cn => cn && cn !== className).join(" ");
     }
     
+    setIcon(icon) {
+        if (this.changingTo !== icon) {
+            this.changingTo = icon;
+            this.changedAt = Date.now();
+            this.blinkIcon(() => this.changeIcon());
+        }
+    }
+    
     blinkIcon(func) {
-        this.icon?.setAttribute("class", "hidden chip-icon");
+        if (this.blinking) { return }
+        this.blinking = 1;
+        this.icon?.addClass("hidden");
         this.chip.style.color = "transparent";  
-        AH.delay(.4, () => {
+        AH.holdUntill(30, () => Date.now() - this.changedAt >= 400, () => {
             if (func) { func() }
-           this.icon?.setAttribute("class", "chip-icon");
-           this.chip.style.color = "";
+            AH.delay(1/60, () => {
+               this.icon?.removeClass("hidden");
+               this.chip.style.color = "";
+               this.blinking = 0;
+           });
         });
     }
     
-    setIcon(icon) {
-        console.log(icon, this.icon)
-        if (icon !== this.icon?.outerHTML) {
-            this.blinkIcon(() => {
-                if (icon != null) {
-                    this.chip.textContent = "";
-                    this.icon = new DOMParser().parseFromString(icon, "image/svg+xml").querySelector("svg");
-                } else {
-                    this.icon?.setAttribute("class", "chip-icon hidden");
-                    AH.delay(.4, () => {
-                        this.icon?.remove();
-                        this.icon = undefined;
-                        this.chip.textContent = "...";
-                        this.chip.style.color = "";
-                    });
-                }
-            });
-            this.lastIcon = icon;
+    changeIcon() {
+        this.icon?.remove();
+        if (this.changingTo !== undefined) {
+            this.icon = new SVGE([], { cn: "hidden chip-icon", fromString: this.changingTo, parent: this.chip });
+            this.chipText.textContent = "";
+        } else {
+            this.icon = undefined;
+            this.chipText.textContent = "...";
         }
     }
     
@@ -109,7 +113,7 @@ class CWS { // Choice Wheel Sector
         }
         //fetch("http://localhost:7148/" + path)
         //.then(async res => this.icon = await res.text());
-        this.iconName = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path d="M8 13.5 14 8A1 1 0 0 0 8 4 1 1 0 0 0 2 8z" fill="currentColor" /></svg>`;
+        this.icon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path d="M8 13.5 14 8A1 1 0 0 0 8 4 1 1 0 0 0 2 8z" fill="currentColor" /></svg>`;
     }
     
     async #generateSector(value, sizes, i, a) {
@@ -286,7 +290,7 @@ class CH extends Initable { // Choice Handler
                     Object.values(this.cm.wheel.fields).forEach(obj => obj.deactivate());
                     cws?.activate();
                     this.cm.text.textContent = cws?.text ?? "";
-                    this.cc.setIcon(cws?.iconName);
+                    this.cc.setIcon(cws?.icon);
                     document.querySelector(":root").style.setProperty("--cur-color", cws?.color ?? "var(--m-color)");
                 });
             });
@@ -311,7 +315,6 @@ class CH extends Initable { // Choice Handler
                         this.chosen = undefined;
                     }
                 });
-                    
             });
             
         });

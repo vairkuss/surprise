@@ -22,7 +22,7 @@ class SVGL extends Initable { // Scalable Vector Graphics Loader
             //*/
             AH.holdUntill(30, () => strings != null, () => {
                 this.#iconsStorage = Object.entries(strings).reduce((storage, [key, value]) => {
-                    storage[key] = SVGE.fromString(value);
+                    storage[key] = new SVGE([], { fromString: value });
                     return storage;
                 }, {});
             });
