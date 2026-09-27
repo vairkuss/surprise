@@ -1,5 +1,55 @@
 /* Choice Handler */
 
+class CCC { // Choice Chip Chain
+    constructor() {
+        this.root = document.createElement("div");
+        this.root.className = "cho-chain-seg";
+        this.ghost = document.createElement("div");
+        this.ghost.className = "cho-chain-ghost";
+    }
+    
+    get size() {
+        const rect = this.root.getBoundingClientRect();
+        return rect.width;
+    }
+    get margin() { return this.size * .5 }
+    
+    update([chipX, chipY]) {
+        const chipR = this.size / 1.5 + this.margin;
+        const rad = Math.atan2(chipY, chipX);
+        const vec = [Math.cos(rad), Math.sin(rad)];
+        
+        const length = Math.sqrt(chipX**2 + chipY**2);
+        const segments = Math.floor((length - chipR) / (this.size + this.margin));
+        
+        const rest = (length - chipR) % (this.size + this.margin);
+        const restFraction = rest / (this.size + this.margin);
+        this.ghost.style.filter = `opacity(${restFraction * 100}%)`;
+        
+        const diff = this.root.children.length - segments;
+        if (diff < 0) { this.#gain(Math.abs(diff)) }
+        else if (diff > 0) { this.#lose(diff) }
+        
+        [...this.root.children].forEach((seg, i) => {
+            const dist = i * (this.size + this.margin) + rest;
+            const [x, y] = [0, 1].map(v => vec[v] * dist);
+            seg.style.left = x;
+            seg.style.top = y;
+        });
+    }
+    
+    #gain(count) {
+        const seg = document.createElement("div");
+        seg.className = "cho-chain-seg";
+        [...Array(count)].forEach(_ => this.root.appendChild(seg.cloneNode()));
+    }
+    
+    #lose(count) {
+        [...this.root.children].splice(0, count).forEach(seg => seg.remove());
+    }
+}
+
+
 class CC { // Choice Chip
     constructor() {
         this.dp = null;
@@ -13,12 +63,16 @@ class CC { // Choice Chip
         this.base.appendChild(this.chip);
         
         this.chipText = document.createElement("span");
-        this.chipText.id = "chip-text";
+        this.chipText.id = "chip-icon";
         this.chipText.textContent = "...";
         this.chip.appendChild(this.chipText);
         
-        this.chipBorder = new SVGE([14], { cn: "chip-border", parent: this.chip });
-        new SVGCE([6, 7], { parent: this.chipBorder.el });
+        this.chipBorder = new SVGE([14], { id: "chip-border", parent: this.chip });
+        new SVGCE([6, 7], { parent: this.chipBorder });
+        
+        this.chain = new CCC();
+        this.base.appendChild(this.chain.root);
+        this.base.appendChild(this.chain.ghost);
     }
     
     get active() { return this.dp != null }
@@ -30,6 +84,10 @@ class CC { // Choice Chip
     
     removeClass(className) {
         this.base.className = this.base.className.split(" ").filter(cn => cn && cn !== className).join(" ");
+    }
+    
+    updateChain() {
+        this.chain.update(this.cords);
     }
     
     setIcon(icon) {
@@ -58,7 +116,7 @@ class CC { // Choice Chip
     changeIcon() {
         this.icon?.remove();
         if (this.changingTo !== undefined) {
-            this.icon = new SVGE([], { cn: "hidden chip-icon", fromString: this.changingTo, parent: this.chip });
+            this.icon = new SVGE([], { id: "chip-icon", cn: "hidden", fromString: this.changingTo, parent: this.chip });
             this.chipText.textContent = "";
         } else {
             this.icon = undefined;
@@ -67,17 +125,23 @@ class CC { // Choice Chip
     }
     
     retrieve() {
-        const style = () => getComputedStyle(this.chip);
-        const a = () => parseFloat(style().left);
-        const b = () => parseFloat(style().top);
-        const rad = () => Math.atan2(b(), a());
+        const rad = () => Math.atan2(...this.cords.toReversed());
         const direction = () => [Math.cos(rad()), Math.sin(rad())];
-        AH.repeatUntill(1/60, () => !a() && !b(), () => {
-            const c = Math.sqrt(a()**2 + b()**2);
-            const [x, y] = [a(), b()].map((v, i) => v - direction()[i] * c / 10);
+        AH.repeatUntill(1/60, () => this.cords.every(v => !v) || this.dp != null, () => {
+            const c = Math.sqrt(this.cords.reduce((s, v) => s + v**2, 0));
+            const [x, y] = this.cords.map((v, i) => v - direction()[i] * c / 10);
             this.chip.style.left = Math.abs(x) < .5 ? 0 : x + "px";
             this.chip.style.top = Math.abs(y) < .5 ? 0 : y + "px";
+            this.updateChain();
         });
+    }
+    
+    get style() {
+        return getComputedStyle(this.chip);
+    }
+    
+    get cords() {
+        return [parseFloat(this.style.left), parseFloat(this.style.top)]
     }
 }
 
@@ -86,9 +150,10 @@ class CWS { // Choice Wheel Sector
 
     constructor(key, value, sizes, i, a) {
         this.text = key;
+        this.value = value;
         this.#calculateColor(key);
         this.#fetchIcon(value);
-        this.#generateSector(value, sizes, i, a);
+        this.#generateSector(sizes, i, a);
     }
     
     async #calculateColor(key) {
@@ -116,17 +181,17 @@ class CWS { // Choice Wheel Sector
         this.icon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path d="M8 13.5 14 8A1 1 0 0 0 8 4 1 1 0 0 0 2 8z" fill="currentColor" /></svg>`;
     }
     
-    async #generateSector(value, sizes, i, a) {
+    async #generateSector(sizes, i, a) {
         const directions = this.#generateDirections(i, a, 180 / 5 / a.length);
         const cords = this.#calculateCords(directions, sizes);
         const fieldD = this.#gatherFieldData(cords);
-        this.field = new SVGPE(fieldD, { id: value, cn: "cho-field" });
-        const dividerD = this.#calculateDividerData(directions[0], sizes);
+        this.field = new SVGPE(fieldD, { id: `id${i}`, cn: "cho-field" });
+        const dividerD = this.calculateDividerData(directions[0], sizes);
         this.divider = new SVGPE(dividerD, { cn: "cho-divider" });
     }
     
-    #generateDirections(i, a, segments) {
-        return [...Array(segments + 1)].map((_, seg) => seg / segments)
+    #generateDirections(i, a, sectors) {
+        return [...Array(sectors + 1)].map((_, sector) => sector / sectors)
         .map(part => Math.PI * (i + part) / a.length);
     }
     
@@ -136,17 +201,16 @@ class CWS { // Choice Wheel Sector
     }
     
     #gatherFieldData(cords) {
-        return cords.map((pair, i) => (i ? "L" :"M") + pair.join(" ")).join("") + "z"
+        return cords.map((pair, i) => (i ? "L" : "M") + pair.join(" ")).join("") + "z"
     }
     
-    #calculateDividerData(dir, sizes) {
+    calculateDividerData(dir, sizes) {
         const [xI, yI] = DECC.cords(dir, sizes.inR + sizes.divW * .5, sizes.outR);
         const [xO, yO] = DECC.cords(dir, sizes.outR - sizes.divW * .5, sizes.outR);
         return `M${xI} ${yI}L${xO} ${yO}`;
     }
     
     activate() { this.field.addClass("active") }
-    
     deactivate() { this.field.removeClass("active") }
 }
 
@@ -178,28 +242,25 @@ class CW { // Choice Wheel
     
     #generateBody(base) {
         const bodyRect = document.body.getBoundingClientRect();
-        this.body = new SVGE([this.sizes.outR * 2, this.sizes.outR + this.sizes.divW / 2], { id: "cho-wheel" });
+        this.body = new SVGE([this.sizes.outR * 2, this.sizes.outR + this.sizes.divW / 2], { id: "cho-wheel", fill: "url(#cho-wheel-grad)" });
         this.body.setAttribute("style",
             `bottom: calc(${getComputedStyle(base).bottom} + var(--cho-size) * 0.4);` +
             `left: ${bodyRect.width / 2 - this.sizes.outR};`
         );
     }
     
-    async #appendSectors(keys, choices) {
-        this.fields = Object.fromEntries(keys.map((key, i, a) => {
-            const value = JSON.stringify([choices[key]]);
-            const cws = new CWS(key, value, this.sizes, i, a);
-            AH.holdUntill(30, () => cws.field != null, () => cws.field.appendTo(this.body));
+    #appendSectors(keys, choices) {
+        this.fields = keys.map((key, i, a) => {
+            const cws = new CWS(key, choices[key], this.sizes, i, a);
+            AH.holdUntill(30, () => cws.field != null, () => this.body.addMask(cws.field.el));
             AH.holdUntill(30, () => cws.divider != null, () => cws.divider.appendTo(this.body));
-            return [value, cws];
-        }));
+            return cws;
+        });
     }
     
-    async #appendLastDivider() {
-        const [xI, yI] = DECC.cords(Math.PI, this.sizes.inR + this.sizes.divW * .5, this.sizes.outR);
-        const [xO, yO] = DECC.cords(Math.PI, this.sizes.outR - this.sizes.divW * .5, this.sizes.outR);
-        const lastDivider = new SVGPE(`M${xI} ${yI}L${xO} ${yO}`, { cn: "cho-divider" });
-        lastDivider.appendTo(this.body);
+    #appendLastDivider() {
+        const d = CWS.prototype.calculateDividerData(Math.PI, this.sizes);
+        new SVGPE(d, { cn: "cho-divider", parent: this.body });
     }
 }
 
@@ -216,16 +277,16 @@ class CM { // Choice Menu
     updateMenu() {
         this.wheel?.body.remove();
         this.text?.remove();
-        
         const base = this.menu.parentElement;
         if (!base) { return }
         this.wheel = new CW(base, this.choices); 
-        AH.holdUntill(30, () => this.wheel.body != null, () => this.wheel.body.appendTo(this.menu));
-        
-        this.text = document.createElement("pre");
-        this.text.id = "cho-text";
-        this.text.style.bottom = parseFloat(getComputedStyle(this.wheel.body.el).bottom) + this.wheel.sizes.outR + "px";
-        this.menu.appendChild(this.text);
+        AH.holdUntill(30, () => this.wheel.body != null, () => {
+            this.wheel.body.appendTo(this.menu);
+            this.text = document.createElement("pre");
+            this.text.id = "cho-text";
+            this.text.style.bottom = parseFloat(getComputedStyle(this.wheel.body.el).bottom) + this.wheel.sizes.outR + "px";
+            this.menu.appendChild(this.text);
+        });
     }
     
     blinkText(func) {
@@ -274,7 +335,10 @@ class CH extends Initable { // Choice Handler
             this.cc.chip.addEventListener("pointerdown", e => {
                 if (this.chosen !== undefined && !SB.bubblesActive) { return }
                 e.preventDefault();
-                this.cc.dp = { x: e.screenX, y: e.screenY }
+                const chipStyle = getComputedStyle(this.cc.chip);
+                const x = parseFloat(chipStyle.left);
+                const y = parseFloat(chipStyle.top);
+                this.cc.dp = { x: e.screenX - x, y: e.screenY - y }
                 this.cc.addClass("active");
                 this.cm.show();
             }, true);
@@ -284,9 +348,11 @@ class CH extends Initable { // Choice Handler
                 e.preventDefault();
                 this.cc.chip.style.left = e.screenX - this.cc.dp.x + "px";
                 this.cc.chip.style.top = e.screenY - this.cc.dp.y + "px";
+                this.cc.updateChain();
                 const field = document.elementsFromPoint(e.clientX, e.clientY).find(el => el.matches(".cho-field"));
+                const id = field != null ? parseInt(field.href.slice(7, field.href.length - 1)) : undefined; /////////
                 AH.holdUntill(30, () => this.cm.wheel.fields != null, () => {
-                    const cws = this.cm.wheel.fields[field?.id];
+                    const cws = this.cm.wheel.fields[id];
                     Object.values(this.cm.wheel.fields).forEach(obj => obj.deactivate());
                     cws?.activate();
                     this.cm.text.textContent = cws?.text ?? "";
@@ -303,11 +369,14 @@ class CH extends Initable { // Choice Handler
                 this.cc.dp = null;
                 const rect = this.cc.base.getBoundingClientRect();
                 const id = document.elementsFromPoint(e.clientX, e.clientY).find(el => el.matches(".cho-field"))?.id;
-                if (id === "[null]") { this.chosen = null }
-                else if (id != null) { [this.chosen] = JSON.parse(id) }
+                if (id != null) {
+                    const fired = this.cm.wheel.fields[parseInt(id.slice(2))];
+                    this.chosen = fired.value;
+                }
                 else { this.cc.retrieve() }
-                AH.delay(.4, () => {
+                AH.delay(.6, () => {
                     this.cc.retrieve();
+                    this.cc.setIcon(undefined);
                     document.querySelector(":root").style.setProperty("--cur-color", "var(--m-color)");
                     if (this.chosen !== undefined) {
                         this.cc.addClass("hidden");

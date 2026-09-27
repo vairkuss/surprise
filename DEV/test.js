@@ -11,7 +11,10 @@ class Initable {
 }
 //*/
 
-class CA {
+/* Dialogue Handler */
+
+
+class CAH { // Character Animations Handler
     
     static play(char, animation, pose, pause) {
         // play animation
@@ -38,7 +41,7 @@ class CA {
 }
 
 
-class DH extends Initable {
+class DH extends Initable { // Dialogue Handler
     
     static #current = {};
     static #cursor = {};
@@ -74,8 +77,8 @@ class DH extends Initable {
                 return this.#readDialogue(charName);
             } else if (this.#page < 0) {
                 const action = [
-                    () => CA.patpat(char),
-                    () => CA.wagwag(char)
+                    () => CAH.patpat(char),
+                    () => CAH.wagwag(char)
                 ].at(~this.#page);
                 if (action != null) { action() }
                 this.#page = null;
@@ -97,15 +100,15 @@ class DH extends Initable {
         
         /**
         before?.forEach(({ id, pose, animation }) => {
-            CA.play(id, animation, pose);
+            CAH.play(id, animation, pose);
         });
         /**/
         
         replicas?.forEach(async ({ id, text, pose, animation, pause }, i) => {
             AH.holdUntill(30, () => this.#clicked === i, () => {
                 const char = document.getElementById(id);
-                CA.blink(id);
-                // CA.play(id, animation, pose, pause);
+                CAH.blink(id);
+                // CAH.play(id, animation, pose, pause);
                 // await animation end, duration is pause ?? .4s
                 SB.hit();
                 new SB(char, text, pose);

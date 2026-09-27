@@ -109,7 +109,7 @@
     outline: calc(var(--cho-size) * 0.02) solid hsl( from var(--cur-color2) calc(h + 180) s l );
 }
 
-.chip-border {
+#chip-border {
     display: block;
     position: absolute;
     inset: 0;
@@ -117,7 +117,7 @@
     height: auto;
 }
 
-.chip-border > circle {
+#chip-border > circle {
     fill: none;
     
     stroke: hsl( from var(--cur-color3) calc(h + 180) s l );
@@ -134,7 +134,7 @@
         stroke-width 0.3s ease-out;
 }
 
-.chip-icon {
+#chip-icon {
     margin: 10%;
     width: 80%;
     height: auto;
@@ -149,6 +149,24 @@
 
 #choice.active > #chip {
     color: hsl( from var(--cur-color2) calc(h + 180) calc(s * 0.7) calc(l * 1.5) );
+}
+
+.cho-chain-seg, .cho-chain-ghost {
+    --seg-size: calc(var(--cho-size) * 0.25);
+    --seg-bias: calc((var(--cho-size) - var(--seg-size)) / 2);
+    display: grid;
+    place-content: center;
+    position: absolute;
+    z-index: 2019;
+    left: var(--seg-bias);
+    top: var(--seg-bias);
+    width: var(--seg-size);
+    height: var(--seg-size);
+    border-radius: var(--seg-size);
+}
+
+.cho-chain-seg > .cho-chain-seg, .cho-chain-ghost {
+    background: var(--cur-color);
 }
 
 
@@ -171,8 +189,9 @@
     transition: bottom 0.4s;
 }
 
-.cho-field {
-    fill: transparent;
+
+.cho-field.active {
+    fill: white;
 }
 
 .cho-divider {
@@ -203,4 +222,3 @@
         transparent
     );
 }
-

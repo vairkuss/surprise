@@ -15,24 +15,21 @@ class SVGL extends Initable { // Scalable Vector Graphics Loader
     
     static async init() {
         super.init(() => {
-            let strings = null;
-            /**
-            fetch("http://localhost:7148/get/icons") // { iconName: iconStringData }
-            .then(async res => strings = await res.json());
-            //*/
-            AH.holdUntill(30, () => strings != null, () => {
-                this.#iconsStorage = Object.entries(strings).reduce((storage, [key, value]) => {
-                    storage[key] = new SVGE([], { fromString: value });
+            fetch("http://localhost:7148/get/icons")
+            .then(res => res.json())
+            .then(strings => {
+                this.#iconsStorage = Object.keys(strings).reduce((storage, key) => {
+                    const donorTree = new DOMParser.parseFromString(strings[key], "image/svg+xml");
+                    const donor = donorTree.querySelector(":root");
+                    storage[key] = new SVGE([], { parse: donor });
                     return storage;
                 }, {});
             });
         });
     }
     
-    static getIcon(iconName) {
-        return this.#iconsStorage[iconName];
-    }
+    static getIcon(iconName) { return this.#iconsStorage[iconName] }
 }
 
 
-SVGL.init();
+//SVGL.init();

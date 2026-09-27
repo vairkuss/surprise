@@ -14,5 +14,12 @@
         <stop offset="75%" stop-color="hsl(from var(--cur-color) h calc(s * 0.05) calc(l * 0.7))" />
         <stop offset="100%" stop-color="hsl(from var(--cur-color) calc(h - 5) calc(s * 0.1) calc(l * 0.55))" />
     </linearGradient>
+    <radialGradient id="cho-wheel-grad" cx="50%" cy="93.75%" r="93.75%">
+        <stop offset="0%" stop-color="hsl(from var(--cur-color) h s l / 0)" />
+        <stop offset="25%" stop-color="hsl(from var(--cur-color) h s l / 0.05)" />
+        <stop offset="50%" stop-color="hsl(from var(--cur-color) h s l) / 0.2)" />
+        <stop offset="75%" stop-color="hsl(from var(--cur-color) h s l) / 0.05)" />
+        <stop offset="100%" stop-color="hsl(from var(--cur-color) h s l) / 0)" />
+    </radialGradient>
 </defs>
 </svg>

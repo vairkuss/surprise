@@ -13,6 +13,10 @@
     bottom: calc(-1 * var(--cho-size));
 }
 
+.transparent {
+    filter: opacity(0%);
+}
+
 
 .active * {
     /*
