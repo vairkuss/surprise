@@ -135,7 +135,9 @@
 }
 
 #chip-icon {
-    margin: 10%;
+    position: absolute;
+    place-content: center;
+    inset: 10%;
     width: 80%;
     height: auto;
     fill: currentColor;

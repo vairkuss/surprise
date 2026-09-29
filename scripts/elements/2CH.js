@@ -350,7 +350,7 @@ class CH extends Initable { // Choice Handler
                 this.cc.chip.style.top = e.screenY - this.cc.dp.y + "px";
                 this.cc.updateChain();
                 const field = document.elementsFromPoint(e.clientX, e.clientY).find(el => el.matches(".cho-field"));
-                const id = field != null ? parseInt(field.href.slice(7, field.href.length - 1)) : undefined; /////////
+                const id = field != null ? parseInt(field.getAttribute("href").slice(3)) : undefined;
                 AH.holdUntill(30, () => this.cm.wheel.fields != null, () => {
                     const cws = this.cm.wheel.fields[id];
                     Object.values(this.cm.wheel.fields).forEach(obj => obj.deactivate());
@@ -367,11 +367,11 @@ class CH extends Initable { // Choice Handler
                 this.cm.hide();
                 this.cc.removeClass("active");
                 this.cc.dp = null;
-                const rect = this.cc.base.getBoundingClientRect();
-                const id = document.elementsFromPoint(e.clientX, e.clientY).find(el => el.matches(".cho-field"))?.id;
-                if (id != null) {
-                    const fired = this.cm.wheel.fields[parseInt(id.slice(2))];
-                    this.chosen = fired.value;
+                const fired = document.elementsFromPoint(e.clientX, e.clientY).find(el => el.matches(".cho-field"));
+                if (fired != null) {
+                    const id = parseInt(fired.getAttribute("href").slice(3));
+                    const value = this.cm.wheel.fields[id].value;
+                    this.chosen = value;
                 }
                 else { this.cc.retrieve() }
                 AH.delay(.6, () => {

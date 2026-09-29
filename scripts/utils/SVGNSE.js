@@ -37,7 +37,7 @@ class SVGNSE { // Scalable Vector Graphics Name Space Element
 
 class SVGUE extends SVGNSE { // Scalable Vector Graphics Use Element
     constructor(href, options) {
-        super("path", options);
+        super("use", options);
         this.setAttribute("href", href);
     }
 }
@@ -121,9 +121,8 @@ class SVGE extends SVGNSE { // Scalable Vector Graphics Element
             });
         }
         AH.holdUntill(30, () => el.id != null, () => {
-            const use = new SVGNSE("use", { cn: el.getAttribute("class") });
-            use.setAttribute("href", `url(#${el.id})`);
-            //use.setAttribute("style", "filter: opacity(0%)");
+            const use = new SVGUE(`#${el.id}`, { cn: el.getAttribute("class") });
+            use.setAttribute("style", "filter: opacity(0%)");
             use.appendTo(this.el);
             this.mask.appendChild(el.el ?? el);
         });
