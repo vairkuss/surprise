@@ -371,7 +371,7 @@ class CH extends Initable { // Choice Handler
             document.body.appendChild(this.cc.base);
             
             this.cc.chip.addEventListener("pointerdown", e => {
-                if (this.chosen !== undefined && !SB.bubblesActive) { return }
+                if (this.chosen !== undefined && !SB.bubblesActive || this.cc.chip.className.includes("hidden")) { return }
                 e.preventDefault();
                 const chipStyle = getComputedStyle(this.cc.chip);
                 const x = parseFloat(chipStyle.left);
@@ -412,7 +412,7 @@ class CH extends Initable { // Choice Handler
                     this.chosen = cws.value;
                 }
                 else { this.cc.retrieve() }
-                AH.delay(.6, () => {
+                AH.delay(.4, () => {
                     this.cc.retrieve();
                     this.cc.setIcon(undefined);
                     document.querySelector(":root").style.setProperty("--cur-color", "var(--m-color)");

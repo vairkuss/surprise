@@ -40,7 +40,9 @@
     color: var(--cur-color-light);
     font-size: calc(var(--cho-size) * 0.4);
     
-    transition: all 0.4s ease-out, top 0.8s cubic-bezier(0.4, 0.2, 0.5, 2);
+    transition:
+        background 0.4s ease-out,
+        bottom 0.8s cubic-bezier(0.4, 0.2, 0.5, 2);
 }
 
 #choice::before {
@@ -54,8 +56,10 @@
     background: #000;
     filter: opacity(0%);
     
-    will-change: transform;
-    transition: all 0.4s ease-out;
+    will-change: transform, filter;
+    transition:
+        transform 0.4s ease-out,
+        filter 0.4s ease-out;
 }
 
 #choice::after {
@@ -70,7 +74,9 @@
     border: calc(var(--cho-size) * 0.15) solid hsl( from var(--cur-color-dark) h calc(s * 1.2) calc(l * 0.8) );
     border-radius: 100%;
     
-    transition: all 0.4s ease-out;
+    transition:
+        border-color 0.4s ease-out,
+        background 0.4s ease-out;
 }
 
 
@@ -130,7 +136,7 @@
     transform-origin: 50% 50%;
     animation: 4s rotate linear infinite;
     transition:
-        stroke 0.3s ease-out,
+        stroke 0.5s ease-out,
         stroke-width 0.5s ease-out;
 }
 
@@ -182,7 +188,8 @@
     width: 100vw;
     height: 100vh;
     
-    transition: all 0.3s ease-in;
+    transition:
+        filter 0.3s ease-in;
 }
 
 #cho-wheel {
@@ -223,4 +230,11 @@
         rgb(0 0 0 / 0.1),
         transparent
     );
+}
+
+
+#choice svg {
+    transition:
+        stroke 0.4s ease-out,
+        fill 0.4s ease-out;
 }

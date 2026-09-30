@@ -2,19 +2,33 @@
     transform: scale(20%) !important;
     filter: opacity(0%) !important;
     will-change: transform, filter;
+    transition:
+        transform 0.4s ease-in,
+        filter 0.4s ease-in;
+}
+
+.bubble.hidden .tail {
     transition: all 0.3s ease-in;
 }
 
-.hidden.bubble .tail {
-    transition: all 0.3s ease-in;
-}
-
-.hidden#choice {
+#choice.hidden {
     bottom: calc(-1 * var(--cho-size));
+    transition:
+        transform 0.4s ease-in,
+        filter 0.4s ease-in,
+        bottom 0.4s ease-in;
 }
 
-.transparent {
-    filter: opacity(0%);
+#cho-menu.hidden {
+    transition:
+        0s transform 0.4s ease-in,
+        filter 0.4s ease-in;
+}
+
+#cho-wheel.hidden {
+    bottom: calc(-1 * var(--cho-size) + var(--cho-size) * 0.4);
+    transition:
+        bottom 0.4s ease-in;
 }
 
 
@@ -31,13 +45,13 @@
     */
 }
 
-.active#choice::before {
+#choice.active::before {
     transform: scale(2000%);
     filter: opacity(60%);
 }
 
 
-.masked {
+*.masked:not(.active):not(.hidden) {
     filter: opacity(5%);
     transform: scale(80%);
 }
