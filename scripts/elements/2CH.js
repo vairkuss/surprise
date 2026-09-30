@@ -218,9 +218,13 @@ class CWS { // Choice Wheel Sector
 class CW { // Choice Wheel
 
     constructor(base, choices) {
-        const keys = this.#shuffleKeys(choices);
         this.#calculateSizes(base);
         this.#generateBody(base);
+        this.#generateNegativeMask();
+        this.#placePlaceholder();
+        this.#generateGradient("-inactive");
+        this.#generateGradient("");
+        const keys = this.#shuffleKeys(choices);
         this.#appendSectors(keys, choices);
         this.#appendLastDivider();
     }
@@ -233,13 +237,6 @@ class CW { // Choice Wheel
         this.sizes.outR = baseSize * 3;
     }
     
-    #shuffleKeys(choices) {
-        return Object.keys(choices).reduce((arr, key) => {
-            arr.splice((arr.length + 1) * Math.random(), 0, key);
-            return arr;
-        }, []);
-    }
-    
     #generateBody(base) {
         const bodyRect = document.body.getBoundingClientRect();
         this.body = new SVGE([this.sizes.outR * 2, this.sizes.outR + this.sizes.divW / 2], { id: "cho-wheel", fill: "url(#cho-wheel-grad)" });
@@ -249,10 +246,51 @@ class CW { // Choice Wheel
         );
     }
     
+    #generateNegativeMask() {
+        const negMask = new SVGNSE("mask", { id: `${this.body.mask.id}-neg`, parent: this.body.defs.el });
+        const children = () => [...this.body.mask.children];
+        AH.holdUntill(30, () => children().length, () => {
+            children().forEach(child => {
+                const use = new SVGUE(`#${child.getAttribute("id")}`, { parent: negMask.el });
+                use.setAttribute("style", "filter: invert(1)");
+            });
+        });
+    }
+    
+    #placePlaceholder() {
+        const rect = new SVGRE(["100%", "100%"]);
+        rect.setAttribute("mask", `url(#${this.body.mask.id}-neg)`);
+        rect.setAttribute("fill", "url(#cho-wheel-grad-inactive)");
+        this.body.el.insertBefore(rect.el, this.body.main.el);
+    }
+    
+    #generateGradient(name) {
+        const gradient = new SVGNSE("radialGradient", { id: `cho-wheel-grad${name}` });
+        gradient.setAttributes(
+            ["gradientUnits", "userSpaceOnUse"],
+            ["cx", this.sizes.outR],
+            ["cy", this.sizes.outR],
+            ["fr", this.sizes.inR],
+            ["r", this.sizes.outR]
+        );
+        const colors = () => document.getElementById(`cho-wheel-grad${name}-colors`);
+        AH.holdUntill(30, () => colors() != null, () => {
+            gradient.cloneChildren(colors());
+            gradient.appendTo(this.body.defs.el);
+        });
+    }
+    
+    #shuffleKeys(choices) {
+        return Object.keys(choices).reduce((arr, key) => {
+            arr.splice((arr.length + 1) * Math.random(), 0, key);
+            return arr;
+        }, []);
+    }
+    
     #appendSectors(keys, choices) {
         this.fields = keys.map((key, i, a) => {
             const cws = new CWS(key, choices[key], this.sizes, i, a);
-            AH.holdUntill(30, () => cws.field != null, () => this.body.addMask(cws.field.el));
+            AH.holdUntill(30, () => cws.field != null, () => this.body.addToMask(cws.field.el));
             AH.holdUntill(30, () => cws.divider != null, () => cws.divider.appendTo(this.body));
             return cws;
         });
@@ -370,8 +408,8 @@ class CH extends Initable { // Choice Handler
                 const fired = document.elementsFromPoint(e.clientX, e.clientY).find(el => el.matches(".cho-field"));
                 if (fired != null) {
                     const id = parseInt(fired.getAttribute("href").slice(3));
-                    const value = this.cm.wheel.fields[id].value;
-                    this.chosen = value;
+                    const cws = this.cm.wheel.fields[id];
+                    this.chosen = cws.value;
                 }
                 else { this.cc.retrieve() }
                 AH.delay(.6, () => {

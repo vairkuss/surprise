@@ -29,15 +29,15 @@
     border-radius: calc(var(--cho-size) * 40);
     background: radial-gradient(
         circle closest-corner at center,
-        var(--cur-color4),
-        var(--cur-color4),
-        var(--cur-color4),
-        var(--cur-color4),
+        var(--cur-color-dark),
+        var(--cur-color-dark),
+        var(--cur-color-dark),
+        var(--cur-color-dark),
         transparent,
         transparent
     );
     
-    color: var(--cur-color2);
+    color: var(--cur-color-light);
     font-size: calc(var(--cho-size) * 0.4);
     
     transition: all 0.4s ease-out, top 0.8s cubic-bezier(0.4, 0.2, 0.5, 2);
@@ -66,8 +66,8 @@
     position: absolute;
     inset: calc(var(--cho-size) * 0.2);
     
-    background: hsl( from var(--cur-color4) h calc(s * 2) calc(l * 0.4) );
-    border: calc(var(--cho-size) * 0.15) solid hsl( from var(--cur-color4) h calc(s * 1.2) calc(l * 0.8) );
+    background: hsl( from var(--cur-color-dark) h calc(s * 2) calc(l * 0.4) );
+    border: calc(var(--cho-size) * 0.15) solid hsl( from var(--cur-color-dark) h calc(s * 1.2) calc(l * 0.8) );
     border-radius: 100%;
     
     transition: all 0.4s ease-out;
@@ -104,9 +104,9 @@
     box-sizing: border-box;
     
     background: transparent;
-    border: calc(var(--cho-size) * 0.095) solid var(--cur-color3);
+    border: calc(var(--cho-size) * 0.095) solid var(--cur-color-dim);
     border-radius: 100%;
-    outline: calc(var(--cho-size) * 0.02) solid hsl( from var(--cur-color2) calc(h + 180) s l );
+    outline: calc(var(--cho-size) * 0.02) solid hsl( from var(--cur-color-light) calc(h + 180) s l );
 }
 
 #chip-border {
@@ -120,7 +120,7 @@
 #chip-border > circle {
     fill: none;
     
-    stroke: hsl( from var(--cur-color3) calc(h + 180) s l );
+    stroke: hsl( from var(--cur-color-dim) calc(h + 180) s l );
     stroke-width: 0;
     --r: 6;
     r: var(--r);
@@ -130,8 +130,8 @@
     transform-origin: 50% 50%;
     animation: 4s rotate linear infinite;
     transition:
-        stroke 0.5s ease-out,
-        stroke-width 0.3s ease-out;
+        stroke 0.3s ease-out,
+        stroke-width 0.5s ease-out;
 }
 
 #chip-icon {
@@ -143,14 +143,14 @@
     fill: currentColor;
 }
 
-#choice.active > #chip > .chip-border > circle {
-    stroke: hsl( from var(--cur-color2) calc(h + 180) calc(s * 0.7) calc(l * 1.5) );
+#choice.active > #chip > #chip-border > circle {
+    stroke: hsl( from var(--cur-color-light) calc(h + 180) calc(s * 0.7) calc(l * 1.5) );
     stroke-width: 1;
     transition: stroke-width 0.6s cubic-bezier(0.2, 0.6, 0.4, 2);
 }
 
 #choice.active > #chip {
-    color: hsl( from var(--cur-color2) calc(h + 180) calc(s * 0.7) calc(l * 1.5) );
+    color: hsl( from var(--cur-color-light) calc(h + 180) calc(s * 0.7) calc(l * 1.5) );
 }
 
 .cho-chain-seg, .cho-chain-ghost {
@@ -197,7 +197,7 @@
 }
 
 .cho-divider {
-    stroke: hsl( from var(--cur-color2) calc(h + 180) s l );
+    stroke: hsl( from var(--cur-color-light) calc(h + 180) s l );
     stroke-width: calc(var(--cho-size) / 5);
     stroke-linecap: round;
 }

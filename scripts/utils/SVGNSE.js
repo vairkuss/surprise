@@ -13,8 +13,9 @@ class SVGNSE { // Scalable Vector Graphics Name Space Element
     
     get id() { return this.el.getAttribute("id") }
     get className() { return this.el.getAttribute("class") }
-    get childElements() { return this.el.childElements }
+    get children() { return this.el.children }
     
+    setAttributes(...pairs) { pairs.forEach(pair => this.el.setAttribute(...pair)) }
     setAttribute(attr, value) { this.el.setAttribute(attr, value) }
     getAttribute(attr) { return this.el.getAttribute(attr) }
     
@@ -32,6 +33,10 @@ class SVGNSE { // Scalable Vector Graphics Name Space Element
     appendChild(el) { this.el.appendChild(el) }
     appendTo(el) { el.appendChild(this.el) }
     remove() { this.el.remove() }
+    
+    cloneChildren(el) {
+        [...el.children].forEach(childEl => this.el.appendChild(childEl.cloneNode(true)));
+    }
 }
 
 
@@ -96,19 +101,19 @@ class SVGE extends SVGNSE { // Scalable Vector Graphics Element
     }
     
     #genMask(w, h, { fill, parse: donor }) {
-        const defs = new SVGNSE("defs", { parent: this.el });
-        this.mask = new SVGNSE("mask", { id: SVGE.id, parent: defs.el });
-        const grad = new SVGRE([w, h], { parent: this.el });
-        grad.setAttribute("mask", `url(#${this.mask.id})`);
-        if (fill != null) { grad.setAttribute("fill", fill) }
+        this.defs = new SVGNSE("defs", { parent: this.el });
+        this.mask = new SVGNSE("mask", { id: `${SVGE.id}-mask`, parent: this.defs.el });
+        this.main = new SVGRE([w, h], { id: "main", parent: this.el });
+        this.main.setAttribute("mask", `url(#${this.mask.id})`);
+        if (fill != null) { this.main.setAttribute("fill", fill) }
         if (donor != null) { this.maskFromDonor(donor) }
     }
     
     maskFromDonor(el) {
-        el.querySelectorAll("*").forEach(shape => this.addMask(shape));
+        el.querySelectorAll("*").forEach(shape => this.addToMask(shape));
     }
     
-    addMask(el) {
+    addToMask(el) {
         if (el.id == null) {
             const bytes = new TextEncoder().encode(el.outerHTML);
             crypto.subtle.digest("SHA-256", bytes).then(hash => {
