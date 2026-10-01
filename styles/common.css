@@ -14,3 +14,9 @@
     will-change: height;
     transition: 1.4s height ease-out;
 }
+
+#content {
+    display: grid;
+    position: fixed;
+    width: 100
+}

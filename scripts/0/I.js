@@ -6,8 +6,6 @@ class Initable {
 
     static get initiated() { return this.__initiated }
 
-    
-
     static async init(func) {
 
         if (this.__initiated) { return }

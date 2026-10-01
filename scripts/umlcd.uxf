@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="15.1">
+  <zoom_level>7</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>189</x>
+      <y>322</y>
+      <w>168</w>
+      <h>49</h>
+    </coordinates>
+    <panel_attributes>Initable
+--
+_# initiated: bool = false {isReadOnly}_
+--
+_+ init(func: Callable[Any, Any])_
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>14</x>
+      <y>427</y>
+      <w>448</w>
+      <h>133</h>
+    </coordinates>
+    <panel_attributes>AsyncFunction
+--
+--
+_+ delay(time: Number, callback: Callable[Any, Any]): Promise_
+_+ holdUntill(frequency: Number, statement: Callable[Any, Any], callback: Callable[Any, Any]): Promise_
+_+ holdUntillClick(frequency: Number, callback: Callable[Any, Any]): Promise_
+_+ repeatOnClicksUntill(frequency: Number, statement: Callable[Any, Any], callback: Callable[Any, Any]): Promise_</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>
