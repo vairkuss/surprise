@@ -1,15 +1,4 @@
-const xmlns = "http://www.w3.org/2000/svg";
-
-class Initable {
-    static __initialised = 0;
-    static get initiated() { return this.__initialised }
-    
-    static async init(func) {
-        if (this.__initialised) { return }
-        func();
-        this.__initialised = 1;
-    }
-}
+/* Page Manager */
 
 
 class PM extends Initable {
