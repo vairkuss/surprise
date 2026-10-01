@@ -1,37 +1,22 @@
 <!DOCTYPE html>
-<html lang=ru>
+<html lang="ru">
 <head>
-  <link rel=stylesheet href=styles/index.css>
+  <link rel="stylesheet" href="styles/index.css">
   <title>INFILAXY</title>
 </head>
 
 <body>
-  <div id=cover style="
-position: fixed;
-z-index: 100;
-background:
-    linear-gradient(
-        to bottom,
-        black 40%,
-        transparent 100%
-    );
-top: 0;
-left: 0;
-width: 100vw;
-height: 250vh;
-will-change: height;
-transition: 1.4s height ease-out;
-"></div>
+  <div id="cover"></div>
 
-  <div class="btn block" href=/preview>
-    <div class="load-svg icon" icon=arrow></div>
+  <div class="btn block" onclick="location.replace('/preview')">
+    <div class="load-svg icon" id="arrow"></div>
   </div>
 
-  <img id=infi alt=tiger class=character>
-  <img id=virko alt=deer class=character>
+  <div id="infi" class="character"></div>
+  <div id="virko" class="character"></div>
   
-  <div id=scripts style=display:none>
-      <script src=scripts/init.js id=init></script>
+  <div id="scripts">
+      <script src="scripts/init.js" id="init"></script>
   </div>
 </body>
 </html>
