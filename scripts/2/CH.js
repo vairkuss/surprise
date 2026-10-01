@@ -1,3 +1,5 @@
+/* AF DECC */
+/* SVGNSE SB! */
 /* Choice Handler */
 
 class CCC { // Choice Chip Chain
@@ -371,7 +373,7 @@ class CH extends Initable { // Choice Handler
             document.body.appendChild(this.cc.base);
             
             this.cc.chip.addEventListener("pointerdown", e => {
-                if (this.chosen !== undefined && !SB.bubblesActive || this.cc.chip.className.includes("hidden")) { return }
+                if (this.chosen !== undefined && !SB.bubblesActive || this.cc.chip.className.includes("hidden")) { return } // переделать в методы класса и вызывать в DH -> PM -> init
                 e.preventDefault();
                 const chipStyle = getComputedStyle(this.cc.chip);
                 const x = parseFloat(chipStyle.left);
