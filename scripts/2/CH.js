@@ -349,7 +349,7 @@ class CM { // Choice Menu
 }
 
 
-class CH extends Initable { // Choice Handler
+class CH extends I { // Choice Handler <-- make undependant
     
     static chosen = undefined;
     static setChoice(choices) {

@@ -1,5 +1,11 @@
-class SVGL extends Initable { // Scalable Vector Graphics Loader
+/* I */
+/* SVGNSE */
+/* Scalable Vector Graphics Loader */
+
+class SVGL extends I { // Scalable Vector Graphics Loader
     static #iconsStorage = null;
+    static #loaded = 0;
+    static get loaded() { return this.#loaded }
     
     static async init() {
         super.init(() => {
@@ -12,6 +18,7 @@ class SVGL extends Initable { // Scalable Vector Graphics Loader
                     storage[key] = new SVGE([], { parse: donor });
                     return storage;
                 }, {});
+                this.#loaded = 1;
             });
         });
     }
@@ -20,4 +27,4 @@ class SVGL extends Initable { // Scalable Vector Graphics Loader
 }
 
 
-//SVGL.init();
+SVGL.init();

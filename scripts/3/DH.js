@@ -1,7 +1,9 @@
+/* I AF */
+/* --- */
+/* AH SB CH */
 /* Dialogue Handler */
 
-
-class DH extends Initable { // Dialogue Handler
+class DH { // Dialogue Handler
     
     static #current = {};
     static #cursor = {};
@@ -40,8 +42,8 @@ class DH extends Initable { // Dialogue Handler
                 return this.#readDialogue(charName);
             } else if (this.#page < 0) {
                 const action = [
-                    () => CAF.patpat(char),
-                    () => CAF.wagwag(char)
+                    () => AH.patpat(char),
+                    () => AH.wagwag(char)
                 ].at(~this.#page);
                 if (action != null) { action() }
                 this.#page = null;
@@ -62,14 +64,14 @@ class DH extends Initable { // Dialogue Handler
         this.#clicked = 0;
         
         before?.forEach(async ({ id, animation, pose, pause }) => {
-            CAF.play(id, animation, pose, pause);
+            AH.play(id, animation, pose, pause);
         });
         
         replicas?.forEach(async ({ id, text, animation, pose, pause }, i) => {
             AF.holdUntill(30, () => this.#clicked === i, () => {
                 const char = document.getElementById(id);
-                CAF.blink(id);
-                CAF.play(id, animation, pose, pause).then(() => SB.hit());
+                AH.blink(id);
+                AH.play(id, animation, pose, pause).then(() => SB.hit());
                 new SB(char, text, pose);
             });
         });
