@@ -1,166 +1,99 @@
-/* Page Manager */
+/* I */
+/* SVGL */
+/* Common Meta Loader */
 
-
-class PM extends Initable {
+class CML extends I { // Page Constructor
     
     static #globalVariables = {};
     static get globalVariables() { return this.#globalVariables }
     static #lastClick = 0;
     static #dtl = 500; //double tap latency
     
-    static async #loadGlobalVariables() {
-        this.#globalVariables = await fetch("http://localhost:7148/get/variables")
-        .then(async response => await response.json());
-        this.updateColor(this.globalVariables.i);
-    }
-    
-    static async updateColor(id) {
-        fetch(`http://localhost:7148/get/mcolor?c=${id}`)
-        .then(async response => {
+    static updateColor(id) {
+        fetch(`http://localhost:7148/get/mcolor?id=${id}`)
+        .then(async res => {
             const root = document.querySelector(":root");
-            root.style.setProperty('--m-color', await response.text());
+            root.style.setProperty('--m-color', await res.text());
         });
     }
     
+    static #addStyles(styles) {
+        const head = document.querySelector("head");
+        styles.forEach(bunch => {
+            const link = document.createElement("link");
+            link.rel = "stylesheet";
+            link.href = `styles/common/${ctl}`
+            head.appendChild(link);
+        }
+    }
     
-    static async #addMeta() {
-        // STYLES
-        const headElement = document.querySelector("head");
-        const commonStyles = await fetch("http://localhost:7148/get/common_styles")
-        .then(async response => await response.json());
-        headElement.insertAdjacentHTML(
-            "beforeend",
-            commonStyles
-                .map(ctl => `<link rel="stylesheet" href="../styles/common/${ctl}" />`)
-                .concat([
-                    '<meta charset="UTF-8"/>',
-                    '<link rel="shortcut icon" href="../res/icons/rune.svg" type="image/svg+xml" sizes="any">',
-                    '<link rel="manifest" href="../res/databases/manifest.json">'
-                ])
-                .join("")
-        );
-        
-        // CLASSES
+    static #addClasses(classes) {
         const scripts = document.querySelector("#scripts");
-        await fetch("http://localhost:7148/get/utils")
-        .then(async response => await response.json())
-        .then(utils => {
-            utils.forEach(url => {
+        classes.forEach((layer, i) => {
+            layer.forEach(filename => {
                 const script = document.createElement("script");
-                script.src = `../scripts/classes/${url}`;
+                script.src = `scripts/${i}/${filename}`;
                 scripts.appendChild(script);
             });
         });
-        await fetch("http://localhost:7148/get/elements")
-        .then(async response => await response.json())
-        .then(utils => {
-            utils.forEach(url => {
-                const script = document.createElement("script");
-                script.src = `../scripts/classes/${url}`;
-                scripts.appendChild(script);
-            });
+    }
+    
+    static #addGrads(grads) {
+        const tree = new DOMParser().parseFromString(grads, "image/svg+xml");
+        const gradsEl = tree.querySelector("svg");
+        document.querySelector("body").appendChild(gradsEl);
+    }
+
+    static #loadSVG(icons) {
+        SVGL.loadIcons(icons);
+        document.querySelectorAll(".load-svg").forEach(async icon => {
+            if (icon.textContent) {
+                const text = document.createElement("pre");
+                text.className = "text";
+                text.innerHTML = icon.innerHTML;
+                icon.innerHTML = text.outerHTML;
+            }
+            if (!icon.id) { return }
+            const svge = SVGL.icon[icon.id];
+            if (svge != null) { svge.appendTo(icon) }
+            else if (!icon.textContent) { icon.textContent = filename }
         });
-        
-        // GRADS
-        const grads = await fetch("http://localhost:7148/get/grads")
-        .then(async res => new DOMParser().parseFromString(await res.text(), "image/svg+xml"));
-        document.querySelector("body").appendChild(grads);
     }
-    
 
-    static async #developBlocks() {
-        [...document.querySelectorAll(".block")]
-            .filter(
-                blockElement => ![...blockElement.children].flatMap(
-                    blockChild => blockChild.className.split(" ")
-                ).includes("inner-ring")
-            )
-            .forEach(
-                blockElement => {
-                    blockElement.innerHTML = `
-<div class="inner-ring">
-    ${blockElement.innerHTML}
-</div>
-`;
-                }
-            );
-        if (
-            ![...document.querySelectorAll(".block")].every(
-                blockElement => [...blockElement.children].some(
-                    blockChild => blockChild.className === "inner-ring"
-                )
-            )
-        ) { this.#developBlocks() }
+    static #developBlocks() {
+        const selector = ".block:not(:has(.inner-ring)):not(:has(.block:not(:has(.inner-ring))))";
+        const ringlessBlocks = () => [...document.querySelectorAll(selector)];
+        ringlessBlocks().forEach(block => {
+            const ring = document.createElement("div");
+            ring.className = "inner-ring";
+            ring.innerHTML = block.innerHTML;
+            block.innreHTML = ring.outerHTML;
+        });
+        if (ringlessBlocks().length) { this.#developBlocks() }
     }
-    
 
-    static async #loadSVG() {
-        document.querySelectorAll(".icon").forEach(
-            async iconElement => {
-                if (iconElement.textContent) {
-                    iconElement.innerHTML = `<div class=text>${iconElement.textContent}</div>`;
-                }
-                const filename = iconElement.getAttribute("icon");
-                if (filename == null) { return }
-                const file = await fetch(`../res/icons/${filename}.svg`)
-                .then(async response => await response.text());
-                    
-                try {
-                    if (file === "Not Found") {
-                        throw new Error(`File not found: "${url}"`);
-                    }
-                    iconElement.innerHTML = file;
-                } catch (e) {
-                    
-                    console.error(e);
-                    iconElement.textContent = iconElement.textContent
-                        ? iconElement.textContent
-                        : filename;
-                }
-            }
-        );
-    }
-    
-    
-    static async #breakLines() {
-        document.querySelectorAll(".text").forEach(
-            async textElement => {
-                let text = textElement.textContent.split(" ");
-                const maxWidth = window.getComputedStyle(textElement.parentElement).width;
-                console.log(textElement.textContent, maxWidth);
-                let string = [];
-                
-            }
-        )
-    }
-    
-
-    static async init() {
+    static init() {
         super.init(() => {
-            this.#loadGlobalVariables();
-            this.#addMeta();
-            this.#developBlocks();
-            this.#loadSVG()
-            /*.then(() => this.#breakLines())*/;
-            document.querySelector("html").setAttribute("style", "")
-            document.querySelector("#cover")?.style.setProperty("height", "0");
-            document.addEventListener("click", e => {
-                const now = Date.now();
-                if (now - this.#lastClick < this.#dtl) { e.preventDefault() }
-                this.#lastClick = now;
+            fetch("http://localhost:7148/get/common_meta")
+            .then(res => res.json())
+            .then(({ gVars, styles, classes, grads, icons }) => {
+                this.#globalVariables = gVars;
+                this.updateColor(gVars.i);
+                this.#addStyles(styles);
+                this.#addClasses(classes);
+                this.#addGrads(grads);
+                this.#loadSVG(icons);
+                this.#developBlocks();
+                document.querySelector("#cover")?.style.setProperty("height", "0");
+                document.addEventListener("click", e => {
+                    const now = Date.now();
+                    if (now - this.#lastClick < this.#dtl) { e.preventDefault() }
+                    this.#lastClick = now;
+                });
             });
         });
     }
 }
 
 
-/**/
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
-        //*/
-        PM.init()
-        /**/
-    }
-);
-//*/
+document.addEventListener("DOMContentLoaded", () => CML.init());

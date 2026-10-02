@@ -1,4 +1,3 @@
-/* AF */
 /* Scalable Vector Graphics NameSpace Element */
 
 class SVGNSE { // Scalable Vector Graphics NameSpace Element
@@ -113,26 +112,14 @@ class SVGE extends SVGNSE { // Scalable Vector Graphics Element
     }
     
     maskFromDonor(el) {
-        el.querySelectorAll("*").forEach(shape => this.addToMask(shape));
+        [...el.childNodes].forEach(shape => this.addToMask(shape));
     }
     
     addToMask(el) {
-        if (el.id == null) {
-            const bytes = new TextEncoder().encode(el.outerHTML);
-            crypto.subtle.digest("SHA-256", bytes).then(hash => {
-                const hashBytes = new Uint8Array(hash);
-                const sum = [...hashBytes].reduce((sum, add) => sum + add, 0);
-                const randArr = times => [...Array(times)].map(() => Math.random() * sum);
-                const randVal = times => Math.trunc(randArr(times).reduce((sum, add) => sum + add, 0) / times);
-                const id = hashBytes.toHex() + randVal(825);
-                el.setAttribute("id", `id${id}`);
-            });
-        }
-        AF.holdUntill(30, () => el.id != null, () => {
-            const use = new SVGUE(`#${el.id}`, { cn: el.getAttribute("class") });
-            use.setAttribute("style", "filter: opacity(0%)");
-            use.appendTo(this.el);
-            this.mask.appendChild(el.el ?? el);
-        });
+        const id = el.getAttribute("id");
+        const use = new SVGUE(`#${id}`, { cn: el.getAttribute("class") });
+        use.setAttribute("style", "filter: opacity(0)");
+        use.appendTo(this.el);
+        this.mask.appendChild(el.el ?? el);
     }
 }

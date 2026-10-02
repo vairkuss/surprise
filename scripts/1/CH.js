@@ -1,5 +1,4 @@
-/* AF DECC */
-/* SVGNSE SB! */
+/* AF DECC SVGNSE */
 /* Choice Handler */
 
 class CCC { // Choice Chip Chain
@@ -220,10 +219,10 @@ class CWS { // Choice Wheel Sector
 class CW { // Choice Wheel
 
     constructor(base, choices) {
-        this.#calculateSizes(base);
-        this.#generateBody(base);
-        this.#generateNegativeMask();
-        this.#placePlaceholder();
+        this.#calcSizes(base);
+        this.#genBody(base);
+        this.#genNegMask();
+        this.#placeInactiveGrad();
         this.#generateGradient("-inactive");
         this.#generateGradient("");
         const keys = this.#shuffleKeys(choices);
@@ -231,7 +230,7 @@ class CW { // Choice Wheel
         this.#appendLastDivider();
     }
     
-    #calculateSizes(base) {
+    #calcSizes(base) {
         const baseSize = parseFloat(getComputedStyle(base).height);
         this.sizes = {};
         this.sizes.divW = baseSize / 5;
@@ -239,7 +238,7 @@ class CW { // Choice Wheel
         this.sizes.outR = baseSize * 3;
     }
     
-    #generateBody(base) {
+    #genBody(base) {
         const bodyRect = document.body.getBoundingClientRect();
         this.body = new SVGE([this.sizes.outR * 2, this.sizes.outR + this.sizes.divW / 2], { id: "cho-wheel", fill: "url(#cho-wheel-grad)" });
         this.body.setAttribute("style",
@@ -248,22 +247,21 @@ class CW { // Choice Wheel
         );
     }
     
-    #generateNegativeMask() {
+    #genNegMask() {
         const negMask = new SVGNSE("mask", { id: `${this.body.mask.id}-neg`, parent: this.body.defs.el });
         const children = () => [...this.body.mask.children];
         AF.holdUntill(30, () => children().length, () => {
             children().forEach(child => {
-                const use = new SVGUE(`#${child.getAttribute("id")}`, { parent: negMask.el });
+                const use = new SVGUE(child.getAttribute("href"), { parent: negMask.el });
                 use.setAttribute("style", "filter: invert(1)");
             });
         });
     }
     
-    #placePlaceholder() {
-        const rect = new SVGRE(["100%", "100%"]);
+    #placeInactiveGrad() {
+        const rect = new SVGRE(["100%", "100%"], { parent: this.body });
         rect.setAttribute("mask", `url(#${this.body.mask.id}-neg)`);
         rect.setAttribute("fill", "url(#cho-wheel-grad-inactive)");
-        this.body.el.insertBefore(rect.el, this.body.main.el);
     }
     
     #generateGradient(name) {
@@ -349,9 +347,11 @@ class CM { // Choice Menu
 }
 
 
-class CH extends I { // Choice Handler <-- make undependant
+class CH { // Choice Handler
     
+    static cc = new CC();
     static chosen = undefined;
+    
     static setChoice(choices) {
         if (choices == null) {
             this.chosen = null;
@@ -366,69 +366,4 @@ class CH extends I { // Choice Handler <-- make undependant
             });
         }
     }
-    
-    static init() {
-        super.init(() => {
-            this.cc = new CC();
-            document.body.appendChild(this.cc.base);
-            
-            this.cc.chip.addEventListener("pointerdown", e => {
-                if (this.chosen !== undefined && !SB.bubblesActive || this.cc.chip.className.includes("hidden")) { return } // переделать в методы класса и вызывать в DH -> PM -> init
-                e.preventDefault();
-                const chipStyle = getComputedStyle(this.cc.chip);
-                const x = parseFloat(chipStyle.left);
-                const y = parseFloat(chipStyle.top);
-                this.cc.dp = { x: e.screenX - x, y: e.screenY - y }
-                this.cc.addClass("active");
-                this.cm.show();
-            }, true);
-            
-            document.body.addEventListener("pointermove", e => {
-                if (!this.cc.active) { return }
-                e.preventDefault();
-                this.cc.chip.style.left = e.screenX - this.cc.dp.x + "px";
-                this.cc.chip.style.top = e.screenY - this.cc.dp.y + "px";
-                this.cc.updateChain();
-                const field = document.elementsFromPoint(e.clientX, e.clientY).find(el => el.matches(".cho-field"));
-                const id = field != null ? parseInt(field.getAttribute("href").slice(3)) : undefined;
-                AF.holdUntill(30, () => this.cm.wheel.fields != null, () => {
-                    const cws = this.cm.wheel.fields[id];
-                    Object.values(this.cm.wheel.fields).forEach(obj => obj.deactivate());
-                    cws?.activate();
-                    this.cm.text.textContent = cws?.text ?? "";
-                    this.cc.setIcon(cws?.icon);
-                    document.querySelector(":root").style.setProperty("--cur-color", cws?.color ?? "var(--m-color)");
-                });
-            });
-            
-            document.body.addEventListener("pointerup", e => {
-                if (!this.cc.active) { return }
-                e.preventDefault();
-                this.cm.hide();
-                this.cc.removeClass("active");
-                this.cc.dp = null;
-                const fired = document.elementsFromPoint(e.clientX, e.clientY).find(el => el.matches(".cho-field"));
-                if (fired != null) {
-                    const id = parseInt(fired.getAttribute("href").slice(3));
-                    const cws = this.cm.wheel.fields[id];
-                    this.chosen = cws.value;
-                }
-                else { this.cc.retrieve() }
-                AF.delay(.4, () => {
-                    this.cc.retrieve();
-                    this.cc.setIcon(undefined);
-                    document.querySelector(":root").style.setProperty("--cur-color", "var(--m-color)");
-                    if (this.chosen !== undefined) {
-                        this.cc.addClass("hidden");
-                        this.cm.menu.remove();
-                        this.chosen = undefined;
-                    }
-                });
-            });
-            
-        });
-    }
 }
-
-
-CH.init();

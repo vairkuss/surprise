@@ -1,3 +1,7 @@
+html {
+    background: #000;
+}
+
 #cover {
     position: fixed;
     z-index: 100;
