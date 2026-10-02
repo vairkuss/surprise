@@ -1,90 +1,4 @@
-class DF { // Draw Form
-
-    static NULL () {};
-    
-    static rect (ctx, tileSize, x, y, sizeX, sizeY, fill) {
-        return function () {
-            let args = [
-                (x + (1 - sizeX) / 2) * tileSize,
-                (y + (1 - sizeY) / 2) * tileSize,
-                sizeX * tileSize,
-                sizeY * tileSize
-            ];
-            if (fill) {ctx.fillRect(...args)} else {ctx.strokeRect(...args)}
-        }
-    }
-    
-    static square (ctx, tileSize, x, y, size, fill) {
-        return this.rect(ctx, tileSize, x, y, size, size, fill);
-    }
-    
-    static tile (ctx, tileSize, x, y, fill) {
-        return this.square(ctx, tileSize, x, y, 1, fill);
-    }
-    
-    static circle (ctx, tileSize, x, y, d, fill) {
-        return function () {
-            ctx.beginPath();
-            ctx.arc(
-                (x + 0.5) * tileSize,
-                (y + 0.5) * tileSize,
-                d / 2 * tileSize,
-                0,
-                Math.PI * 2
-            );
-            if (fill) {ctx.fill()} else {ctx.stroke()}
-        }
-    }
-    
-    static side (ctx, tileSize, x, y, w, direction) {
-        return function () {
-            let corners = [...Array(4)].map(
-                (_, i) => [x, y].map(
-                    (v, j) => Math.trunc((i - j + 1) / 2) % 2
-                        ? (v + 1) * tileSize //- w / 2
-                        : v * tileSize //+ w / 2
-                )
-            );
-            ctx.beginPath();
-            ctx.moveTo(...corners[direction]);
-            ctx.lineTo(...corners[(direction + 1) % 4]);
-            ctx.stroke();
-            //console.log(`[${corners[direction]}], [${corners[(direction + 1) % 4]}]`);
-        }
-    }
-}
-
-
-class Tile {
-    
-    constructor (x, y, color="#000", borderWidth=0, borderColor=null, fill=1) {
-        this.x = x;
-        this.y = y;
-        this.cords = () => [this.x, this.y];
-        this.area = (gridSize) => [...Array(3 * 3)].map((v, i) => [
-            this.x - (i % 3) + 1,
-            this.y - Math.trunc(i / 3) + 1
-        ])
-        this.color = color;
-        this.borderWidth = borderWidth;
-        this.borderColor = borderColor === null ? color : borderColor;
-        this.fill = fill;
-    }
-    
-    draw(ctx, fillFunction, strokeFunction, color=null, borderColor=null, borderWidth=null) {
-        if (this.fill) {
-            ctx.fillStyle = color === null ? this.color : color;
-            fillFunction();
-        }
-        ctx.lineWidth = borderWidth === null ? this.borderWidth : borderWidth;
-        ctx.strokeStyle = borderColor === null ? this.borderColor : borderColor;
-        strokeFunction();
-        ctx.lineWidth = 0;
-    }
-}
-
-
-class DashPreviewTile extends Tile {
+class DPT extends T { // Dash Preview Tile
     
     constructor(x, y, danger) {
         let color = danger ? "#f00" : "#0ff";
@@ -107,7 +21,7 @@ class DashPreviewTile extends Tile {
 }
 
 
-class BorderTile extends Tile {
+class BT extends T { // Border Tile
     
     constructor(x, y) {
         super(x, y, "#fff", 4);
@@ -139,7 +53,7 @@ class BorderTile extends Tile {
 }
 
 
-class Apple extends Tile {
+class A extends T { // Apple
     
     constructor (x, y) {
         super(x, y, "#d53", 2, "#c32")
@@ -155,7 +69,7 @@ class Apple extends Tile {
 }
 
 
-class SnakeSegment extends Tile {
+class SS extends T { // Snake Segment
     
     constructor (x, y) {
         super(x, y, "#4a0");
@@ -171,7 +85,7 @@ class SnakeSegment extends Tile {
 }
 
 
-class SnakeHead extends Tile {
+class SH extends T { // Snake Head
     
     static dashLength = 3;
     
@@ -223,7 +137,7 @@ class SnakeHead extends Tile {
 }
 
 
-class Enemy extends Tile {
+class E extends T { // Enemy
     
     constructor (startX, startY, tickTiming, color="#b00", borderWidth=0, borderColor=null, fill=1) {
         super(startX, startY, color, borderWidth, borderColor, fill);
@@ -236,7 +150,7 @@ class Enemy extends Tile {
 }
 
 
-class StreamlinedEnemy extends Enemy {
+class SE extends E { // Streamlined Enemy
     
     constructor (startX, startY, tickTiming, direction, color="#60f") {
         super(startX, startY, tickTiming, color);
@@ -259,14 +173,14 @@ class StreamlinedEnemy extends Enemy {
 }
 
 
-class EnemySpawner {
+class ES { // Enemy Spawner
     static pawn (startX, startY, direction) {
         return new StreamlinedEnemy(startX, startY, 2/4, direction);
     }
 }
 
 
-class Board {
+class B { // Board
     
     static staminaElement = document.querySelector("#stamina");
     static staminaCooldown = 1.2;
@@ -606,4 +520,4 @@ class Board {
     }
 }
 
-Board.init();
+B.init();
