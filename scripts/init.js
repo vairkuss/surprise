@@ -2,7 +2,7 @@
 /* SVGL */
 /* Common Meta Loader */
 
-class CML extends I { // Page Constructor
+class CML extends I { // Common Meta Loader
     
     static #globalVariables = {};
     static get globalVariables() { return this.#globalVariables }
