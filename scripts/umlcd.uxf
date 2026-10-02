@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <diagram program="umlet" version="15.1">
-  <zoom_level>9</zoom_level>
+  <zoom_level>8</zoom_level>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>873</x>
+      <x>776</x>
       <y>0</y>
-      <w>198</w>
-      <h>63</h>
+      <w>176</w>
+      <h>56</h>
     </coordinates>
     <panel_attributes>Initable
 --
@@ -20,10 +20,10 @@ _+ init(func)_
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>81</x>
+      <x>72</x>
       <y>0</y>
-      <w>504</w>
-      <h>108</h>
+      <w>448</w>
+      <h>96</h>
     </coordinates>
     <panel_attributes>AsyncFunction
 --
@@ -39,10 +39,10 @@ _+ repeatUntill(interval, statement, func)_
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>612</x>
+      <x>544</x>
       <y>0</y>
-      <w>234</w>
-      <h>72</h>
+      <w>208</w>
+      <h>64</h>
     </coordinates>
     <panel_attributes>DirectionalElementCoordinatesCalculator
 --
@@ -55,10 +55,10 @@ _+ cords(rad, l, bias): Array&lt;Number&gt; [2]_
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>351</x>
-      <y>153</y>
-      <w>270</w>
-      <h>90</h>
+      <x>312</x>
+      <y>136</y>
+      <w>240</w>
+      <h>80</h>
     </coordinates>
     <panel_attributes>AnimationHandler
 --
@@ -73,10 +73,10 @@ _+ wagwag(char)_
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>18</x>
-      <y>747</y>
-      <w>234</w>
-      <h>63</h>
+      <x>16</x>
+      <y>664</y>
+      <w>208</w>
+      <h>56</h>
     </coordinates>
     <panel_attributes>SpeechBubbleTail
 --
@@ -90,9 +90,9 @@ _+ wagwag(char)_
     <id>UMLClass</id>
     <coordinates>
       <x>0</x>
-      <y>153</y>
-      <w>270</w>
-      <h>540</h>
+      <y>136</y>
+      <w>240</w>
+      <h>480</h>
     </coordinates>
     <panel_attributes>SpeechBubble
 --
@@ -137,10 +137,10 @@ _+ remove()_
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>126</x>
-      <y>684</y>
-      <w>27</w>
-      <h>81</h>
+      <x>112</x>
+      <y>608</y>
+      <w>24</w>
+      <h>72</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;70.0</additional_attributes>
@@ -148,10 +148,10 @@ _+ remove()_
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>477</x>
-      <y>99</y>
-      <w>27</w>
-      <h>72</h>
+      <x>424</x>
+      <y>88</y>
+      <w>24</w>
+      <h>64</h>
     </coordinates>
     <panel_attributes>lt=&lt;.</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;60.0</additional_attributes>
@@ -159,10 +159,10 @@ _+ remove()_
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>126</x>
-      <y>99</y>
-      <w>27</w>
-      <h>72</h>
+      <x>112</x>
+      <y>88</y>
+      <w>24</w>
+      <h>64</h>
     </coordinates>
     <panel_attributes>lt=&lt;.</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;60.0</additional_attributes>
@@ -170,10 +170,10 @@ _+ remove()_
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>891</x>
-      <y>369</y>
-      <w>189</w>
-      <h>99</h>
+      <x>896</x>
+      <y>456</y>
+      <w>112</w>
+      <h>96</h>
     </coordinates>
     <panel_attributes>&lt;&lt;data class&gt;&gt;
 SVGNSEOptions
@@ -188,10 +188,10 @@ SVGNSEOptions
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>558</x>
-      <y>369</y>
-      <w>279</w>
-      <h>162</h>
+      <x>552</x>
+      <y>368</y>
+      <w>248</w>
+      <h>288</h>
     </coordinates>
     <panel_attributes>SVGNSE
 --
@@ -200,22 +200,261 @@ SVGNSEOptions
 
 + id: String {readOnly}
 + className: String {readOnly}
-+ children
++ children: HTMLCollection {readOnly}
 --
 + SVGNSE(elName, options: SVGNSEOptions)
 
++ setAttributes(pairs)
++ setAttribute(attr, value)
++ getAttribute(attr): str
+
++ addClass(newCN)
++ removeClass(rmCN)
+
++ appendChild(el)
++ appendTo()
++ remove()
+
++ cloneChildren(el)
 </panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>828</x>
-      <y>387</y>
-      <w>81</w>
-      <h>27</h>
+      <x>792</x>
+      <y>496</y>
+      <w>120</w>
+      <h>24</h>
     </coordinates>
-    <panel_attributes>lt=&lt;-</panel_attributes>
-    <additional_attributes>70.0;10.0;10.0;10.0</additional_attributes>
+    <panel_attributes>lt=&lt;.</panel_attributes>
+    <additional_attributes>130.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1000</x>
+      <y>336</y>
+      <w>224</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>SVGRE
+--
++ el: SVGRectElement
+--
++ SVGRE(whxy: Array&lt;Number&gt;, options)
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>856</x>
+      <y>336</y>
+      <w>128</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>SVGUE
+--
++ el: SVGUseElement
+--
++ SVGUE(href, options)
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1048</x>
+      <y>624</y>
+      <w>128</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>SVGPE
+--
++ el: SVGPathElement
+--
++ SVGPE(d, options)
++ setPath(d)
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>816</x>
+      <y>624</y>
+      <w>216</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>SVGCE
+--
++ el: SVGCircleElement
+--
++ SVGCE(rxy: Array&lt;Number&gt;, options)
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>976</x>
+      <y>544</y>
+      <w>152</w>
+      <h>96</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;60.0;170.0;60.0;170.0;100.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>912</x>
+      <y>544</y>
+      <w>24</w>
+      <h>96</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;100.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>912</x>
+      <y>384</y>
+      <w>24</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.</panel_attributes>
+    <additional_attributes>10.0;90.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>976</x>
+      <y>384</y>
+      <w>152</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.</panel_attributes>
+    <additional_attributes>10.0;90.0;10.0;50.0;170.0;50.0;170.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>672</x>
+      <y>304</y>
+      <w>264</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;80.0;10.0;10.0;310.0;10.0;310.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>912</x>
+      <y>304</y>
+      <w>216</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>lt=-</panel_attributes>
+    <additional_attributes>10.0;10.0;250.0;10.0;250.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>664</x>
+      <y>648</y>
+      <w>272</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;90.0;320.0;90.0;320.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>912</x>
+      <y>688</y>
+      <w>216</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>lt=-</panel_attributes>
+    <additional_attributes>10.0;40.0;250.0;40.0;250.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1240</x>
+      <y>424</y>
+      <w>200</w>
+      <h>176</h>
+    </coordinates>
+    <panel_attributes>SVGE
+--
+_- coun: Number = 0_
+_+ id: String {readOnly}_
+
++ el: SVGSVGElement
++ defs: SVGNSE
++ mask: SVGNSE
++ main: SVGNSE
+--
++ SVGE(wh: Array&lt;Number&gt;, options)
+- genMask(w, h, options)
++ maskFromDoor(el)
++ addToMask(el)
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1104</x>
+      <y>304</y>
+      <w>256</w>
+      <h>136</h>
+    </coordinates>
+    <panel_attributes>lt=-</panel_attributes>
+    <additional_attributes>10.0;10.0;300.0;10.0;300.0;150.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1192</x>
+      <y>496</y>
+      <w>64</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.</panel_attributes>
+    <additional_attributes>10.0;10.0;60.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1048</x>
+      <y>472</y>
+      <w>152</w>
+      <h>64</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;data class&gt;&gt;
+SVGEOptions
+--
++ parse: Element | SVGNSE
++ fill: String
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1000</x>
+      <y>496</y>
+      <w>64</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;60.0;10.0</additional_attributes>
   </element>
 </diagram>
