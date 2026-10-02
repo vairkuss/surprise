@@ -3,9 +3,6 @@
 
 class SB {
     static pairs = {};
-    static get chars() {
-        return Object.keys(this.pairs);
-    }
     static get bubbles() {
         return Object.values(this.pairs);
     }
@@ -24,7 +21,7 @@ class SB {
         SB.pairs[char.id] = this;
         
         this.writing = 0;
-        if (text == null) { return this }
+        if (text == null) { return }
         this.lifes = [...document.body.querySelectorAll(".character")].length;
         
         this.bubble = document.createElement("div");
@@ -226,23 +223,15 @@ class SBT {
         const a = charMidX - faceMidX;
         const b = Math.max(charMidY - faceRect.bottom, 0);
         const c = Math.sqrt(a**2 + b**2);
-        
-        const xmlns = "http://www.w3.org/2000/svg";
-        this.svg = document.createElementNS(xmlns, "svg");
-        this.svg.setAttribute("xmlns", xmlns);
-        this.svg.setAttribute("width", w);
-        this.svg.setAttribute("height", b);
-        this.svg.setAttribute("viewBox", `0 0 ${w} ${b}`);
-        this.svg.setAttribute("class", "tail");
-        sb.bubble.appendChild(this.svg);
+
+        this.svg = new SVGE([w, b], { cn: "tail", parent: sb.bubble });
         
         const rad = Math.atan2(b, a);
         const direction = [Math.cos(rad), Math.sin(rad)];
         const [x, y] = direction.map(v => v * (c - r));
-        
-        const path = document.createElementNS(xmlns, "path");
-        path.setAttribute("d", `M${(w-r)/2} 0C${(w-r)/2} 0 ${w/2} 0 ${x+w/2} ${y}C${w/2} 0 ${(w+r)/2} 0 ${(w+r)/2} 0`);
-        this.svg.appendChild(path);
+
+        const d = `M${(w-r)/2} 0C${(w-r)/2} 0 ${w/2} 0 ${x+w/2} ${y}C${w/2} 0 ${(w+r)/2} 0 ${(w+r)/2} 0`;
+        const path = new SVGPE(d, { parent: this.svg.el });
         
         /**
         const createPoint = (x, y) => {

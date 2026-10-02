@@ -1,37 +1,221 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <diagram program="umlet" version="15.1">
-  <zoom_level>7</zoom_level>
+  <zoom_level>9</zoom_level>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>189</x>
-      <y>322</y>
-      <w>168</w>
-      <h>49</h>
+      <x>873</x>
+      <y>0</y>
+      <w>198</w>
+      <h>63</h>
     </coordinates>
     <panel_attributes>Initable
 --
-_# initiated: bool = false {isReadOnly}_
+_# initiated: bool = false {readOnly}_
 --
-_+ init(func: Callable[Any, Any])_
+_+ init(func)_
 </panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>14</x>
-      <y>427</y>
-      <w>448</w>
-      <h>133</h>
+      <x>81</x>
+      <y>0</y>
+      <w>504</w>
+      <h>108</h>
     </coordinates>
     <panel_attributes>AsyncFunction
 --
 --
-_+ delay(time: Number, callback: Callable[Any, Any]): Promise_
-_+ holdUntill(frequency: Number, statement: Callable[Any, Any], callback: Callable[Any, Any]): Promise_
-_+ holdUntillClick(frequency: Number, callback: Callable[Any, Any]): Promise_
-_+ repeatOnClicksUntill(frequency: Number, statement: Callable[Any, Any], callback: Callable[Any, Any]): Promise_</panel_attributes>
+_+ delay(time, callback): Promise_
+_+ holdUntill(frequency, statement, callback): Promise_
+_+ holdUntillClick(frequency, callback): Promise_
+_+ repeatOnClicksUntill(frequency, statement, checkBeforeClick, func, callback): Promise_
+_+ repeatUntill(interval, statement, func)_
+</panel_attributes>
     <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>612</x>
+      <y>0</y>
+      <w>234</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>DirectionalElementCoordinatesCalculator
+--
+--
+_+ direction(rad): Array&lt;Number&gt; [2]_
+_+ cords(rad, l, bias): Array&lt;Number&gt; [2]_
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>351</x>
+      <y>153</y>
+      <w>270</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>AnimationHandler
+--
+--
+_+ play(char, animation, pose, pause): Promise_
+_+ blink(char)_
+_+ patpat(char)_
+_+ wagwag(char)_
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>18</x>
+      <y>747</y>
+      <w>234</w>
+      <h>63</h>
+    </coordinates>
+    <panel_attributes>SpeechBubbleTail
+--
++ svg: SVGE
+--
++ SpeechBubbleTail(sb: SpeechBubble)
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>0</x>
+      <y>153</y>
+      <w>270</w>
+      <h>540</h>
+    </coordinates>
+    <panel_attributes>SpeechBubble
+--
+_+ pairs: Object&lt;String, SpeechBubble&gt;_
+_+ bubbles: Array&lt;SpeechBubble&gt; {readOnly}_
+_+ bubblesActive: bool {readOnly}_
+
++ writing: bool = 0
++ lifes: Number
+
++ bubble: HTMLDivElement
++ face: HTMLDivElement
++ tail = SpeechBubbleTail
+
++ vx: Number = 0
++ growCompX: Number
++ growCompY: Number
++ initialRect: DOMRect
+
++ x: Number
++ y: Number
++ translationX: Number
+
++ drawInterval: Number
++ collisionInterval: Number
+--
+_+ hit()_
+_+ remove()_
+
++ SpeechBubble(char, text, pose)
+
+- flyOut()
+- startDrawing()
+- startColliding()
+- setColisionInterval()
+- writeText(char, text, pose)
+
+- hit()
+- remove()</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>126</x>
+      <y>684</y>
+      <w>27</w>
+      <h>81</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;70.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>477</x>
+      <y>99</y>
+      <w>27</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;60.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>126</x>
+      <y>99</y>
+      <w>27</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;60.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>891</x>
+      <y>369</y>
+      <w>189</w>
+      <h>99</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;data class&gt;&gt;
+SVGNSEOptions
+--
++ id: String
++ cn: String
++ fromString: String
++ parent: Element
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>558</x>
+      <y>369</y>
+      <w>279</w>
+      <h>162</h>
+    </coordinates>
+    <panel_attributes>SVGNSE
+--
++ el: SVGElement
++ raw: String
+
++ id: String {readOnly}
++ className: String {readOnly}
++ children
+--
++ SVGNSE(elName, options: SVGNSEOptions)
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>828</x>
+      <y>387</y>
+      <w>81</w>
+      <h>27</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>70.0;10.0;10.0;10.0</additional_attributes>
   </element>
 </diagram>
