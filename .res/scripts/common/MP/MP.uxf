@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="15.1">
+  <zoom_level>8</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>776</x>
+      <y>0</y>
+      <w>176</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>Initable
+--
+_# initiated: bool = false {readOnly}_
+--
+_+ init(func)_
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>72</x>
+      <y>0</y>
+      <w>448</w>
+      <h>96</h>
+    </coordinates>
+    <panel_attributes>AsyncFunction
+--
+--
+_+ delay(time, callback): Promise_
+_+ holdUntill(frequency, statement, callback): Promise_
+_+ holdUntillClick(frequency, callback): Promise_
+_+ repeatOnClicksUntill(frequency, statement, checkBeforeClick, func, callback): Promise_
+_+ repeatUntill(interval, statement, func)_
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>544</x>
+      <y>0</y>
+      <w>208</w>
+      <h>64</h>
+    </coordinates>
+    <panel_attributes>DirectionalElementCoordinatesCalculator
+--
+--
+_+ direction(rad): Array&lt;Number&gt; [2]_
+_+ cords(rad, l, bias): Array&lt;Number&gt; [2]_
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>312</x>
+      <y>136</y>
+      <w>240</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>AnimationHandler
+--
+--
+_+ play(char, animation, pose, pause): Promise_
+_+ blink(char)_
+_+ patpat(char)_
+_+ wagwag(char)_
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>16</x>
+      <y>664</y>
+      <w>208</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>SpeechBubbleTail
+--
++ svg: SVGE
+--
++ SpeechBubbleTail(sb: SpeechBubble)
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>0</x>
+      <y>136</y>
+      <w>240</w>
+      <h>480</h>
+    </coordinates>
+    <panel_attributes>SpeechBubble
+--
+_+ pairs: Object&lt;String, SpeechBubble&gt;_
+_+ bubbles: Array&lt;SpeechBubble&gt; {readOnly}_
+_+ bubblesActive: bool {readOnly}_
+
++ writing: bool = 0
++ lifes: Number
+
++ bubble: HTMLDivElement
++ face: HTMLDivElement
++ tail = SpeechBubbleTail
+
++ vx: Number = 0
++ growCompX: Number
++ growCompY: Number
++ initialRect: DOMRect
+
++ x: Number
++ y: Number
++ translationX: Number
+
++ drawInterval: Number
++ collisionInterval: Number
+--
+_+ hit()_
+_+ remove()_
+
++ SpeechBubble(char, text, pose)
+
+- flyOut()
+- startDrawing()
+- startColliding()
+- setColisionInterval()
+- writeText(char, text, pose)
+
+- hit()
+- remove()</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>112</x>
+      <y>608</y>
+      <w>24</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;70.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>424</x>
+      <y>88</y>
+      <w>24</w>
+      <h>64</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;60.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>112</x>
+      <y>88</y>
+      <w>24</w>
+      <h>64</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;60.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>896</x>
+      <y>456</y>
+      <w>112</w>
+      <h>96</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;data class&gt;&gt;
+SVGNSEOptions
+--
++ id: String
++ cn: String
++ fromString: String
++ parent: Element
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>552</x>
+      <y>368</y>
+      <w>248</w>
+      <h>288</h>
+    </coordinates>
+    <panel_attributes>SVGNSE
+--
++ el: SVGElement
++ raw: String
+
++ id: String {readOnly}
++ className: String {readOnly}
++ children: HTMLCollection {readOnly}
+--
++ SVGNSE(elName, options: SVGNSEOptions)
+
++ setAttributes(pairs)
++ setAttribute(attr, value)
++ getAttribute(attr): str
+
++ addClass(newCN)
++ removeClass(rmCN)
+
++ appendChild(el)
++ appendTo()
++ remove()
+
++ cloneChildren(el)
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>792</x>
+      <y>496</y>
+      <w>120</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.</panel_attributes>
+    <additional_attributes>130.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1000</x>
+      <y>336</y>
+      <w>224</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>SVGRE
+--
++ el: SVGRectElement
+--
++ SVGRE(whxy: Array&lt;Number&gt;, options)
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>856</x>
+      <y>336</y>
+      <w>128</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>SVGUE
+--
++ el: SVGUseElement
+--
++ SVGUE(href, options)
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1048</x>
+      <y>624</y>
+      <w>128</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>SVGPE
+--
++ el: SVGPathElement
+--
++ SVGPE(d, options)
++ setPath(d)
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>816</x>
+      <y>624</y>
+      <w>216</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>SVGCE
+--
++ el: SVGCircleElement
+--
++ SVGCE(rxy: Array&lt;Number&gt;, options)
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>976</x>
+      <y>544</y>
+      <w>152</w>
+      <h>96</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;60.0;170.0;60.0;170.0;100.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>912</x>
+      <y>544</y>
+      <w>24</w>
+      <h>96</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;100.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>912</x>
+      <y>384</y>
+      <w>24</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.</panel_attributes>
+    <additional_attributes>10.0;90.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>976</x>
+      <y>384</y>
+      <w>152</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.</panel_attributes>
+    <additional_attributes>10.0;90.0;10.0;50.0;170.0;50.0;170.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>672</x>
+      <y>304</y>
+      <w>264</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;80.0;10.0;10.0;310.0;10.0;310.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>912</x>
+      <y>304</y>
+      <w>216</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>lt=-</panel_attributes>
+    <additional_attributes>10.0;10.0;250.0;10.0;250.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>664</x>
+      <y>648</y>
+      <w>272</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;90.0;320.0;90.0;320.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>912</x>
+      <y>688</y>
+      <w>216</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>lt=-</panel_attributes>
+    <additional_attributes>10.0;40.0;250.0;40.0;250.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1240</x>
+      <y>424</y>
+      <w>200</w>
+      <h>176</h>
+    </coordinates>
+    <panel_attributes>SVGE
+--
+_- coun: Number = 0_
+_+ id: String {readOnly}_
+
++ el: SVGSVGElement
++ defs: SVGNSE
++ mask: SVGNSE
++ main: SVGNSE
+--
++ SVGE(wh: Array&lt;Number&gt;, options)
+- genMask(w, h, options)
++ maskFromDoor(el)
++ addToMask(el)
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1104</x>
+      <y>304</y>
+      <w>256</w>
+      <h>136</h>
+    </coordinates>
+    <panel_attributes>lt=-</panel_attributes>
+    <additional_attributes>10.0;10.0;300.0;10.0;300.0;150.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1192</x>
+      <y>496</y>
+      <w>64</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.</panel_attributes>
+    <additional_attributes>10.0;10.0;60.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1048</x>
+      <y>472</y>
+      <w>152</w>
+      <h>64</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;data class&gt;&gt;
+SVGEOptions
+--
++ parse: Element | SVGNSE
++ fill: String
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1000</x>
+      <y>496</y>
+      <w>64</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;60.0;10.0</additional_attributes>
+  </element>
+</diagram>

@@ -1,0 +1,1 @@
+<div class="btn block" onclick="location.replace('preview')"><div class="load-svg icon" id="arrow"></div></div><div id="infi" class="character"></div>a<div id="virko" class="character"></div>

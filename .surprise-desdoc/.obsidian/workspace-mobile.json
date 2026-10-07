@@ -55,12 +55,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "ideas.md",
+                "file": "presentation/short-about.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "ideas"
+              "title": "short-about"
             }
           }
         ],
@@ -217,6 +217,7 @@
   },
   "active": "f8b71e55b579b87e",
   "lastOpenFiles": [
+    "ideas.md",
     "index.md",
     "web/characters/infi.md",
     "web/characters/virko.md",
@@ -241,7 +242,6 @@
     "chronology/stage1.md",
     "web/layout/navigation.md",
     "web/layout/main-page.md",
-    "ideas.md",
     "games/secret-arg.md"
   ]
 }
