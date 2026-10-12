@@ -1,0 +1,31 @@
+.middle, .top, .right, .bottom, .left {
+    position: fixed;
+}
+
+.top, .right, .bottom, .left {
+    --num: 3;
+    --pad: calc(var(--num) * min(1vw, 1vh));
+}
+
+.middle {
+    --rx: 0;
+    --ry: 0;
+    left: calc(50vw - var(--rx));
+    top: calc(50vh - var(--ry));
+}
+
+.top {
+    top: var(--pad);
+}
+
+.bottom {
+    bottom: var(--pad);
+}
+
+.left {
+    left: var(--pad);
+}
+
+.right {
+    right: var(--pad);
+}

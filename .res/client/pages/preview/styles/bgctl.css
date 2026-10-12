@@ -1,0 +1,27 @@
+@keyframes bg_anim {     
+    0% {
+        background-position: 0 0, 0 0;
+    }  
+    100% {
+        background-position: 0 0, 0 3vh;
+    }
+}
+
+#content {
+    display: grid;
+    place-content: center;
+    /*
+    grid-template-rows: minmax(var(--btn-size), 3fr) repeat(auto-fit, 1fr);
+    */
+    
+    position: absolute;
+    z-index: 10;
+    inset: 0;
+    
+    background: var(--bg-grad);
+    background-size: 100vw 100vh, 100vw 3vh;
+    background-repeat: no-repeat, repeat;
+    background-position: center;
+    
+    animation: bg_anim 2s linear infinite;
+}

@@ -1,0 +1,24 @@
+<div id="stats">
+    <div id="score"></div>
+    <div id="action-panel">
+        <img alt="stamina" src="/res/images/gui/stamina/0.png" id="stamina" onclick="Board.DASH()">
+    </div>
+</div>
+
+<div class="block">
+    <canvas id="board" width=200 height=200></canvas>
+</div>
+
+<div class="block">
+    <div id="bar">
+        <div class="btn block" onclick="Board.pause()">
+            <div class="icon">p</div>
+        </div>
+        <div class="btn block" onclick="Board.gameStart()">
+            <div class="icon">r</div>
+        </div>
+        <div class="btn block" onclick="Board.gameOver()">
+            <div class="icon">k</div>
+        </div>
+    </div>
+</div>

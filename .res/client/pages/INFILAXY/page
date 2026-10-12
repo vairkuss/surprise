@@ -1,0 +1,18 @@
+<div class="btn block middle" onclick="transition('preview', [0, -1])">
+    <div class="load-svg icon">arrow</div>
+</div>
+<div class="btn block middle top" onclick="transition('collection', [0, 1])">
+    <div class="load-svg icon">arrow</div>
+</div>
+<div class="btn block middle right" onclick="transition('presentation', [1, 0])">
+    <div class="load-svg icon">arrow</div>
+</div>
+<div class="btn block middle bottom masked" onclick="transition('proposition', [0, -1])">
+    <div class="load-svg icon">arrow</div>
+</div>
+<div class="btn block middle left disabled" onclick="transition('4eRn1j_kW@dr4T', [-1, 0])">
+    <div class="load-svg icon">arrow</div>
+</div>
+
+<div id="infi" class="character"></div>
+<div id="virko" class="character"></div>

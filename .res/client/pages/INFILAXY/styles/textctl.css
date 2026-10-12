@@ -1,0 +1,37 @@
+@font-face {
+    font-family: infex;
+    src: url(/local/fonts/infex-main-100.ttf);
+}
+
+@font-face {
+   font-family: "Goodhers Hooney";
+   src: url(/local/fonts/GoodhersHooney.ttf);
+}
+
+@font-face {
+   font-family: fraiche;
+   src: url(/local/fonts/fraiche.ttf);
+}
+
+
+:root {
+    font-family: "Goodhers Hooney", sans-serif;
+    font-size: 4vh;
+    color: hsl(var(--m-hue), calc(var(--m-sat) * 0.8), calc(var(--m-lum) * 0.75));
+}
+
+.lable {
+    font-family: fraiche, serif;
+    font-size: 2rem !important;
+}
+
+.text {
+    color: var(--text-grad);
+    /*
+    background: var(--text-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    */
+}

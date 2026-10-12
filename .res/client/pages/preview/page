@@ -1,0 +1,47 @@
+<div class="block">
+    <div class="icon lable">INFILAXY</div>
+    <div class="icon">Lorem bibsum bla bla bla choto tam eto razumnij tekst ya ochen umnij pupupupu</div>
+    <div id="buttons">
+
+        <div class="btn block">
+            <div class="load-svg icon" onclick='transition("25285", [0, 1])'>arrow</div>
+        </div>
+        <div class="btn block">
+            <div class="load-svg icon" onclick="transition('presentation', [1, 1])">rune</div>
+        </div>
+        <div class="btn block">
+            <div class="load-svg icon" onclick="transition('collection', [0, 2])">filter</div>
+        </div>
+        <div class="btn block">
+            <div class="load-svg icon" onclick="transition('proposition', [0, -1])">play</div>
+        </div>
+        <div class="btn block"> 
+            <div class="load-svg icon" onclick="transition('4eRn1j_kW@dr4T', [-1, 1])">pause</div>
+        </div>
+        <div class="btn block">
+            <div class="load-svg icon">plus</div>
+        </div>
+        <div class="btn block">
+            <div class="load-svg icon">loop</div>
+        </div>
+        <div class="btn block">
+            <div class="load-svg icon">random</div>
+        </div>
+        <div class="btn block" onclick="debug()">
+            <div class="icon">testing</div>
+        </div>
+
+    </div>
+</div>
+
+<div class="block" id="input" style="filter: opacity(0)">
+
+    <label for="values" class="load-svg icon">Enter HSL color values</label>
+    <input type="text" id="values" placeholder="h, s, l" value="714, 825, 285" />
+    <pre id="message"></pre>
+    
+    <div class="btn block" id="execute" onclick="newColor()">
+        <div class="icon">submit</div>
+    </div>
+    
+</div>

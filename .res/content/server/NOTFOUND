@@ -1,1 +1,0 @@
-<div class="block"><div class="icon"><span style="lable">404: </span>Ресурс "<span id="url"></span>" не найден!</div></div><img id="virko" class="character" /><script>document.querySelector("#url").textContent = location.href</script>
