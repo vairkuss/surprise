@@ -1,66 +1,94 @@
 /* Choice Menu */
 
 import AF from "./AF.mjs"
-import DC from "./DC.mjs"
 import VE, { VPE, VRE, VSE } from "./VE.mjs"
 
 
-export class CWS { // Choice Wheel Sector
+class DC { // Data Calculator
+    
+    static dir(rad) {
+        return [Math.cos(rad), -Math.sin(rad)];
+    }
+    
+    static cords(rad, l, bias) {
+         return this.dir(rad).map((v, i) => v * l + bias);
+     }
+    
+    static dividerD(rad, { inR, outR, divW }) {
+        const [xI, yI] = this.cords(rad, inR + divW / 2, outR);
+        const [xO, yO] = this.cords(rad, outR - divW / 2, outR);
+        return `M${xI} ${yI}L${xO} ${yO}`;
+    }
+    
+    static fieldD(dirs, { inR, outR }) {
+        const cordsO = dirs.map(rad => {
+            return this.cords(rad, outR, outR);
+        });
+        const cordsI = dirs.toReversed().map(rad => {
+            return this.cords(rad, inR, outR);
+        });
+        const cords = cordsO.concat(cordsI);
+        return cords.reduce((d, pair, i) => {
+            return d + (i ? 'L' : 'M') + pair.join(' ');
+        }, '') + 'z';
+    }
+}
 
-    constructor(key, value, vault, sizes, i, a) {
+
+class CS { // Choice Wheel Sector
+
+    constructor(key, value, sizes, i, a) {
         this.text = key;
         this.value = value;
         this.#calculateColor(key)
-        .then(() => this.#fetchIcon(vault));
+        .then(() => this.#fetchIcon());
         this.#generateSector(sizes, i, a);
     }
     
     async #calculateColor(key) {
         this.color = "#000";
         const bytes = new TextEncoder().encode(key);
-        crypto.subtle.digest("SHA-256", bytes).then(hash => {
-            this.color = "#" + new Uint8Array(hash.slice(0, 3)).toHex();
-        });
+        const hash = await crypto.subtle.digest("SHA-256", bytes);
+        const rgb = hash.slice(0, 3);
+        this.color = "#" + new Uint8Array(rgb).toHex();
     }
     
-    async #fetchIcon(vault) {
-        const iconName = this.value == null ? "x"
+    #fetchIcon() {
+        const name = this.value == null ? "x"
             : typeof this.value !== "number" ? "sb"
-            : this.value < 0 ? ["pat", "wag"].at(~this.value) ?? "sb"
+            : this.value < 0 ? "pat"
             : null;
-        this.icon = iconName != null ? this.icon = vault.icon[iconName]
-            : vault.randomIcon(parseInt(this.color.slice(1), 16));
+        if (name != null) {
+            this.icon = window.data.icons.named[name];
+        } else {
+            const random = Object.values(window.data.icons.random);
+            const hex = this.color.slice(1);
+            const number = parseInt(hex, 16);
+            const index = number % random.length;
+            this.icon = random[index];
+        }
     }
     
-    async #generateSector(sizes, i, a) {
-        const fieldD = this.#calculateFieldData(sizes, i, a, 180 / 5 / a.length);
+    #generateSector(sizes, i, a) {
+        const cuts = 180 / 5 / a.length;
+        const dirs = Array.from({ length: cuts + 1 }, (_, cut) => {
+            const part = cut / cuts;
+            return Math.PI * (i + part) / a.length;
+        });
+        const fieldD = DC.fieldD(sizes);
         this.field = new VPE(fieldD, { id: `id${i}`, cn: "cho-field" });
-        const dividerD = this.calculateDividerData(directions[0], sizes);
+        const dividerD = DC.dividerD(dirs[0], sizes);
         this.divider = new VPE(dividerD, { cn: "cho-divider" });
     }
     
-    #calculateFieldData(sizes, i, a, cuts) {
-        const directions = [...Array(cuts + 1)].map((_, cut) => cut / cuts)
-        .map(part => Math.PI * (i + part) / a.length);
-        const cords = directions.map(dir => DC.cords(dir, sizes.outR, sizes.outR))
-        .concat(directions.toReversed().map(dir => DC.cords(dir, sizes.inR, sizes.outR)));
-        return cords.map((pair, i) => (i ? "L" : "M") + pair.join(" ")).join("") + "z";
-    }
-    
-    calculateDividerData(dir, sizes) {
-        const [xI, yI] = DC.cords(dir, sizes.inR + sizes.divW * .5, sizes.outR);
-        const [xO, yO] = DC.cords(dir, sizes.outR - sizes.divW * .5, sizes.outR);
-        return `M${xI} ${yI}L${xO} ${yO}`;
-    }
-    
-    activate() { this.field.addClass("active") }
-    deactivate() { this.field.removeClass("active") }
+    activate() { this.field.classList.add("active") }
+    deactivate() { this.field.classList.remove("active") }
 }
 
 
-export class CW { // Choice Wheel
+class CW { // Choice Wheel
 
-    constructor(base, choices, vault) {
+    constructor(base, choices) {
         this.#calcSizes(base);
         this.#genBody(base);
         this.#genNegMask();
@@ -68,12 +96,13 @@ export class CW { // Choice Wheel
         this.#genGrad("-inactive");
         this.#genGrad();
         const keys = this.#shuffleKeys(choices);
-        this.#appendSectors(keys, choices, vault);
+        this.#appendSectors(keys, choices);
         this.#appendLastDivider();
     }
     
     #calcSizes(base) {
-        const baseSize = parseFloat(getComputedStyle(base).height);
+        const baseStyle = getComputedStyle(base);
+        const baseSize = parseFloat(baseStyle.height);
         this.sizes = {};
         this.sizes.divW = baseSize / 5;
         this.sizes.inR = baseSize / 2 + this.sizes.divW * 2;
@@ -81,22 +110,22 @@ export class CW { // Choice Wheel
     }
     
     #genBody(base) {
-        const bodyRect = document.body.getBoundingClientRect();
-        this.body = new VSE([this.sizes.outR * 2, this.sizes.outR + this.sizes.divW / 2], { id: "cho-wheel", fill: "url(#cho-wheel-grad)" });
+        const baseStyle = getComputedStyle(base);
+        const w = this.sizes.outR * 2;
+        const h = this.sizes.outR + this.sizes.divW / 2;
+        this.body = new VSE([w, h], { id: "cho-wheel", fill: "url(#cho-wheel-grad)" });
         this.body.setAttribute("style",
-            `bottom: calc(${getComputedStyle(base).bottom} + var(--cho-size) * 0.4);` +
-            `left: ${bodyRect.width / 2 - this.sizes.outR};`
+            `bottom: calc(${baseStyle.bottom} + var(--cho-size) * 0.4);` +
+            `left: ${root.offsetWidth / 2 - this.sizes.outR};`
         );
     }
     
     #genNegMask() {
         const negMask = new VE("mask", { id: `${this.body.mask.id}-neg`, parent: this.body.defs.el });
-        const children = () => [...this.body.mask.children];
-        AF.holdUntill(30, () => children().length, () => {
-            children().forEach(child => {
-                const use = new SVGUE(child.getAttribute("href"), { parent: negMask.el });
-                use.setAttribute("style", "filter: invert(1)");
-            });
+        const children = [...this.body.mask.children];
+        children.forEach(child => {
+            const use = new SVGUE(child.getAttribute("href"), { parent: negMask.el });
+            use.setAttribute("style", "filter: invert(1)");
         });
     }
     
@@ -115,11 +144,9 @@ export class CW { // Choice Wheel
             ["fr", this.sizes.inR],
             ["r", this.sizes.outR]
         );
-        const colors = () => document.getElementById(`cho-wheel-grad${name}-colors`);
-        AF.holdUntill(30, () => colors() != null, () => {
-            gradient.cloneChildren(colors());
-            gradient.appendTo(this.body.defs.el);
-        });
+        const colors = document.getElementById(`cho-wheel-grad${name}-colors`);
+        gradient.cloneChildren(colors);
+        gradient.appendTo(this.body.defs.el);
     }
     
     #shuffleKeys(choices) {
@@ -129,17 +156,17 @@ export class CW { // Choice Wheel
         }, []);
     }
     
-    #appendSectors(keys, choices, vault) {
+    #appendSectors(keys, choices) {
         this.fields = keys.map((key, i, a) => {
-            const cws = new CWS(key, choices[key], vault, this.sizes, i, a);
-            AF.holdUntill(30, () => cws.field != null, () => this.body.addToMask(cws.field.el));
-            AF.holdUntill(30, () => cws.divider != null, () => cws.divider.appendTo(this.body));
-            return cws;
+            const cs = new CS(key, choices[key], this.sizes, i, a);
+            this.body.addToMask(cs.field.el);
+            cs.divider.appendTo(this.body);
+            return cs;
         });
     }
     
     #appendLastDivider() {
-        const d = CWS.prototype.calculateDividerData(Math.PI, this.sizes);
+        const d = DC.dividerD(Math.PI, this.sizes);
         new VPE(d, { cn: "cho-divider", parent: this.body });
     }
 }
@@ -154,40 +181,35 @@ export default class CM { // Choice Menu
         this.hide();
     }
         
-    updateMenu(vault) {
+    updateMenu() {
         this.wheel?.body.remove();
         this.text?.remove();
         const base = this.menu.parentElement;
-        if (!base) { return }
-        this.wheel = new CW(base, this.choices, vault); 
-        AF.holdUntill(30, () => this.wheel.body != null, () => {
-            this.wheel.body.appendTo(this.menu);
-            this.text = document.createElement("pre");
-            this.text.id = "cho-text";
-            const wheelStyle = getComputedStyle(this.wheel.body.el);
-            const wheelBottom = parseFloat(wheelStyle.bottom);
-            this.text.style.bottom = wheelBottom + this.wheel.sizes.outR + "px";
-            this.menu.appendChild(this.text);
-        });
+        if (!base) return;
+        this.wheel = new CW(base, this.choices);
+        this.wheel.body.appendTo(this.menu);
+        this.text = document.createElement("pre");
+        this.text.id = "cho-text";
+        const wheelStyle = getComputedStyle(this.wheel.body.el);
+        const wheelBottom = parseFloat(wheelStyle.bottom);
+        this.text.style.bottom = wheelBottom + this.wheel.sizes.outR + "px";
+        this.menu.appendChild(this.text);
     }
     
     blinkText(func) {
-        this.text.className = "hidden cho-text";
-        AF.delay(.4, () => {
-            if (func) { func() }
-            this.text.className = "cho-text";
-        });
+        this.text.classList.add("hidden");
+        setTimeout(() => {
+            if (func) func();
+            this.text.classList.remove("hidden");
+        }, 400);
     }
     
-    show(vault) {
-        this.updateMenu(vault);
-        const classes = this.menu.className.split(" ").filter(cn => cn);
-        this.menu.className = classes.filter(cn => cn !== "hidden").join(" ");
+    show() {
+        this.updateMenu();
+        this.menu.classList.remove("hidden");
     }
     
     hide() {
-        if (this.menu.className.includes("hidden")) { return }
-        const classes = this.menu.className.split(" ").filter(cn => cn);
-        this.menu.className = classes.concat(["hidden"]).join(" ");
+        this.menu.classList.add("hidden");
     }
 }

@@ -29,7 +29,7 @@ export default class RR { // Request Responder
         const timestamp = Date.now();
         const logTime = new Date(timestamp).toLocaleTimeString("en-GB");
         const method = this.req.method.padStart(4);
-        const given = ext.toUpperCase().padStart(4);
+        const given = ext.padStart(4);
         console.log(`$ [${logTime}] <${code}> ${method} ${given}: ${this.req.url}`);
         this.res.writeHead(code, { "Content-Type": MIME_TYPES[ext] ?? MIME_TYPES.default });
         this.res.end(data);
@@ -45,6 +45,15 @@ export default class RR { // Request Responder
     }
     
     end() {
-        this.sendText("");
+        this.sendText('');
+    }
+    
+    sendLog({ origin, args }) {
+        const timestamp = Date.now();
+        const logTime = new Date(timestamp).toLocaleTimeString("en-GB");
+        const formated = `$\t${args.join("\n$\t")}`;
+        console.debug(`\n$ [${logTime}] <LOG> ${origin}\n${formated}\n`);
+        this.res.statusCode = 200;
+        this.res.end();
     }
 }

@@ -11,29 +11,19 @@ export default class VE { // sVg namespace Element
             : new DOMParser().parseFromString(data, "image/svg+xml").querySelector(name);
         this.raw = data ?? this.el.outerHTML;
         if (id != null) this.setAttribute("id", id);
-        if (cn != null) this.addClass(cn);
+        if (cn != null) this.classList.add(cn);
         if (donor != null) this.cloneChildren(donor);
         if (parent != null) this.appendTo(parent);
     }
     
     get id() { return this.el.getAttribute("id") }
-    get className() { return this.el.getAttribute("class") }
+    get className() { return this.el.className }
+    get classList() { return this.el.classList }
     get children() { return this.el.children }
     
     setAttributes(...pairs) { pairs.forEach(pair => this.el.setAttribute(...pair)) }
     setAttribute(attr, value) { this.el.setAttribute(attr, value) }
     getAttribute(attr) { return this.el.getAttribute(attr) }
-    
-    addClass(newCN) {
-        if (this.className?.includes(newCN)) { return }
-        const updCN = (this.className ?? "").split(" ").filter(cn => cn).concat([newCN]).join(" ");
-        this.setAttribute("class", updCN);
-    }
-    
-    removeClass(rmCN) {
-        const updCN = (this.className ?? "").split(" ").filter(cn => cn && cn !== rmCN).join(" ");
-        this.setAttribute("class", updCN);
-    }
     
     appendChild(el) { this.el.appendChild(el) }
     appendTo(el) { el.appendChild(this.el) }
@@ -118,10 +108,10 @@ export class VSE extends VE { // sVg Svg Element
     #genMask(w, h, { fill, parse: donor }) {
         this.defs = new VE("defs", { parent: this.el });
         this.mask = new VE("mask", { id: `${VSE.id}-mask`, parent: this.defs.el });
-        this.fill = new VRE([w, h], { id: "main", parent: this.el });
+        this.fill = new VRE([w, h], { parent: this.el });
         this.fill.setAttribute("mask", `url(#${this.mask.id})`);
-        if (fill != null) { this.fill.setAttribute("fill", fill) }
-        if (donor != null) { this.maskFromDonor(donor) }
+        if (fill != null) this.fill.setAttribute("fill", fill);
+        if (donor != null) this.maskFromDonor(donor);
     }
     
     maskFromDonor(el) {
@@ -130,7 +120,7 @@ export class VSE extends VE { // sVg Svg Element
     
     addToMask(el) {
         const id = el.getAttribute("id");
-        const use = new VUE(`#${id}`, { cn: el.getAttribute("class") });
+        const use = new VUE(`#${id}`, { cn: el.className });
         use.setAttribute("style", "filter: opacity(0)");
         use.appendTo(this.el);
         this.mask.appendChild(el.el ?? el);

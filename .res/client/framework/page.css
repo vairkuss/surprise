@@ -6,10 +6,6 @@
     background: #000;
     width: 100vw;
     height: 100vh;
-    will-change: filter, translate;
-    transition:
-        0.6s filter ease-in-out,
-        0.6s translate ease-in;
 }
 
 body {
@@ -27,7 +23,7 @@ body {
             to bottom,
             black 40%,
             transparent 100%
-        ) center / 100% 100%;
+        ) center / 100%;
     top: 0;
     left: 0;
     width: 100vw;
@@ -40,4 +36,16 @@ body {
     display: grid;
     position: fixed;
     width: 100;
+    will-change: filter, translate;
+    transition:
+        0.6s filter ease-in-out,
+        0.6s translate ease-in;
+}
+
+#scripts {
+    display: none;
+}
+
+#cold-storage {
+    display: none;
 }

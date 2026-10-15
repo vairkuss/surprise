@@ -1,7 +1,7 @@
 /* Dialogue Handler */
 
 import AF from "./AF.mjs"
-import AH from "./AH.mjs"
+import CO from "./CO.mjs";
 import SB from "./SB.mjs"
 import CH from "./CH.mjs"
 
@@ -15,16 +15,16 @@ class DH { // Dialogue Handler
     static get ready() { return this.#page == null }
     static get cursor() { return JSON.parse(JSON.stringify(this.#cursor)) }
     
-    static #updateCursor(char, newValue, relative) {
-        this.#cursor[char] = (this.#cursor[char] ?? 0) * relative + newValue;
-        this.#cursor[char] = Math.min(this.#cursor[char], this.#current[char].length - 1);
+    static #updateCursor({ name }, value, relative) {
+        const cursor = (this.#cursor[char] ?? 0) * relative + value;
+        this.#cursor[char] = Math.min(cursor, this.#current[name].length - 1);
         window.data.save.cursor = this.#cursor;
     }
     
     static #readDialogue(char) {
         this.#page = this.#page ?? 0;
         this.#readPage(this.#current[char]?.at(this.#cursor[char])?.at(this.#page));
-        AF.holdUntill(30, () => this.#clicked === null, () => {
+        this.onPageComplete(() => {
             if (this.#page?.constructor.name === "Array") {
                 const [csv, page] = this.#page;
                 this.#page = page;
@@ -34,20 +34,20 @@ class DH { // Dialogue Handler
                 return this.#readDialogue(charName);
             } else if (this.#page < 0) {
                 const action = [
-                    () => AH.patpat(char),
-                    () => AH.wagwag(char)
+                    () => char.pat(),
+                    () => char.wag()
                 ].at(~this.#page);
-                if (action != null) { action() }
+                if (action != null) action();
                 this.#page = null;
             }
             
-            AF.delay(0.4, () => {
+            setTimeout(() => {
                 if (this.#page != null) {
                     this.#readDialogue(char);
                 } else {
                     this.#updateCursor(char, 1, 1);
                 }
-            });
+            }, 400);
         });
     }
     
@@ -67,17 +67,19 @@ class DH { // Dialogue Handler
             });
         });
         
-        const skip = typeof choices === "number" ? choices >= 0 : choices != null;
-        AF.repeatOnClicksUntill(30,
-            () => this.#clicked >= replicas.length - skip && !SB.bubblesActive,
-            true,
-            () =>  this.#clicked += !SB.bubblesActive,
+        const passLast = typeof choices === "number" ? choices >= 0 : choices != null;
+        AF.repeatOnClicksUntill(true,
+            () => this.#clicked >= replicas.length - passLast && SB.active == null,
+            () => this.#clicked += SB.active == null,
             () => {
                 CH.setChoice(choices);
-                AF.holdUntill(30, () => CH.chosen !== undefined && !SB.bubblesActive, () => {
-                    SB.bubbles.forEach(sb => sb.remove());
-                    this.#page = CH.chosen;
-                    this.#clicked = null;
+                CH.onChosen(() => {
+                    SB.onFinished(() => {
+                        SB.remove();
+                        this.#page = CH.chosen;
+                        this.#clicked = null;
+                        this.onPageComplete();
+                    });
                 });
             }
         );
@@ -89,30 +91,21 @@ class DH { // Dialogue Handler
         this.#current = window.data.replicas;
         this.#cursor = window.data.save.cursor;
         
-        document.querySelectorAll(".character").forEach(char => {
-            const { idle, hover } = window.data.sprites[char.id];
-            const getRandom = collection => {
-                const keys = Object.keys(collection);
-                const key = keys[Math.trunc(keys.length * Math.random())];
-                return collection[key];
-            }
-            const setSprite = collection => {
-                const src = getRandom(collection);
-                char.style.background = `url("${src}")`;
-            }
-            setSprite(idle);
+        document.querySelectorAll(".character").forEach(el => {
             
-            char.addEventListener("pointerout", () => {
-                if (this.ready) setSprite(idle);
+            const char = new CO(el);
+            
+            el.addEventListener("pointerout", () => {
+                if (this.ready) char.idle;
             });
-            char.addEventListener("pointerover", () => {
-                if (this.ready) setSprite(hover);
+            el.addEventListener("pointerover", () => {
+                if (this.ready) char.hover();
             });
-            char.addEventListener("contextmenu", e => {
+            el.addEventListener("contextmenu", e => {
                 e.preventDefault();
             });
-            char.addEventListener("click", () => {
-                if (this.ready) this.#readDialogue(char.id);
+            el.addEventListener("click", () => {
+                if (this.ready) this.#readDialogue(char);
             });
         });
         
@@ -121,7 +114,7 @@ class DH { // Dialogue Handler
         CH.cc.chip.addEventListener("pointerdown", e => {
             const chosen = CH.chosen !== undefined;
             const chipHidden = CH.cc.chip.className.includes("hidden");
-            if (chosen && !SB.bubblesActive || chipHidden) return;
+            if (chosen && SB.active == null || chipHidden) return;
             e.preventDefault();
             const chipStyle = getComputedStyle(CH.cc.chip);
             const x = parseFloat(chipStyle.left);

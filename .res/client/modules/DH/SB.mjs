@@ -1,318 +1,237 @@
 /* Speech Bubble */
 
-import AF from "./AF.mjs";
 
-
-export default class SB {
-    static pairs = {};
-    static get bubbles() {
-        return Object.values(this.pairs);
-    }
-    static get bubblesActive() {
-        return this.bubbles.some(sb => sb.writing);
+export default class SB { // Speech Bubble
+    
+    static bubbles = [];
+    static get active() {
+        return this.bubbles.find(sb => sb.face.writing);
     }
     static hit() {
-        this.bubbles.forEach(sb => sb.hit());
+        this.bubbles.forEach(async sb => sb.hit());
     }
     static remove() {
-        this.bubbles.forEach(sb => sb.remove());
+        this.bubbles.forEach(async sb => sb.remove());
     }
     
-    constructor(char, text, pose) {
-        SB.pairs[char.id]?.remove();
-        SB.pairs[char.id] = this;
-        
-        this.writing = 0;
-        if (text == null) { return }
-        this.lifes = [...document.body.querySelectorAll(".character")].length;
-        
-        this.bubble = document.createElement("div");
-        this.bubble.className = "hidden bubble";
-        char.appendChild(this.bubble);
-        
-        this.face = document.createElement("div");
-        this.face.className = "face";
-        this.bubble.appendChild(this.face);
-        
-        this.vx = 0;
-        
+    constructor(char) {
+        const existing = SB.bubbles.find(sb => sb.char === char);
+        if (existing != null) {
+            existing.face.write(text);
+            return existing;
+        }
+        this.char = char;
+        this.body = document.createElement("div");
+        this.body.className = "hidden bubble";
+        this.face = new SF(this);
+        this.body.appendChild(this.face.el);
         this.#flyOut();
         this.#startDrawing();
         this.#startColliding();
-        this.#writeText(char, text, pose);
     }
     
-    #flyOut () {
-        const randRad = Math.PI * .25 + Math.random() * Math.PI * .5;
-        const direction = [Math.cos(randRad), Math.sin(randRad) * .5 + .5];
-        AF.delay(1/60, () => {
-            this.bubble.className = "bubble";
-            this.bubble.style.left = `calc(${direction[0]} * min(30vh, 30vw))`;
-            this.bubble.style.top = `calc(${-direction[1]} * min(30vh, 30vw))`;
-        });
+    #flyOut() {
+        const rad = Math.PI / 4 + Math.random() * Math.PI / 2;
+        const x = Math.cos(rad);
+        const y = Math.sin(rad) / 2 + .5;
+        setTimeout(() => {
+            this.body.classList.remove("hidden");
+            this.body.style.left = `calc(${x} * min(30vh, 30vw))`;
+            this.body.style.top = `calc(${-y} * min(30vh, 30vw))`;
+        }, 1/60 * 1000);
     }
     
     #startDrawing() {
+        const faceStyle = getComputedStyle(this.face.el);
+        const minW = parseFloat(faceStyle.minWidth);
+        const pad = parseFloat(faceStyle.paddingLeft);
+        const r = parseFloat(faceStyle.borderRadius);
         this.drawInterval = setInterval(() => {
-            const rect = this.face.getBoundingClientRect();
-            const style = getComputedStyle(this.face);
-            this.tail = new SBT(this);
-            this.bubble.parentElement.style.zIndex = this.lifes + 90;
-            this.growCompX = (parseFloat(style.minWidth) + parseFloat(style.paddingLeft) * 2 - rect.width) / 2;
-            this.growCompY = parseFloat(style.borderRadius) - rect.height;
-        }, 1000/30);
+            this.tail = new ST(this);
+            this.char.el.style.zIndex = this.lifes + 90;
+            const faceRect = this.face.el.getBoundingClientRect();
+            this.growCompX = (minW + pad * 2 - faceRect.width) / 2;
+            this.growCompY = r - faceRect.height;
+        }, 1/30 * 1000);
     }
     
      #startColliding() {
-        const charRect = this.bubble.parentElement.getBoundingClientRect();
+        const charRect = this.char.el.getBoundingClientRect();
         const charMidX = charRect.left + charRect.width / 2;
         const charMidY = charRect.top + charRect.height / 2;
-        AF.delay(0.4, () => {
-            this.initialRect = this.face.getBoundingClientRect();
-            this.y = -Math.abs(this.initialRect.top + this.initialRect.height / 2 - charMidY);
-            this.x = this.initialRect.left + this.initialRect.width / 2 - charMidX;
+        this.vx = 0;
+        setTimeout(() => {
+            this.initial = this.face.getBoundingClientRect();
+            const initialMidY = this.initial.top + this.initial.height / 2;
+            const initialMidX = this.initial.left + this.initial.width / 2;
+            this.y = -Math.abs(initialMidY - charMidY);
+            this.x = initialMidX - charMidX;
             this.translationX = 0;
             this.#setCollisionInterval();
-        });
+        }, 400);
     }
     
     #setCollisionInterval() {
         this.collisionInterval = setInterval(() => {
-            const curRect = this.bubble.getBoundingClientRect();
-            const curStyle = getComputedStyle(this.bubble);
-            const directionX =
-                curRect.left < document.body.offsetWidth * .02 ? 1
-                : curRect.right > document.body.offsetWidth * .98 ? -1
+            const curRect = this.body.getBoundingClientRect();
+            const pageW = document.body.offsetWidth;
+            const dirX = curRect.left < pageW * .02 ? 1
+                : curRect.right > pageW * .98 ? -1
                 : 0;
-            this.vx += .5 * (.5 * directionX || -Math.sign(this.vx) * Math.min(1, Math.abs(this.vx)));
+            const dirBack = -Math.sign(this.vx);
+            const step = Math.min(1, Math.abs(this.vx));
+            this.vx += dirX / 4 || dirBack * step / 2;
             this.translationX += this.vx;
-            this.bubble.style.left = this.x + this.growCompX + this.translationX + "px";
+            this.body.style.left = this.x + this.growCompX + this.translationX + "px";
         
-            const mrg = .5 * parseFloat(getComputedStyle(this.face).borderRadius);
-            this.bubble.style.top = SB.bubbles
-            .filter(sb => sb.bubble.getBoundingClientRect().top > curRect.top)
-            .reduce((mrgT, sb) => {
-                const sbHeight = sb.face.getBoundingClientRect().height;
-                return mrgT - sbHeight - mrg;
-            }, this.y) + this.initialRect.height + this.growCompY + "px";
-        }, 1000/30);
+            const faceStyle = getComputedStyle(this.face.el);
+            const mrg = parseFloat(faceStyle.borderRadius) / 2;
+            const fromBelow = SB.bubbles.reduce((h, sb) => {
+                const sbRect = sb.face.el.getBoundingClientRect();
+                if (sbRect.top > curRect.top) return h;
+                return h - sbRect.height - mrg;
+            }, this.y)
+            this.body.style.top = fromBelow + this.initialRect.height + this.growCompY + "px";
+        }, 1/30 * 1000);
     }
     
-    #writeText(char, text, pose) {
-        if (!text?.length) { return }
-        this.face.textContent = "";
-        this.writing = 1;
-        let frequency = 20; 
-        AF.delay(1/60, () => {
-            document.body.addEventListener("click", () => { frequency *= 20 }, { once: 1 });
-        });
-        
-        async function addToOutput(c=0) {
-            if (
-                c && text[c-1] === "\\"
-                || !"\\•§¢π∆×√|®".includes(text[c])
-            ) { this.face.textContent += text[c] }
-            
-            if (text[c] === "®") {
-                this.remove();
-                return;
-            }
-            
-            const shortPause = "•!?-.,);3".includes(text[c]);
-            const longPause = text[c] === "§";
-            const glitch = text[c] === "¢";
-            const shake = text[c] === "π";
-            const jump = text[c] === "∆";
-            const skip = ": \n\t".includes(text[c])
-                || glitch
-                || shake
-                || jump
-                || c && text[c-1] === "×"
-                || ": \n\t|".split("").reduce((last, sep) => {
-                    return last.split(sep).at(-1);
-                }, this.face.textContent).startsWith("√");
-            
-            if (longPause) {
-                char.src = `res/images/characters/${char.id}/${pose}0.png`;
-            }
-            if (glitch) {
-                this.bubble.className = this.bubble.className.startsWith("glitch")
-                    ? this.bubble.className.split(" ").filter(cn => cn !== "glitch").join(" ")
-                    : "glitch " + this.bubble.className;
-                this.bubble.parentElement.className = this.bubble.className.startsWith("glitch")
-                    ? this.bubble.parentElement.className.split(" ").filter(cn => cn !== "glitch").join(" ")
-                    : "glitch " + this.bubble.parentElement.className;
-            }
-            if (shake) {
-                this.bubble.className = this.bubble.className.startsWith("shake")
-                    ? this.bubble.className.split(" ").filter(cn => cn !== "shake").join(" ")
-                    : "shake " + this.bubble.className;
-            }
-            if (jump) {
-                const h = parseFloat(getComputedStyle(this.face).borderRadius);
-                const cur = parseFloat(getComputedStyle(this.bubble).top);
-                clearInterval(this.collisionInterval);
-                this.bubble.style.top = cur - h * 2 + "px";
-                let fall = 0;
-                AF.holdUntill(30,
-                    () => fall,
-                    () => this.#setCollisionInterval()
-                );
-                AF.delay(0.1, () => {
-                    this.bubble.style.top = cur + "px";
-                    fall = 1;
-                });
-            }
-            
-            c++;
-            AF.delay(+!skip * (+shortPause * 2 + 1) * (+longPause * 9 + 1) / frequency, () => {
-                if (c >= text.length) {
-                    this.className = "bubble";
-                    this.writing = 0;
-                    return;
-                }
-                if (c < text.length - 1 && text[c+1] !== "§") {
-                    char.src = `res/images/characters/${char.id}/${pose}1.png`
-                }
-                addToOutput.call(this, c);
-            });
-        }
-        
-        addToOutput.call(this);
+    jump() {
+        const faceStyle = getComputedStyle(this.face.el);
+        const jumpH = parseFloat(faceStyle.borderRadius);
+        const bodyStyle = getComputedStyle(this.body);
+        const bodyTop = parseFloat(bodyStyle.top);
+        clearInterval(this.collisionInterval);
+        this.body.style.top = bodyTop - jumpH * 2 + "px";
+        setTimeout(() => {
+            this.body.style.top = bodyTop + "px";
+            this.#setCollisionInterval();
+        }, 100);
     }
     
     hit() {
         this.lifes--;
-        if (!this.lifes) { this.remove() }
+        if (!this.lifes) this.remove();
     }
     
     remove() {
+        const id = SB.bubbles.indexOf(this);
+        SB.bubbles.splice(id, 1);
         clearInterval(this.collisionInterval);
         clearInterval(this.drawInterval);
-        delete SB.pairs[this.bubble.parentElement.id];
-        const faceRect = this.face.getBoundingClientRect();
-        const charRect = this.bubble.parentElement.getBoundingClientRect();
-        this.bubble.style.top = -(charRect.bottom - charRect.height / 2 - faceRect.bottom);
-        AF.holdUntill(30, () => this.tail && this.tail.svg, () => this.tail.svg.setAttribute("style", "height: 0"));
-        AF.delay(1/60, () => {
-            this.bubble.className = "hidden bubble";
-        });
-        AF.delay(.4, () => {
-            this.bubble.remove();
-        });
+        const faceRect = this.face.el.getBoundingClientRect();
+        const charRect = this.char.el.getBoundingClientRect();
+        const charMidY = charRect.top + charRect.height / 2;
+        this.body.style.top = faceRect.bottom - charMidY;
+        this.tail?.svg.remove();
+        setTimeout(() => {
+            this.body.classList.add("hidden");
+            setTimeout(() => this.body.remove(), 400);
+        }, 1/60 * 1000);
     }
 }
 
 
-export class SBT {
+class SF { // Speech bubble Face
+    
+    constructor(sb) {
+        this.sb = sb;
+        this.el = document.createElement("div");
+        this.el.className = "face";
+    }
+    
+    #pause() {
+        this.paused = 1;
+        this.sb.char.src = this.sb.char.sprites.talk[`${this.sb.char.pose}0`];
+        setTimeout(() => this.paused = 0, 400);
+    }
+    
+    #processChar(c, i, text) {
+        const written = text.slice(0, i);
+        const escaped = written.endsWith('\\');
+        const meta = "\\®•§×√|¢π∆".includes(c);
+        if (escaped || !meta) this.el.textContent += c;
+
+        const stutter = "•!?-.,);3".includes(c);
+        const pause = c === '§';
+        const ignore = written.match(/(?::|\s|×.|√[^√|]*?)$/) != null;
+        const glitch = c === '¢';
+        const shake = c === 'π';
+        const jump = c === '∆';
+        const animation = glitch || shake || jump
+        const skip = ignore || animation;
+        
+        if (pause) this.#pause();
+        if (c === '®') {
+            this.sb.char.shock();
+            return this.sb.remove();
+        }
+        if (glitch) this.char.el.classList.toggle("glitch", !this.char.el.matches(".glitch"));
+        if (shake) this.sb.body.classList.toggle("shake", !this.sb.body.matches(".shake"));
+        if (jump) this.sb.jump();
+        
+        const wait = +!skip * (stutter * 2 + 1) * (pause * 7 + 1);
+        const waitSeconds = wait / this.writeSpeed;
+        setTimeout(() => {
+            if (i >= text.length) return signal.dispatch(new Event("sbWritingEnd"));
+            const next = i + 1;
+            if (next < text.length && text[next] !== '§') {
+                this.char.src = this.char.sprites.talk[`${pose}1`];
+            }
+        }, waitSeconds * 1000);
+    }
+    
+    write(text) {
+        this.el.textContent = '';
+        this.sb.lifes = 2;
+        this.speed = 20; 
+        document.body.addEventListener("click", () => {
+            if (!this.paused) this.speed *= 20;
+        }, { once: 1 });
+        const enumerated = Object.entries(Array.from(text));
+        this.writing = 1;
+        signal.addEventListener("sbWritingEnd", () => {
+            this.writing = 0;
+        }, { once: 1 });
+        for (const [i, c] of enumerated) {
+            this.#processChar(c, i, text);
+            if (!this.writing) return this.el.className = "face";
+        );
+    }
+}
+
+
+class ST { // Speech bubble Tail
+    
     constructor(sb) {
         sb.tail?.svg.remove();
-        //if (!SB.bubbles.filter(sbb => sbb.lifes === 1)) {
-        //    document.body.querySelectorAll(`#todelete${sb.bubble.parentElement.id}`).forEach(e => e.remove());
-        //}
         
-        const charRect = sb.bubble.parentElement.getBoundingClientRect();
+        const char = sb.body.parentElement;
+        const charRect = char.getBoundingClientRect();
         const charMidX = charRect.left + charRect.width / 2;
         const charMidY = charRect.top + charRect.height / 2;
         
-        const faceStyle = getComputedStyle(sb.face);
+        const faceStyle = getComputedStyle(sb.face.el);
         const r = parseFloat(faceStyle.borderRadius);
-        const w = parseFloat(faceStyle.width) + parseFloat(faceStyle.borderWidth) * 2 + parseFloat(faceStyle.paddingLeft) * 2;
+        const faceW = parseFloat(faceStyle.width);
+        const faceBorder = parseFloat(faceStyle.borderWidth);
+        const facePad = parseFloat(faceStyle.paddingLeft);
+        const w = faceW + faceBorder * 2 + facePad * 2;
         
-        const faceRect = sb.face.getBoundingClientRect();
+        const faceRect = sb.face.el.getBoundingClientRect();
         const faceMidX = faceRect.left + w / 2;
         
         const a = charMidX - faceMidX;
         const b = Math.max(charMidY - faceRect.bottom, 0);
         const c = Math.sqrt(a**2 + b**2);
+        if (c < r) return;
 
-        this.svg = new SVGE([w, b], { cn: "tail", parent: sb.bubble });
+        this.svg = new SVGE([w, b], { cn: "tail", parent: sb.body });
         
         const rad = Math.atan2(b, a);
-        const direction = [Math.cos(rad), Math.sin(rad)];
-        const [x, y] = direction.map(v => v * (c - r));
+        const dir = [Math.cos(rad), Math.sin(rad)];
+        const [x, y] = dir.map(v => v * (c - r));
 
         const d = `M${(w-r)/2} 0C${(w-r)/2} 0 ${w/2} 0 ${x+w/2} ${y}C${w/2} 0 ${(w+r)/2} 0 ${(w+r)/2} 0`;
         const path = new SVGPE(d, { parent: this.svg.el });
-        
-        /**
-        const createPoint = (x, y) => {
-            const p = document.createElement("i");
-            p.style = `position: fixed; z-index: 1000; top: ${y-2.5}px; left: ${x-2.5}px; background: orange; width: 5px; height: 5px; border-radius: 5px`;
-            p.id = "todelete";
-            document.body.appendChild(p);
-        }
-        //createPoint(facecharMidX, faceRect.bottom - faceRect.height);
-        //createPoint(charMidX, charMidY);
-        //createPoint(facecharMidX + x, faceRect.bottom + y - faceRect.height);
-        /**
-        const createLine = (x1, y1, x2, y2, color="red") => {
-            const w = Math.abs(x1 - x2);
-            const h = Math.abs(y1 - y2);
-            //console.info([x1, y1], [x2, y2], color, [w, h]);
-            const bx = Math.min(x1, x2);
-            const by = Math.min(y1, y2);
-            const svg = document.createElementNS(xmlns, "svg");
-            svg.setAttribute("xmlns", xmlns);
-            svg.setAttribute("width", Math.max(2, w));
-            svg.setAttribute("height", Math.max(2, h));
-            svg.setAttribute("viewBox", `0 0 ${Math.max(2, w)} ${Math.max(2, h)}`);
-            svg.setAttribute("id", `todelete${sb.bubble.parentElement.id}`);
-            svg.setAttribute("style", `position: fixed; z-index: 1000; stroke-width: 2px; stroke: ${color}; top: ${by}; left: ${bx}`);
-            document.body.appendChild(svg);
-            const p = document.createElementNS(xmlns, "path");
-            p.setAttribute("d", `M${x1-bx} ${y1-by}L${x2-bx} ${y2-by}`);
-            svg.appendChild(p);
-        }
-        const bodyRect = document.body.getBoundingClientRect();
-        const midX = bodyRect.width / 2;
-        const midY = bodyRect.height / 2;
-        //createLine(facecharMidX, faceRect.bottom - faceRect.height, charMidX, charMidY);
-        //const faceRect = this.svg.parentElement.querySelector(".face").getBoundingClientRect();
-        
-        const bordBias = 2 * parseFloat(getComputedStyle(sb.face).borderWidth);
-        createLine(charMidX, faceRect.bottom + y, charMidX, faceRect.bottom, `#5f5`);
-        const main = SB.bubbles
-        .filter(sb => sb.bubble.getBoundingClientRect().top > this.svg.parentElement.getBoundingClientRect().top)
-        .reduce((last, sb) => {
-            const sbH = sb.face.getBoundingClientRect().height;
-            const x = charMidX;
-            const y1 = last;
-            const y2 = last - sbH;
-            const y3 = last - sbH - r;
-            return y3;
-        }, faceRect.bottom);
-        SB.bubbles
-        .filter(sb => sb.bubble.getBoundingClientRect().top > this.svg.parentElement.getBoundingClientRect().top)
-        .reduce((last, sb) => {
-            const sbH = sb.face.getBoundingClientRect().height;
-            const x = charMidX;
-            const y1 = last;
-            const y2 = last + sbH + r;
-            const y3 = last + r;
-            createLine(x, y3, x, y2, `blue`);
-            createLine(x, y2, x, y1, `#5ff`);
-            return y3;
-        }, faceRect.bottom);
-        createLine(charMidX, faceRect.bottom, charMidX, faceRect.bottom - faceRect.height, `#f5f`);
-        createLine(charMidX, faceRect.bottom, charMidX, faceRect.bottom - faceRect.height - sb.mrgComp, `#f55`);
-        /**
-        const createCircle = (x, y, r) => {
-            const svg = document.createElementNS(xmlns, "svg");
-            svg.setAttribute("xmlns", xmlns);
-            svg.setAttribute("width", r*2);
-            svg.setAttribute("height", r*2);
-            svg.setAttribute("viewBox", `0 0 ${r*2} ${r*2}`);
-            svg.setAttribute("id", "todelete");
-            svg.setAttribute("style", `position: fixed; z-index: 1000; stroke-width: 2px; stroke: turquoise; fill: transparent; top: ${y-r}; left: ${x-r}`);
-            document.body.appendChild(svg);
-            const c = document.createElementNS(xmlns, "circle");
-            c.setAttribute("r", r);
-            c.setAttribute("cx", r);
-            c.setAttribute("cy", r);
-            svg.appendChild(c);
-        }
-        //createCircle(charMidX, charMidY, r);
-        //*/
     }
 }

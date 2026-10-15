@@ -9,6 +9,35 @@ export default class FL { // File Loader
     constructor(cwd) {
         this.cwd = cwd;
     }
+    
+    #styles(title) {
+        const link = href => `<link rel="stylesheet" href="${href}" />`;
+        const stylesPath = path.join("client", "pages", title, "styles");
+        return this.folder(stylesPath).reduce((styles, ctl) => {
+            return styles + link(`client/pages/${title}/styles/${ctl}`);
+        }, '');
+    }
+    
+    #scripts() {
+        const script = src => `<script type="module" src="${src}"></script>`;
+        const scriptsPath = path.join("client", "modules");
+        return this.folder(scriptsPath).reduce((scripts, ctl) => {
+            return scripts + script(`client/modules/${ctl}/${ctl}.js`); 
+        }, '');
+    }
+    
+    #grads() {
+        const gradsPath = path.join("local", "data", "grads.svg");
+        return this.txt(gradsPath);
+    }
+    
+    #collection() {
+        const collectionPath = path.join("local", "data", "collection.csv");
+        const collection = this.txt(collectionPath).split("\r\n");
+        const li = val => `<li>${val}</li>`;
+        const ol = collection.reduce((code, ent) => code + li(ent), '');
+        return `<ol id="collection">${ol}</ol>`;
+    }
 
     checkPath(href) {
         if (!fs.existsSync(href)) return 404;
@@ -17,7 +46,7 @@ export default class FL { // File Loader
     
     folder(href, options) {
         const code = this.checkPath(href);
-        if (code != null) return code;
+        if (code != null) return [`${code}`];
         return fs.readdirSync(href, options);
     }
 
@@ -56,8 +85,10 @@ export default class FL { // File Loader
         file.data = file.data
         .split('styles go here').join(this.#styles(title))
         .split('NOSERVER').join(title)
-        .split('Запустите "START.py", чтобы начать интерракцию').join(content.data)
-        .split('scripts go here').join(this.#scripts());
+        .split('content goes here').join(content.data)
+        .split('scripts go here').join(this.#scripts())
+        .split('grads go here').join(this.#grads())
+        .split('collection goes here').join(this.#collection());
         return file;
     }
     
@@ -75,21 +106,5 @@ export default class FL { // File Loader
         .split("MESSAGE").join(message[code] ?? message.default);
         page.code = code;
         return page;
-    }
-    
-    #styles(title) {
-        const link = href => `<link rel="stylesheet" href="${href}" />`;
-        const stylesPath = path.join("client", "pages", title, "styles");
-        return this.folder(stylesPath).reduce((styles, ctl) => {
-            return styles + link(`client/pages/${title}/styles/${ctl}`);
-        }, '');
-    }
-    
-    #scripts() {
-        const script = src => `<script type="module" src="${src}"></script>`;
-        const scriptsPath = path.join("client", "modules");
-        return this.folder(scriptsPath).reduce((scripts, ctl) => {
-            return scripts + script(`client/modules/${ctl}/${ctl}.js`); 
-        }, '');
     }
 }

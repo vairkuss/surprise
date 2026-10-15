@@ -1,4 +1,7 @@
 .character {
+    --sprite: url(/local/data/grads.svg);
+    --tail: url(/local/data/grads.svg);
+    --main-color: transparent;
     z-index: 90;
     display: grid;
     place-content: center;
@@ -7,24 +10,34 @@
     bottom: 10vh;
     height: min(35vh, 35vw);
     width: min(35vh, 35vw);
+    background:
+        var(--sprite) center / 100% no-repeat,
+        var(--tail) center / 100% no-repeat,
+        radial-gradient(closest-side circle at center,
+            rgb(from var(--main-color) r g b / 0.1),
+            transparent
+        );
 }
 
 
 #infi {
     left: min(10vh, 10vw);
-    --main-color: yellow;
-    /*background: var(--main-color);*/
-    
-    & .face {
-        color: #fff;
-        background: #000;
-        border-color: #fff;
-    }
-    
-    & .tail {
-        fill: #000;
-        stroke: #fff;
-    }
+    --main-color: magenta;
+    --sec-color: yellow;
+    /**
+    background: var(--main-color);
+    /**/
+}
+
+#infi .face {
+    color: #fff;
+    background: #000;
+    border-color: #fff;
+}
+
+#infi .tail {
+    fill: #000;
+    stroke: #fff;
 }
 
 
@@ -32,16 +45,20 @@
     right: min(10vh, 10vw);
     --main-color: brown;
     --sec-color: turquoise;
-    /*background: var(--main-color);*/
-    
-    /*& .face {
-        color: var(--sec-color);
-        background: var(--main-color);
-        border-color: var(--sec-color);
-    }
-    
-    & .tail {
-        fill: var(--main-color);
-        stroke: var(--sec-color);
-    }*/
+    /**
+    background: var(--main-color);
+    /**/
 }
+
+/**
+#virko .face {
+    color: var(--sec-color);
+    background: var(--main-color);
+    border-color: var(--sec-color);
+}
+
+#virko .tail {
+    fill: var(--main-color);
+    stroke: var(--sec-color);
+}
+/**/

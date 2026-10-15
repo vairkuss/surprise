@@ -13,13 +13,11 @@
     --cur-color-gray: hsl(from var(--cur-color) h 2% l);
     
     --bg-grad:
-        radial-gradient(
-            ellipse 85% 85%,
+        radial-gradient(ellipse 85% 85%,
             transparent,
             hsl(from var(--cur-color) h calc(s * 0.2) calc(l * 0.05))
         ),
-        linear-gradient(
-            to bottom,
+        linear-gradient(to bottom,
             hsl(from var(--cur-color) calc(h - 5) calc(s * 0.2) calc(l * 0.15)),
             hsl(from var(--cur-color) h calc(s * 0.2) calc(l * 0.2)),
             hsl(from var(--cur-color) calc(h + 5) calc(s * 0.2) calc(l * 0.15)),
@@ -28,52 +26,49 @@
         );
         
     --block-bg-grad:
-        radial-gradient(
-            ellipse 40% 40%,
+        radial-gradient(ellipse 40% 40%,
             hsl(from var(--cur-color) h calc(s * 0.2) calc(l * 0.225)),
             hsl(from var(--cur-color) h calc(s * 0.15) calc(l * 0.125))
         );
         
     --block-bg-grad-hover:
-        radial-gradient(
-                ellipse 70% 70%,
+        radial-gradient(ellipse 70% 70%,
                 hsl(from var(--cur-color) h calc(s * 0.2) calc(l * 0.55)),
                 hsl(from var(--cur-color) h calc(s * 0.35) calc(l * 0.1))
         );
     
     --block-bg-grad-active:
-        radial-gradient(
-            ellipse 60% 60%,
+        radial-gradient(ellipse 60% 60%,
             hsl(from var(--cur-color) h calc(s * 0.30) calc(l * 0.75)),
             hsl(from var(--cur-color) h calc(s * 0.65) calc(l * 0.20))
         );
         
     --btn-bg-grad-disabled:
-        radial-gradient(
-            ellipse 40% 40%,
+        radial-gradient(ellipse 40% 40%,
             hsl(from var(--cur-color) h calc(s * 0.15) calc(l * 0.175)),
             hsl(from var(--cur-color) h calc(s * 0.1) calc(l * 0.075))
         );
     
     --dis-grad:
-        linear-gradient(
-                105deg,
-                hsl(from var(--cur-color) calc(h - 5) calc(s * 0.1) calc(l * 0.55)),
-                hsl(from var(--cur-color) h calc(s * 0.05) calc(l * 0.4)),
-                hsl(from var(--cur-color) calc(h + 5) calc(s * 0.1) calc(l * 0.55)),
-                hsl(from var(--cur-color) h calc(s * 0.05) calc(l * 0.7)),
-                hsl(from var(--cur-color) calc(h - 5) calc(s * 0.1) calc(l * 0.55))
-            );
+        linear-gradient(105deg,
+            hsl(from var(--cur-color) calc(h - 5) calc(s * 0.1) calc(l * 0.55)),
+            hsl(from var(--cur-color) h calc(s * 0.05) calc(l * 0.4)),
+            hsl(from var(--cur-color) calc(h + 5) calc(s * 0.1) calc(l * 0.55)),
+            hsl(from var(--cur-color) h calc(s * 0.05) calc(l * 0.7)),
+            hsl(from var(--cur-color) calc(h - 5) calc(s * 0.1) calc(l * 0.55))
+        );
         
     --text-grad: url(#text-grad);
-        /*linear-gradient(
-            105deg,
+    color: var(--text-grad);
+        /**
+        linear-gradient(105deg,
             hsl(from var(--cur-color) calc(h - 5) calc(s * 0.8) calc(l * 0.75)),
             hsl(from var(--cur-color) h calc(s * 0.8) calc(l * 0.6)),
             hsl(from var(--cur-color) calc(h + 5) calc(s * 0.8) calc(l * 0.75)),
             hsl(from var(--cur-color) h calc(s * 0.8) calc(l * 0.9)),
             hsl(from var(--cur-color) calc(h - 5) calc(s * 0.8) calc(l * 0.75))
-        );*/
+        );
+        /**/
     
 }
 

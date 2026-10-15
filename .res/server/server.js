@@ -1,8 +1,8 @@
 /* Surprise Server */
 
-import DS from "./DS.mjs";
-import FL from "./FL.mjs";
-import RR from "./RR.mjs";
+import DS from "./storage.mjs";
+import FL from "./loader.mjs";
+import RR from "./sender.mjs";
 
 import http from "http";
 import path from "path";
@@ -69,8 +69,9 @@ const SERVER = http.createServer(async (req, res) => {
         
         
         case "/get/data":
-            const absentKeys = ["page", "chars"].some(key => meta.get(key) == null);
-            if (req.method !== "GET" || absentKeys) return notFound();
+            const required = ["page", "chars"];
+            const absent = required.some(key => meta.get(key) == null);
+            if (req.method !== "GET" || absent) return notFound();
             const [page, chars] = meta.values();
             const data = DS.gather(page, chars);
             rr.sendObj(data);
@@ -84,6 +85,15 @@ const SERVER = http.createServer(async (req, res) => {
                 DS.writeSave(data.save);
                 DS.data.transition = data.transition;
                 rr.end();
+            });
+        break;
+            
+        case "/post/log":
+            if (req.method !== "POST") return notFound();
+            req.on("data", data => body += data);
+            req.on("end", () => {
+                const data = JSON.parse(body);
+                rr.sendLog(data);
             });
         break;
         

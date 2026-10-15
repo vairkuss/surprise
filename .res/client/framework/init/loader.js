@@ -26,9 +26,6 @@ class PL { // Page Loader
         const chars = [...document.querySelectorAll(".character")].map(el => el.id);
         const res = await fetch(`${location.origin}/get/data?page=${page}&chars=${JSON.stringify(chars)}`);
         const data = await res.json();
-        const tree = new DOMParser().parseFromString(data.grads, "image/svg+xml");
-        data.grads = tree.querySelector(":root");
-        data.collection = data.collection.split("\r\n");
         data.icons = this.#processIcons(data.icons);
         if (chars.length) data.replicas = JSON.parse(data.replicas);
         if (chars.length) data.sprites = JSON.parse(data.sprites);
@@ -40,7 +37,8 @@ class PL { // Page Loader
         this.#inited = 1;
         PF.init();
         PC.init();
-        window.pending.forEach(init => init());
+        log(data);
+        window.pending?.forEach(init => init());
     }
 }
 

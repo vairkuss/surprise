@@ -49,9 +49,9 @@ export default class PF { // Page Finiliser
     }
     
     static init() {
-        document.body.appendChild(window.data.grads);
         this.#loadSVG();
         this.#developBlocks();
         this.#adjustBlocks();
+        document.body.removeAttribute("style");
     }
 }

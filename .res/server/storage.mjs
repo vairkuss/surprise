@@ -18,9 +18,7 @@ class NC { // Node Collection
         const primal = keys.shift();
         const last = keys.pop();
         if (last != null) {
-            const parts = last.split('.');
-            const name = parts.length < 2 ? last
-                : parts.slice(0, -1).join('.');
+            const name = last.replace(/\.(.*)/, '');
             keys.push(name);
         }
         this[primal] = keys.toReversed().reduce((prev, key) => {
@@ -30,20 +28,29 @@ class NC { // Node Collection
     
     append(href, data) {
         const keys = this.#hrefToKeys(href);
+        const last = keys.pop();
+        if (last != null) {
+            const name = last.replace(/\.(.*)/, '');
+            keys.push(name); 
+        }
         const key = keys.shift();
         const child = keys.join(path.sep);
-        if (!keys.length) this[key] = data
-        else if (key in this) this[key].append(child, data)
-        else this[key] = new NC(child, data);
+        if (!keys.length) {
+            this[key] = data;
+        } else if (key in this) {
+            this[key].append(child, data);
+        } else {
+            this[key] = new NC(child, data);
+        }
     }
     
     get(href) {
-        const keys = href.split(path.sep);
-        const filename = keys.pop();
-        const parts = filename.split('.');
-        const name = parts.length < 2 ? filename
-            : parts.slice(0, -1).join('.');
-        keys.push(name);
+        const keys = this.#hrefToKeys(href);
+        const last = keys.pop();
+        if (last != null) {
+            const name = last.replace(/\.(.*)/, '');
+            keys.push(name); 
+        }
         return keys.reduce((folder, key) => folder[key] ?? {}, this);
     }
 }
@@ -67,6 +74,8 @@ export default class DS { // Data Storage
         return root.get(dir);
     }
     
+    static #savePath = path.join("local", "data", "save.json");
+    
     static #loadSave() {
         this.data.save = {
             stage: 0,
@@ -76,9 +85,8 @@ export default class DS { // Data Storage
             score: { highest: [0, 0, 0], best: 0 },
             pause: 1
         }
-        this.savePath = path.join("local", "data", "save.json");
-        if (fs.existsSync(this.savePath)) {
-            const local = this.fl.json(this.savePath);
+        if (fs.existsSync(this.#savePath)) {
+            const local = this.fl.json(this.#savePath);
             Object.apply(this.data.save, local);
         }
         this.writeSave({ pause: 1 });
@@ -87,14 +95,12 @@ export default class DS { // Data Storage
     static writeSave(save) {
         Object.apply(this.data.save, save);
         const data = JSON.stringify(this.data.save);
-        fs.writeFileSync(this.savePath, data, "utf-8");
+        fs.writeFileSync(this.#savePath, data, "utf-8");
     }
     
-    static #loadData() {
-        const data = name => path.join("local", "data", name);
-        this.data.collection = this.fl.txt(data("collection.csv"));
-        this.data.grads = this.fl.txt(data("grads.svg"));
-        this.data.dialogues = this.fl.json(data("dialogues.json"));
+    static #loadDialogues() {
+        const dialoguesPath = path.join("local", "data", "dialogues.json");
+        this.data.dialogues = this.fl.json(dialoguesPath);
     }
     
     static #loadIcons() {
@@ -128,7 +134,7 @@ export default class DS { // Data Storage
         this.fl = fl;
         this.data = {};
         this.#loadSave();
-        this.#loadData();
+        this.#loadDialogues();
         this.#loadIcons();
         this.#loadImgs();
     }

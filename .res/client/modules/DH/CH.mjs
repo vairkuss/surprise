@@ -16,9 +16,9 @@ export default class CH { // Choice Handler
         } else if (typeof choices !== "object" || choices.constructor.name === "Array") {
             this.chosen = choices;
         } else {
-            AF.holdUntill(30, () => !SB.bubblesActive, () => {
+            SB.onWritingEnd(() => {
                 this.chosen = undefined;
-                this.cc.removeClass("hidden");
+                this.cc.classList.remove("hidden");
                 this.cm = new CM(choices);
                 this.cc.base.appendChild(this.cm.menu);
             });
@@ -31,16 +31,19 @@ export default class CH { // Choice Handler
         this.cc.chip.style.left = e.screenX - this.cc.dp.x + "px";
         this.cc.chip.style.top = e.screenY - this.cc.dp.y + "px";
         this.cc.updateChain();
-        const field = document.elementsFromPoint(e.clientX, e.clientY).find(el => el.matches(".cho-field"));
-        const id = field != null ? parseInt(field.getAttribute("href").slice(3)) : undefined;
-        AF.holdUntill(30, () => this.cm.wheel.fields != null, () => {
-            const cws = this.cm.wheel.fields[id];
-            Object.values(this.cm.wheel.fields).forEach(obj => obj.deactivate());
-            cws?.activate();
-            this.cm.text.textContent = cws?.text ?? "";
-            this.cc.setIcon(cws?.icon);
-            document.querySelector(":root").style.setProperty("--cur-color", cws?.color ?? "var(--m-color)");
-        });
+        const fired = document.elementsFromPoint(e.clientX, e.clientY);
+        const field = fired.find(el => el.matches(".cho-field"));
+        const id = field == null ? field : parseInt(field.getAttribute("href").slice(3));
+        const cs = this.cm.wheel.fields[id];
+        this.cm.wheel.fields.forEach(obj => obj.deactivate());
+        if (cs != null) {
+            cs.activate();
+            this.cm.text.textContent = cs.text;
+            cs.whenReady(() => {
+                this.cc.setIcon(cs.icon);
+                root.style.setProperty("--cur-color", cs.color);
+            });
+        } else root.style.setProperty("--cur-color", "var(--m-color)");
     }
     
     static makeChoice(event) {
@@ -49,20 +52,21 @@ export default class CH { // Choice Handler
         this.cm.hide();
         this.cc.removeClass("active");
         this.cc.dp = null;
-        const fired = document.elementsFromPoint(e.clientX, e.clientY).find(el => el.matches(".cho-field"));
-        if (fired != null) {
-            const id = parseInt(fired.getAttribute("href").slice(3));
-            const cws = this.cm.wheel.fields[id];
-            this.chosen = cws.value;
+        const fired = document.elementsFromPoint(e.clientX, e.clientY);
+        const field = fired.find(el => el.matches(".cho-field"));
+        if (field != null) {
+            const id = parseInt(field.getAttribute("href").slice(3));
+            const cs = this.cm.wheel.sectors[id];
+            this.chosen = cs.value;
         } else if (this.chosen !== undefined) {
-            AF.delay(.4, () => {
+            setTimeout(() => {
                 this.cc.retrieve();
                 this.cc.setIcon(undefined);
                 this.chosen = undefined;
                 this.cm.menu.remove();
-                this.cc.addClass("hidden");
-                document.querySelector(":root").style.setProperty("--cur-color", "var(--m-color)");
-            });
+                this.cc.base.classList.add("hidden");
+                root.style.setProperty("--cur-color", "var(--m-color)");
+            }, 400);
         } else this.cc.retrieve();
     }
 }
