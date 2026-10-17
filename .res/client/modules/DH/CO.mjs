@@ -6,9 +6,10 @@ export default class CO {
     static chars = {};
     
     constructor(el) { // Character Object
-        CO.chars[this.name] = this;
         this.el = el;
+        CO.chars[el.id] = this;
         this.sprites = window.data.sprites[el.id];
+        this.idle();
     }
     
     get name() { return this.el.id }
@@ -19,8 +20,8 @@ export default class CO {
     get src() { return this.__src }
     set src(src) {
         this.__src = src;
-        this.pose = src.match(/\.?([^\d/.]+)[^/]*$/)[1];
-        this.el.style.setProperty("--sprite", `url(${src})`);
+        this.pose = src.match(/\.?([^/\d.]+)[^/]*$/)[1];
+        this.el.style.setProperty("--sprite", `url(/${src})`);
     }
     
     #random(collection) {

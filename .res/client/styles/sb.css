@@ -12,12 +12,11 @@
     bottom: 0;
     height: fit-content;
     
-    transform: scale(100%);
-    filter: opacity(100%);
     will-change: transform, filter;
     transition:
         all 0.4s ease-out;
 }
+
 
 .face {
     display: grid;
@@ -39,6 +38,7 @@
     place-content: center;
     white-space: pre-line;
 }
+
 
 .tail {
     fill: #fff;

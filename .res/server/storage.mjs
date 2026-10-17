@@ -140,11 +140,13 @@ export default class DS { // Data Storage
     }
     
     static gather(page, chars) {
+        if (page == null || chars == null) return {};
         const clone = JSON.parse(JSON.stringify(this.data));
         delete clone.dialogues;
         if (page !== "BEASTAXY") delete clone.beast;
         const replicas = this.data.dialogues[`${page}:${this.data.save.stage}`];
         clone.replicas = JSON.stringify(replicas);
+        console.debug(typeof chars, chars);
         const sprites = JSON.parse(chars).reduce((sprites, char) => {
             sprites[char] = this.data.sprites[char];
             return sprites;

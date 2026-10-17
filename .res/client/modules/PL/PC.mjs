@@ -11,30 +11,32 @@ export default class PC { // Page Controller
         window.root = document.querySelector("#content");
         window.transition = (url, [x, y]) => this.transition(url, [x, y]);
         window.log = (...args) => {
-            // находить место вызова функции из трея
-            // new Error().stack;
-            console.debug(...args);
+            const caller = new Error().stack.toString().split('\n')[2];
+            console.debug(caller, ...args);
             fetch(`${location.origin}/post/log`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ origin: location.href, args: [...args] })
+                body: JSON.stringify({ pathname: location.pathname, args, caller })
             });
         }
     }
     
     static #spawn() {
-        const [x, y] = window.data.transition ?? [0, 0];
-        window.data.transition = null;
-        root.style.transition = "none";
-        setTimeout(() => {
-            root.style.filter = "opacity(0)"
-            root.style.translate = `calc(${x} * 100vw) calc(${y} * -100vh)`;
-            root.style.transition = '';
+        const item = sessionStorage.getItem("transition");
+        if (item != null) {
+            const [x, y] = JSON.parse(item);
+            root.style.transition = "none";
             setTimeout(() => {
-                root.style.filter = '';
-                root.style.translate = '';
+                root.style.filter = "opacity(0)";
+                root.style.translate = `calc(${x} * 100vw) calc(${y} * -100vh)`;
+                setTimeout(() => {
+                    root.style.transition = '';
+                    root.style.filter = '';
+                    root.style.translate = '';
+                }, 1/60 * 1000);
             }, 1/60 * 1000);
-        }, 1/60 * 1000);
+        }
+        document.body.removeAttribute("style");
         const cover = document.querySelector("#cover");
         cover.style.height = 0;
     }
@@ -43,7 +45,7 @@ export default class PC { // Page Controller
         root.style.translate = `calc(${-x} * 100vw) calc(${-y} * -100vh)`;
         root.style.filter = "opacity(0)";
         cover.style.height = "250vh";
-        window.data.transition = [x, y];
+        sessionStorage.setItem("transition", JSON.stringify([x, y]));
         fetch(`${location.origin}/post/data`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },

@@ -15,23 +15,17 @@
 
 
 :root {
+    user-select: none;
     font-family: "Goodhers Hooney", sans-serif;
-    font-size: 4vh;
-    color: hsl(var(--m-hue), calc(var(--m-sat) * 0.8), calc(var(--m-lum) * 0.75));
+    font-size: 3.5vh;
+    color: url(#text-grad);
 }
 
 .lable {
     font-family: fraiche, serif;
-    font-size: 2rem !important;
+    font-size: 2rem;
 }
 
 .text {
-    color: var(--text-grad);
-    /*
-    background: var(--text-grad);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
-    */
+    color: var(--cur-color);
 }

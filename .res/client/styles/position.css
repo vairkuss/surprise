@@ -2,16 +2,16 @@
     position: fixed;
 }
 
-.top, .right, .bottom, .left {
-    --num: 3;
-    --pad: calc(var(--num) * min(1vw, 1vh));
-}
-
 .middle {
     --rx: 0;
     --ry: 0;
     left: calc(50vw - var(--rx));
     top: calc(50vh - var(--ry));
+}
+
+.top, .right, .bottom, .left {
+    --digit: 3;
+    --pad: calc(var(--digit) * min(1vw, 1vh));
 }
 
 .top {
@@ -20,6 +20,7 @@
 
 .bottom {
     bottom: var(--pad);
+    top: auto;
 }
 
 .left {
@@ -28,4 +29,5 @@
 
 .right {
     right: var(--pad);
+    left: auto;
 }

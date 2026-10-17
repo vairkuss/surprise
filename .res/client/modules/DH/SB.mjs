@@ -194,8 +194,10 @@ class SF { // Speech bubble Face
         }, { once: 1 });
         for (const [i, c] of enumerated) {
             this.#processChar(c, i, text);
-            if (!this.writing) return this.el.className = "face";
-        );
+            if (!this.writing) {
+                return this.el.className = "face";
+            }
+        }
     }
 }
 

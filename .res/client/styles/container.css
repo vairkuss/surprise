@@ -1,0 +1,15 @@
+.hbox, .vbox {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+}
+
+
+.hbox {
+    flex-direction: row;
+}
+
+
+.vbox {
+    flex-direction: column;
+}

@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "index.md",
+                "file": "ideas.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "index"
+              "title": "ideas"
             }
           },
           {
@@ -31,20 +31,6 @@
               "pinned": true,
               "icon": "lucide-git-fork",
               "title": "Граф"
-            }
-          },
-          {
-            "id": "b1641d9dad80ce3e",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "index.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "index"
             }
           },
           {
@@ -61,8 +47,7 @@
               "title": "music-library-page"
             }
           }
-        ],
-        "currentTab": 3
+        ]
       }
     ],
     "direction": "vertical"
@@ -213,9 +198,10 @@
       "bases:Створити нову базу": false
     }
   },
-  "active": "1e4d6a48b748ff32",
+  "active": "8ac4a97a96b97ff6",
   "lastOpenFiles": [
     "index.md",
+    "web/layout/music-library-page.md",
     "chronology/stage3.md",
     "presentation/short-about.md",
     "ideas.md",

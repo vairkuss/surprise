@@ -12,10 +12,15 @@ export default class FL { // File Loader
     
     #styles(title) {
         const link = href => `<link rel="stylesheet" href="${href}" />`;
-        const stylesPath = path.join("client", "pages", title, "styles");
-        return this.folder(stylesPath).reduce((styles, ctl) => {
+        const commonPath = path.join("client", "styles");
+        const common = this.folder(commonPath).reduce((styles, ctl) => {
+            return styles + link(`client/styles/${ctl}`);
+        }, '');
+        const pagePath = path.join("client", "pages", title, "styles");
+        const page = this.folder(pagePath).reduce((styles, ctl) => {
             return styles + link(`client/pages/${title}/styles/${ctl}`);
         }, '');
+        return common + page;
     }
     
     #scripts() {
@@ -34,9 +39,9 @@ export default class FL { // File Loader
     #collection() {
         const collectionPath = path.join("local", "data", "collection.csv");
         const collection = this.txt(collectionPath).split("\r\n");
-        const li = val => `<li>${val}</li>`;
-        const ol = collection.reduce((code, ent) => code + li(ent), '');
-        return `<ol id="collection">${ol}</ol>`;
+        const li = text => `<li>${text}</li>`;
+        const items = collection.reduce((items, ent) => items + li(ent), '');
+        return `<ol id="collection">${items}</ol>`;
     }
 
     checkPath(href) {

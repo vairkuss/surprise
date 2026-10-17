@@ -8,10 +8,6 @@ export class CCC { // Choice Chip Chain
     constructor() {
         this.root = document.createElement("div");
         this.root.className = "cho-chain-seg";
-        /**
-        this.ghost = document.createElement("div");
-        this.ghost.className = "cho-chain-ghost";
-        /**/
     }
     
     get size() { return this.root.getBoundingClientRect().width }
@@ -24,17 +20,11 @@ export class CCC { // Choice Chip Chain
         
         const diff = segments + 1 - this.root.children.length;
         if (diff > 0) this.#gain(diff);
-        /**
-        if (diff < 0) this.#lose(diff);
-        /**/
         
         const rest = (length - chipR) % (this.size + this.margin);
         const restFraction = rest / (this.size + this.margin);
         const ghost = this.root.children[segments];
         ghost.style.filter = `opacity(${restFraction * 100}%)`;
-        /**
-        this.ghost.style.filter = `opacity(${restFraction * 100}%)`;
-        /**/
         
         const rad = Math.atan2(chipY, chipX);
         const dir = [Math.cos(rad), Math.sin(rad)];
@@ -53,13 +43,6 @@ export class CCC { // Choice Chip Chain
         const toAppend = Array(count).fill(seg.cloneNode());
         this.root.append(...toAppend);
     }
-    /**
-    #lose(count) {
-        const children = [...this.root.children];
-        const toRemove = children.slice(count);
-        toRemove.forEach(seg => seg.remove());
-    }
-    /**/
 }
 
 
@@ -74,7 +57,7 @@ export default class CC { // Choice Chip
         
         this.chip = document.createElement("div");
         this.chip.id = "chip";
-        this.chip.textContent = "...";
+        this.chip.textContent = "<i>...</i>";
         this.base.appendChild(this.chip);
         
         this.chipBorder = new VSE([14], { id: "chip-border", parent: this.chip });
@@ -82,9 +65,6 @@ export default class CC { // Choice Chip
         
         this.chain = new CCC();
         this.base.appendChild(this.chain.root);
-        /**
-        this.base.appendChild(this.chain.ghost);
-        /**/
     }
     
     get active() {
@@ -105,15 +85,16 @@ export default class CC { // Choice Chip
         if (this.changingTo !== icon) {
             this.changingTo = icon;
             this.transition += 400;
-            if (!this.blinking) this.#blinkIcon();
+            this.#blinkIcon();
         }
     }
     
     #blinkIcon() {
+        if (this.blinking) return;
         this.blinking = 1;
         this.icon?.classList.add("hidden");
         this.chip.style.color = "transparent";
-        signal.addEventListener("chipTransitionEnd", () => {
+        signal.addEventListener("chipIconChanged", () => {
             this.#changeIcon();
             setTimeout(() => {
                this.icon?.classList.remove("hidden");
@@ -121,12 +102,10 @@ export default class CC { // Choice Chip
                this.blinking = 0;
            }, 1/60 * 1000);
         }, { once: 1 });
-        const timer = setInterval(() => {
+        const transitionCounter = setInterval(() => {
             this.transition--;
-            if (!this.transition) {
-                signal.dispatch(new Event("chipTransitionEnd"));
-                clearInterval(timer);
-            }
+            if (!this.transition) signal.dispatch(new Event("chipIconChanged"));
+            if (this.transition <= -400) clearInterval(transitionCounter);
         }, 1);
     }
     

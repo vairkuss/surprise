@@ -5,22 +5,46 @@ class Preview {
     
     static #inited = 0;
     
+    static #developBlocks(blocks) {
+        if (blocks == null) {
+            const lowest = ".block:not(:has(.block))";
+            blocks = [...document.querySelectorAll(lowest)];
+        }
+        blocks = blocks.filter(block => block != null);
+        if (!blocks.length) return;
+        const ringless = ".block:not(:has(> .inner-ring))";
+        blocks.forEach(block => {
+            if (!block.matches(ringless)) return;
+            const ring = document.createElement("div");
+            ring.className = "inner-ring";
+            ring.innerHTML = block.innerHTML;
+            block.innerHTML = ring.outerHTML;
+        });
+        const parents = blocks.reduce((unique, block) => {
+            const parent = block.closest(ringless);
+            if (!unique.includes(parent) && parent != null) {
+                unique.push(parent);
+            }
+            return unique;
+        }, []);
+        this.#developBlocks(parents);
+    }
+    
     static #disableAllBut(current) {
-        const btns = [...document.querySelectorAll('#buttons > .btn')];
-        const index = btns.indexOf(current);
-        btns.splice(current, 1);
-        btns.forEach(btn => {
-            const disabled = btn.matches('disabled');
+        current.classList.add("active");
+        const inactive = "#buttons > .btn:not(.active):has(.load-svg)";
+        document.querySelectorAll(inactive).forEach(btn => {
+            const disabled = btn.matches(".disabled");
             btn.classList.toggle("disabled", !disabled);
         });
+        current.classList.remove("active");
     }
     
     static init() {
         if (this.#inited) return;
         this.#inited = 1;
-        const btns = [...document.querySelectorAll('#buttons .btn')];
-        btns.forEach(btn => {
-            btn.addEventListener("click", () => this.#disableAllBut(btn));
+        document.querySelectorAll('#buttons .btn').forEach(btn => {
+            btn.onclick = () => this.#disableAllBut(btn);
         });
     }
 }
@@ -28,10 +52,15 @@ class Preview {
 
 function newColor() {
     const input = document.querySelector("#values");
-    const values = input.value.split(" ").map(v => {
-        return parseInt(v) === NaN ? 0 : parseInt(v);
+    if (!input.value) return;
+    const values = input.value.split(' ').map(v => {
+        return Number.isNaN(v) ? 0 : parseInt(v);
     });
-    if (values.length !== 3) return console.error(`bad input: "${input.value}"`);
+    if (values.length !== 3) {
+        input.placeholder = "bad input";
+        setTimeout(() => input.placeholder = "h, s, l", 3000);
+        return input.value = '';
+    }
     input.value = '';
     let [h, s, l] = values;
     h %= 360;

@@ -1,51 +1,67 @@
 :root {
     display: grid;
     place-content: center;
+    
     position: fixed;
     z-index: 1;
-    background: #000;
+    
     width: 100vw;
     height: 100vh;
+    
+    background: #000;
 }
 
 body {
     position: absolute;
     z-index: 2;
     inset: 0;
+    
     margin: 0;
+    
+    background: transparent;
 }
 
 #cover {
     position: fixed;
     z-index: 100;
-    background:
-        linear-gradient(
-            to bottom,
-            black 40%,
-            transparent 100%
-        ) center / 100%;
     top: 0;
-    left: 0;
+    
     width: 100vw;
     height: 250vh;
-    will-change: height;
+    
+    background:
+        linear-gradient(to bottom,
+            #000 40%,
+            transparent
+        );
+    
     transition: 1.4s height ease-out;
 }
 
 #content {
     display: grid;
+    place-content: center;
+    
     position: fixed;
-    width: 100;
+    
+    width: 100vw;
+    
+    font-style: normal;
+    
     will-change: filter, translate;
     transition:
         0.6s filter ease-in-out,
         0.6s translate ease-in;
 }
 
-#scripts {
-    display: none;
+#particles {
+    pointer-events: none;
+    
+    position: fixed;
+    top: 0;
+    left: 0;
 }
 
-#cold-storage {
+#scripts, #cold-storage {
     display: none;
 }

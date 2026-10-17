@@ -34,13 +34,13 @@
     </div>
 </div>
 
-<div class="block" id="input" style="filter: opacity(0)">
+<div class="hidden block" id="input">
 
     <label for="values" class="load-svg icon">Enter HSL color values</label>
     <input type="text" id="values" placeholder="h, s, l" value="714, 825, 285" />
     <pre id="message"></pre>
     
-    <div class="btn block" id="execute" onclick="newColor()">
+    <div class="btn block" onclick="newColor()">
         <div class="icon">submit</div>
     </div>
     

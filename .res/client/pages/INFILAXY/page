@@ -1,7 +1,12 @@
-<div class="btn block middle" onclick="transition('preview', [0, -1])">
-    <div class="load-svg icon">arrow</div>
+<div class="vbox middle top">
+    <div class="btn block" onclick="transition('collection', [0, 1])">
+        <div class="load-svg icon">arrow</div>
+    </div>
+    <div class="block">
+        <div class="icon lable">INFILAXY</div>
+    </div>
 </div>
-<div class="btn block middle top" onclick="transition('collection', [0, 1])">
+<div class="btn block middle" onclick="transition('preview', [0, -1])">
     <div class="load-svg icon">arrow</div>
 </div>
 <div class="btn block middle right" onclick="transition('presentation', [1, 0])">

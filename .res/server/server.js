@@ -69,11 +69,10 @@ const SERVER = http.createServer(async (req, res) => {
         
         
         case "/get/data":
-            const required = ["page", "chars"];
-            const absent = required.some(key => meta.get(key) == null);
-            if (req.method !== "GET" || absent) return notFound();
-            const [page, chars] = meta.values();
-            const data = DS.gather(page, chars);
+            const keys = req.url.match(/\?page=(.*)&chars=(\[.*\])$/);
+            if (req.method !== "GET" || keys == null) return notFound();
+            const [, page, chars] = keys;
+            const data = DS.gather(page, chars.replace(/%22/g, '"'));
             rr.sendObj(data);
         break;
         
@@ -83,7 +82,6 @@ const SERVER = http.createServer(async (req, res) => {
             req.on("end", () => {
                 const data = JSON.parse(body);
                 DS.writeSave(data.save);
-                DS.data.transition = data.transition;
                 rr.end();
             });
         break;

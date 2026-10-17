@@ -1,6 +1,5 @@
 /* Choice Menu */
 
-import AF from "./AF.mjs"
 import VE, { VPE, VRE, VSE } from "./VE.mjs"
 
 
@@ -20,11 +19,11 @@ class DC { // Data Calculator
         return `M${xI} ${yI}L${xO} ${yO}`;
     }
     
-    static fieldD(dirs, { inR, outR }) {
-        const cordsO = dirs.map(rad => {
+    static fieldD(cuts, { inR, outR }) {
+        const cordsO = cuts.map(rad => {
             return this.cords(rad, outR, outR);
         });
-        const cordsI = dirs.toReversed().map(rad => {
+        const cordsI = cuts.toReversed().map(rad => {
             return this.cords(rad, inR, outR);
         });
         const cords = cordsO.concat(cordsI);
@@ -51,6 +50,7 @@ class CS { // Choice Wheel Sector
         const hash = await crypto.subtle.digest("SHA-256", bytes);
         const rgb = hash.slice(0, 3);
         this.color = "#" + new Uint8Array(rgb).toHex();
+        this.onColorGenerated();
     }
     
     #fetchIcon() {
@@ -69,20 +69,28 @@ class CS { // Choice Wheel Sector
         }
     }
     
-    #generateSector(sizes, i, a) {
-        const cuts = 180 / 5 / a.length;
-        const dirs = Array.from({ length: cuts + 1 }, (_, cut) => {
-            const part = cut / cuts;
-            return Math.PI * (i + part) / a.length;
+    #generateSector(sizes, sector, sectors) {
+        const fractionSize = 5;
+        const fractions = 180 / fractionSize;
+        const cutsCount = fractions / sectors.length;
+        const cuts = Array.from({ length: cutsCount + 1 }, (_, cut) => {
+            const part = cut / cutsCount;
+            return Math.PI * (sector + part) / sectors.length;
         });
-        const fieldD = DC.fieldD(sizes);
-        this.field = new VPE(fieldD, { id: `id${i}`, cn: "cho-field" });
-        const dividerD = DC.dividerD(dirs[0], sizes);
+        const fieldD = DC.fieldD(cuts, sizes);
+        this.field = new VPE(fieldD, { id: `id${sector}`, cn: "cho-field" });
+        const dividerD = DC.dividerD(cuts[0], sizes);
         this.divider = new VPE(dividerD, { cn: "cho-divider" });
     }
     
     activate() { this.field.classList.add("active") }
     deactivate() { this.field.classList.remove("active") }
+    
+    onColorGenerated(func) {
+        if (typeof func !== "function") return;
+        if (this.color != null) func();
+        else this.onColorGenerated = func;
+    }
 }
 
 
@@ -114,17 +122,16 @@ class CW { // Choice Wheel
         const w = this.sizes.outR * 2;
         const h = this.sizes.outR + this.sizes.divW / 2;
         this.body = new VSE([w, h], { id: "cho-wheel", fill: "url(#cho-wheel-grad)" });
-        this.body.setAttribute("style",
-            `bottom: calc(${baseStyle.bottom} + var(--cho-size) * 0.4);` +
-            `left: ${root.offsetWidth / 2 - this.sizes.outR};`
-        );
+        this.body.style.bottom = `calc(${baseStyle.bottom} + var(--cho-size) * 0.4)`;
+        this.body.style.left = `${root.offsetWidth / 2 - this.sizes.outR}px`;
     }
     
     #genNegMask() {
         const negMask = new VE("mask", { id: `${this.body.mask.id}-neg`, parent: this.body.defs.el });
         const children = [...this.body.mask.children];
         children.forEach(child => {
-            const use = new SVGUE(child.getAttribute("href"), { parent: negMask.el });
+            const href = child.getAttribute("href");
+            const use = new SVGUE(href, { parent: negMask.el });
             use.setAttribute("style", "filter: invert(1)");
         });
     }
@@ -151,13 +158,14 @@ class CW { // Choice Wheel
     
     #shuffleKeys(choices) {
         return Object.keys(choices).reduce((arr, key) => {
-            arr.splice((arr.length + 1) * Math.random(), 0, key);
+            const pos = (arr.length + 1) * Math.random();
+            arr.splice(pos, 0, key);
             return arr;
         }, []);
     }
     
     #appendSectors(keys, choices) {
-        this.fields = keys.map((key, i, a) => {
+        this.sectors = keys.map((key, i, a) => {
             const cs = new CS(key, choices[key], this.sizes, i, a);
             this.body.addToMask(cs.field.el);
             cs.divider.appendTo(this.body);
@@ -177,15 +185,15 @@ export default class CM { // Choice Menu
     constructor(choices) {
         this.menu = document.createElement("div");
         this.menu.id = "cho-menu";
+        this.menu.className = "hidden";
         this.choices = choices;
-        this.hide();
     }
         
     updateMenu() {
         this.wheel?.body.remove();
         this.text?.remove();
         const base = this.menu.parentElement;
-        if (!base) return;
+        if (base == null) return;
         this.wheel = new CW(base, this.choices);
         this.wheel.body.appendTo(this.menu);
         this.text = document.createElement("pre");
@@ -196,12 +204,11 @@ export default class CM { // Choice Menu
         this.menu.appendChild(this.text);
     }
     
-    blinkText(func) {
+    blinkText() {
         this.text.classList.add("hidden");
-        setTimeout(() => {
-            if (func) func();
+        signal.addEventListener("chipIconChanged", () => {
             this.text.classList.remove("hidden");
-        }, 400);
+        }, { once: 1 });
     }
     
     show() {

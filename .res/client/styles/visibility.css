@@ -1,6 +1,7 @@
 .hidden {
-    transform: scale(20%) !important;
-    filter: opacity(0%) !important;
+    transform: scale(0.2) !important;
+    filter: opacity(0) !important;
+    
     will-change: transform, filter;
     transition:
         transform 0.4s ease-in,
@@ -20,31 +21,37 @@
 }
 
 #cho-menu.hidden {
+    top: 100vh;
     transition:
         0s transform 0.4s ease-in,
         filter 0.4s ease-in;
 }
 
 #cho-wheel.hidden {
-    bottom: calc(-1 * var(--cho-size) + var(--cho-size) * 0.4);
+    bottom: calc(var(--cho-size) * -0.6);
     transition:
         bottom 0.4s ease-in;
 }
 
-.active {
-    /*
-    fill: #fff;
-    transition: all 0.3s ease-out;
-    */
-}
 
 #choice.active::before {
-    transform: scale(2000%);
-    filter: opacity(60%);
+    transform: scale(20);
+    filter: opacity(0.6);
 }
 
 
-*.masked:not(.active):not(.hidden) {
-    filter: opacity(5%);
-    transform: scale(80%);
+.masked {
+    transition: 
+        0.4s filter ease-in,
+        0.4s transform ease-in-out;
+}
+
+.masked:not(:active):not(.hidden) {
+    filter: opacity(0.1);
+    transform: scale(0.6);
+}
+
+.masked:hover {
+    filter: opacity(0.4);
+    transform: scale(0.8);
 }
