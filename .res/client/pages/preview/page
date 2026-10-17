@@ -1,10 +1,14 @@
-<div class="block">
-    <div class="icon lable">INFILAXY</div>
-    <div class="icon">Lorem bibsum bla bla bla choto tam eto razumnij tekst ya ochen umnij pupupupu</div>
-    <div id="buttons">
+<!-- Preview -->
 
+
+<div class="block" class="vbox">
+
+    <div class="text lable">INFILAXY</div>
+    <div class="text">Lorem bibsum bla bla bla choto tam eto razumnij tekst ya ochen umnij pupupupu</div>
+    
+    <div id="buttons">
         <div class="btn block">
-            <div class="load-svg icon" onclick='transition("25285", [0, 1])'>arrow</div>
+            <div class="load-svg icon" onclick='transition("25285", [0, 1])'>arrowW</div>
         </div>
         <div class="btn block">
             <div class="load-svg icon" onclick="transition('presentation', [1, 1])">rune</div>
@@ -12,6 +16,7 @@
         <div class="btn block">
             <div class="load-svg icon" onclick="transition('collection', [0, 2])">filter</div>
         </div>
+        
         <div class="btn block">
             <div class="load-svg icon" onclick="transition('proposition', [0, -1])">play</div>
         </div>
@@ -21,6 +26,7 @@
         <div class="btn block">
             <div class="load-svg icon">plus</div>
         </div>
+        
         <div class="btn block">
             <div class="load-svg icon">loop</div>
         </div>
@@ -28,20 +34,23 @@
             <div class="load-svg icon">random</div>
         </div>
         <div class="btn block" onclick="debug()">
-            <div class="icon">testing</div>
+            <div class="text">testing</div>
         </div>
-
     </div>
+    
 </div>
+
 
 <div class="hidden block" id="input">
 
-    <label for="values" class="load-svg icon">Enter HSL color values</label>
-    <input type="text" id="values" placeholder="h, s, l" value="714, 825, 285" />
-    <pre id="message"></pre>
+    <label for="values" class="text">Enter HSL color values</label>
     
-    <div class="btn block" onclick="newColor()">
-        <div class="icon">submit</div>
+    <div class="hbox">
+        <input type="text" id="values" class="icon text" placeholder="h, s, l" value="714, 825, 285" />
+        
+        <div class="btn block" onclick="newColor()">
+            <div class="icon text">submit</div>
+        </div>
     </div>
     
 </div>

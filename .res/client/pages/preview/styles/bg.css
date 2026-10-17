@@ -1,0 +1,35 @@
+@keyframes bg_anim {     
+    0% {
+        background-position: 0 0, 0 0;
+    }  
+    100% {
+        background-position: 0 0, 0 3vh;
+    }
+}
+
+#content {
+    display: grid;
+    place-content: center;
+    
+    position: absolute;
+    z-index: 10;
+    inset: 0;
+    
+    background:
+        radial-gradient(ellipse 85% 85%,
+            transparent,
+            hsl(from var(--cur-color) h calc(s * 0.2) calc(l * 0.05))
+        ),
+        linear-gradient(to bottom,
+            hsl(from var(--cur-color) calc(h - 5) calc(s * 0.2) calc(l * 0.15)),
+            hsl(from var(--cur-color) h calc(s * 0.2) calc(l * 0.2)),
+            hsl(from var(--cur-color) calc(h + 5) calc(s * 0.2) calc(l * 0.15)),
+            hsl(from var(--cur-color) h calc(s * 0.2) calc(l * 0.1)),
+            hsl(from var(--cur-color) calc(h - 5) calc(s * 0.2) calc(l * 0.15))
+        );
+    background-repeat: no-repeat, repeat;
+    background-size: 100vw 100vh, 100vw 3vh;
+    background-position: center;
+    
+    animation: bg_anim 2s linear infinite;
+}

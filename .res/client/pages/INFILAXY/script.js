@@ -15,9 +15,7 @@ class MainPage {
             if (!block.matches(ringless)) return;
             const ring = document.createElement("div");
             ring.className = "inner-ring";
-            for (const child of block.childNodes) {
-                ring.appendChild(child);
-            }
+            [...block.childNodes].forEach(child => ring.appendChild(child));
             block.appendChild(ring);
         });
         const parents = [];
@@ -39,4 +37,4 @@ class MainPage {
 if (window.data == null) {
     if (window.pending == null) window.pending = [];
     window.pending.push(() => MainPage.init());
-} else MaknPage.init();
+} else MainPage.init();

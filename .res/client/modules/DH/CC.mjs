@@ -1,6 +1,6 @@
 /* Choice Chip */
 
-import { VCE, VSE } from "./VE.mjs";
+import { VCE, VSE } from "../PL/VE.mjs";
 
 
 export class CCC { // Choice Chip Chain

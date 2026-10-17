@@ -19,8 +19,7 @@
 }
 
 .bottom {
-    bottom: var(--pad);
-    top: auto;
+    top: calc(100vh - var(--ry) - var(--pad));
 }
 
 .left {
@@ -28,6 +27,5 @@
 }
 
 .right {
-    right: var(--pad);
-    left: auto;
+    left: calc(100vw - var(--rx) - var(--pad));
 }

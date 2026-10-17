@@ -17,22 +17,22 @@ class Preview {
             if (!block.matches(ringless)) return;
             const ring = document.createElement("div");
             ring.className = "inner-ring";
-            ring.innerHTML = block.innerHTML;
-            block.innerHTML = ring.outerHTML;
+            [...block.childNodes].forEach(child => ring.appendChild(child));
+            block.appendChild(ring);
         });
-        const parents = blocks.reduce((unique, block) => {
+        const parents = [];
+        blocks.forEach(block => {
             const parent = block.closest(ringless);
-            if (!unique.includes(parent) && parent != null) {
-                unique.push(parent);
+            if (!parents.includes(parent) && parent != null) {
+                parents.push(parent);
             }
-            return unique;
-        }, []);
+        });
         this.#developBlocks(parents);
     }
     
     static #disableAllBut(current) {
         current.classList.add("active");
-        const inactive = "#buttons > .btn:not(.active):has(.load-svg)";
+        const inactive = "#buttons > .btn:not(.active):has(svg)";
         document.querySelectorAll(inactive).forEach(btn => {
             const disabled = btn.matches(".disabled");
             btn.classList.toggle("disabled", !disabled);
@@ -43,7 +43,8 @@ class Preview {
     static init() {
         if (this.#inited) return;
         this.#inited = 1;
-        document.querySelectorAll('#buttons .btn').forEach(btn => {
+        this.#developBlocks();
+        document.querySelectorAll('#buttons > .btn').forEach(btn => {
             btn.onclick = () => this.#disableAllBut(btn);
         });
     }

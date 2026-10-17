@@ -19,6 +19,8 @@ body {
     margin: 0;
     
     background: transparent;
+    
+    transition: 0.2s filter ea;
 }
 
 #cover {
@@ -62,6 +64,15 @@ body {
     left: 0;
 }
 
-#scripts, #cold-storage {
+#scripts {
     display: none;
+}
+
+#cold-storage {
+    position: fixed;
+    
+    overflow: hidden;
+    
+    width: 0;
+    height: 0;
 }

@@ -1,0 +1,223 @@
+:root {
+    --btn-l: 50;
+}
+
+
+.btn {
+    user-select: none;
+    
+    min-width: var(--btn-size);
+    width: fit-content;
+    height: var(--btn-size);
+    
+    border-radius: var(--btn-size);
+    
+    will-change: transform;
+    transition:
+        0.09s transform ease-in 0.09s,
+        0.1s background ease-in,
+        0.1s box-shadow ease-in 0.1s,
+        0s z-index 0.42s;
+}
+
+/**/
+@media(hover: hover) {
+/**/
+    .btn:hover {
+        z-index: calc(var(--btn-l) + 2);
+    
+        background:
+            radial-gradient(ellipse 70% 70%,
+                hsl(from var(--cur-color) h calc(s * 0.20) calc(l * 0.55)),
+                hsl(from var(--cur-color) h calc(s * 0.35) calc(l * 0.10))
+            );
+        box-shadow:
+            0 0 var(--btn-size)
+            hsl(from var(--cur-color) h calc(s * 0.4) calc(l * 0.2));
+            
+        transform: scale(1.2);
+    
+        transition:
+            0.09s transform ease-in 0.09s,
+            0.1s background ease-in,
+            0.1s box-shadow ease-in 0.1s,
+            0s z-index;
+    }
+/**/
+}
+/**/ 
+
+.btn:active {
+    background:
+        radial-gradient(ellipse 60% 60%,
+            hsl(from var(--cur-color) h calc(s * 0.30) calc(l * 0.75)),
+            hsl(from var(--cur-color) h calc(s * 0.65) calc(l * 0.20))
+        );
+    box-shadow:
+        0 0 calc(var(--btn-size) * 1.5)
+        hsl(from var(--cur-color) h calc(s * 0.8) calc(l * 0.7));
+    
+    transform: scale(0.5);
+    
+    transition:
+        0.09s transform ease-in 0.09s,
+        0.1s background ease-in,
+        0.1s box-shadow ease-in 0.1s,
+        0s z-index;
+}
+
+
+.btn > .inner-ring {
+    padding: 0;
+    
+    border-radius: var(--ring-size);
+    
+    transition:
+        0.2s box-shadow ease-in 0.1s,
+        0.06s width ease-in 0.06s,
+        0.06s height ease-in 0.06s;
+}
+
+.btn > .inner-ring::before {
+    transition: 0.8s background ease-in;
+}
+
+/**/
+@media(hover: hover) {
+/**/
+    .btn:hover > .inner-ring {
+        width: calc(100% - (var(--btn-size) - var(--ring-size)) * (1 / -1.1));
+        height: calc(100% - (var(--btn-size) - var(--ring-size)) * (1 / -1.1));
+        
+        box-shadow:
+            0 0 calc(var(--ring-size) * 0.5)
+            hsl(from var(--cur-color) h calc(s * 0.6) calc(l * 0.6)),
+            inset 0 0 calc(var(--ring-size) * 0.5)
+            hsl(from var(--cur-color) h calc(s * 0.6) calc(l * 0.6));
+        
+        filter:
+            drop-shadow(
+                0 calc(var(--icon-size) * 0.05) 0
+                hsl(from var(--cur-color) h calc(s * 0.3) calc(l * 0.2))
+            );
+        
+        transition:
+            0.2s box-shadow ease-in 0.1s,
+            0.06s width ease-in 0.06s,
+            0.06s height ease-in 0.06s;  
+    }
+/**/
+}
+/**/
+
+.btn:active > .inner-ring {
+    width: calc(100% - (var(--btn-size) - var(--ring-size)) * (1 / 0.4));
+    height: calc(100% - (var(--btn-size) - var(--ring-size)) * (1 / 0.4));
+    
+    box-shadow:
+        0 0 calc(var(--ring-size) * 0.5)
+        hsl(from var(--cur-color) h calc(s * 0.6) calc(l * 0.8)),
+        inset 0 0 calc(var(--ring-size) * 0.5)
+        hsl(from var(--cur-color) h calc(s * 0.6), calc(l * 0.8));
+        
+    transition:
+        0.2s box-shadow ease-in 0.1s,
+        0.06s width ease-in 0.06s,
+        0.06s height ease-in 0.06s;
+}
+    
+
+.btn > .inner-ring > :is(.icon, .text) {
+    z-index: calc(var(--btn-l) + 4);
+    
+    will-change: transform, filter, opacity;
+    transition:
+        0.05s background,
+        0.05s color,
+        0.03s transform ease-in,
+        0.12s opacity ease-in 0.05s,
+        0.2s color ease-in 0.1s,
+        0.2s filter ease-in 0.1s;
+}
+    
+/**/
+@media(hover: hover) {
+/**/
+    .btn:hover > .inner-ring > :is(.icon, .text) {
+        background: transparent;
+        color: hsl(from var(--cur-color) h calc(s * 0.4) calc(l * 0.8));
+       
+        transform: scale(1.21);
+        filter:
+            drop-shadow(
+                0 calc(var(--icon-size) * 0.05) 0
+                hsl(from var(--cur-color) h calc(s * 0.3) calc(l * 0.2))
+            );
+        
+        transition:
+        0.05s background,
+        0.05s color,
+            0.03s transform ease-in,
+            0.12s opacity ease-in 0.05s,
+            0.2s color ease-in 0.1s,
+            0.2s filter ease-in 0.1s
+            0s position 0.3s;
+    }
+/**/
+}
+/**/
+
+.btn:active > .inner-ring > :is(.icon, .text) {
+    transform: scale(0.32);
+    opacity: 0;
+    
+    transition:
+        0.05s background,
+        0.05s color,
+        0.06s transform ease-in,
+        0.12s opacity ease-in,
+        0.2s color ease-in 0.1s,
+        0.2s filter ease-in 0.1s;
+}
+
+
+.disabled {
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse 40% 40%,
+            hsl(from var(--cur-color) h calc(s * 0.15) calc(l * 0.175)),
+            hsl(from var(--cur-color) h calc(s * 0.10) calc(l * 0.075))
+        );
+    transform: scale(0.8);
+}
+
+
+.disabled > .inner-ring {
+    box-shadow: none;
+    
+    transition:
+        0.2s box-shadow ease-in 0.1s,
+        0.06s transform ease-in 0.06s;
+}
+
+.disabled > .inner-ring::before {
+    background: var(--dis-grad) border-box;
+    border-radius: var(--ring-size);
+    border: var(--brd-size) dashed transparent;
+    
+    transition:
+        0.8s background ease-in;
+}
+
+
+.disabled > .inner-ring > :is(.icon, .text) {
+    transform: scale(0.8);
+}
+
+.disabled > .inner-ring > .icon > svg > rect {
+    fill: url(#dis-grad);
+}
+
+.disabled > .inner-ring > .text {
+    background: var(--dis-grad) text;
+}

@@ -1,5 +1,7 @@
 /* Speech Bubble */
 
+import VE, { VPE } from "../PL/VE.mjs";
+
 
 export default class SB { // Speech Bubble
     
@@ -227,13 +229,13 @@ class ST { // Speech bubble Tail
         const c = Math.sqrt(a**2 + b**2);
         if (c < r) return;
 
-        this.svg = new SVGE([w, b], { cn: "tail", parent: sb.body });
+        this.svg = new VE([w, b], { cn: "tail", parent: sb.body });
         
         const rad = Math.atan2(b, a);
         const dir = [Math.cos(rad), Math.sin(rad)];
         const [x, y] = dir.map(v => v * (c - r));
 
         const d = `M${(w-r)/2} 0C${(w-r)/2} 0 ${w/2} 0 ${x+w/2} ${y}C${w/2} 0 ${(w+r)/2} 0 ${(w+r)/2} 0`;
-        const path = new SVGPE(d, { parent: this.svg.el });
+        const path = new VPE(d, { parent: this.svg.el });
     }
 }

@@ -1,6 +1,6 @@
 /* Choice Menu */
 
-import VE, { VPE, VRE, VSE } from "./VE.mjs"
+import VE, { VPE, VRE, VSE } from "../PL/VE.mjs";
 
 
 class DC { // Data Calculator
@@ -10,7 +10,7 @@ class DC { // Data Calculator
     }
     
     static cords(rad, l, bias) {
-         return this.dir(rad).map((v, i) => v * l + bias);
+         return this.dir(rad).map(v => v * l + bias);
      }
     
     static dividerD(rad, { inR, outR, divW }) {

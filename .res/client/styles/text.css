@@ -18,7 +18,7 @@
     user-select: none;
     font-family: "Goodhers Hooney", sans-serif;
     font-size: 3.5vh;
-    color: url(#text-grad);
+    color: var(--cur-color);
 }
 
 .lable {
@@ -27,5 +27,7 @@
 }
 
 .text {
-    color: var(--cur-color);
+    background: var(--text-grad) text;
+    color: transparent;
+    padding: 0.25rem 1rem;
 }

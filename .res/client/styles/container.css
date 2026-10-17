@@ -1,7 +1,11 @@
 .hbox, .vbox {
+    --gap-digit: 5;
+    --gap: calc(var(--gap-digit) * min(1vw, 1vh));
+    
     display: flex;
     justify-content: center;
     align-content: center;
+    gap: var(--gap);
 }
 
 

@@ -14,6 +14,18 @@
     --cur-color-reversed: hsl(from var(--cur-color) calc(h + 180) s l);
     --cur-color-gray:        hsl(from var(--cur-color) h 2% l);
     
-    --text-grad: url(#text-grad);
-    --dis-grad:   url(#dis-grad);
+    --text-grad: linear-gradient(105deg,
+            hsl(from var(--cur-color) calc(h - 5) calc(s * 0.8) calc(l * 0.75)),
+            hsl(from var(--cur-color) h calc(s * 0.8) calc(l * 0.6)),
+            hsl(from var(--cur-color) calc(h + 5) calc(s * 0.8) calc(l * 0.75)),
+            hsl(from var(--cur-color) h calc(s * 0.8) calc(l * 0.9)),
+            hsl(from var(--cur-color) calc(h - 5) calc(s * 0.8) calc(l * 0.75))
+        );
+    --dis-grad: linear-gradient(105deg,
+            hsl(from var(--cur-color) calc(h - 5) calc(s * 0.1) calc(l * 0.55)),
+            hsl(from var(--cur-color) h calc(s * 0.05) calc(l * 0.4)),
+            hsl(from var(--cur-color) calc(h + 5) calc(s * 0.1) calc(l * 0.55)),
+            hsl(from var(--cur-color) h calc(s * 0.05) calc(l * 0.7)),
+            hsl(from var(--cur-color) calc(h - 5) calc(s * 0.1) calc(l * 0.55))
+        );
 }

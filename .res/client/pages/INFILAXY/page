@@ -1,23 +1,36 @@
-<div class="vbox middle top">
+<!-- Main Page -->
+
+
+<!-- <div class="vbox middle top">
     <div class="btn block" onclick="transition('collection', [0, 1])">
-        <div class="load-svg icon">arrow</div>
+        <div class="load-svg icon">arrowW</div>
     </div>
     <div class="block">
-        <div class="icon lable">INFILAXY</div>
+        <div class="icon text lable">INFILAXY</div>
     </div>
-</div>
+</div> -->
+
 <div class="btn block middle" onclick="transition('preview', [0, -1])">
-    <div class="load-svg icon">arrow</div>
+    <div class="load-svg icon">play</div>
 </div>
+
+
+<div class="btn block" onclick="transition('collection', [0, 1])">
+        <div class="load-svg icon">arrowW</div>
+</div>
+
 <div class="btn block middle right" onclick="transition('presentation', [1, 0])">
-    <div class="load-svg icon">arrow</div>
+    <div class="load-svg icon">arrowD</div>
 </div>
+
 <div class="btn block middle bottom masked" onclick="transition('proposition', [0, -1])">
-    <div class="load-svg icon">arrow</div>
+    <div class="load-svg icon">arrowS</div>
 </div>
+
 <div class="btn block middle left disabled" onclick="transition('4eRn1j_kW@dr4T', [-1, 0])">
-    <div class="load-svg icon">arrow</div>
+    <div class="load-svg icon">arrowA</div>
 </div>
+
 
 <div id="infi" class="character"></div>
 <div id="virko" class="character"></div>

@@ -1,0 +1,104 @@
+:root {
+    --btn-size: 2rem;
+    --ring-size: calc(var(--btn-size) * 0.9);
+    --brd-size: calc(var(--btn-size) * 0.08);
+    --icon-size: calc(var(--ring-size) - var(--brd-size));
+    
+    --block-l: 10;
+}
+
+
+.block {
+    display: grid;
+    place-items: center;
+    
+    position: relative;
+    z-index: calc(var(--block-l) + 1);
+    
+    overflow: clip;
+    
+    width: 76vw;
+    height: auto;
+    max-height: 80vh;
+    padding: calc(var(--btn-size) - var(--ring-size));
+    
+    background: 
+        radial-gradient(ellipse 40% 40%,
+            hsl(from var(--cur-color) h calc(s * 0.2) calc(l * 0.225)),
+            hsl(from var(--cur-color) h calc(s * 0.15) calc(l * 0.1))
+        );
+    border-radius: calc(var(--btn-size) / 2);
+    
+    box-shadow:
+        0 0 var(--btn-size)
+        hsl(var(--m-hue), calc(var(--m-sat) * 0.4), calc(var(--m-lum) * 0.2));
+    
+    transition:
+        0.5s height ease-out;
+}
+
+
+.block > .inner-ring {
+    display: grid;
+    place-content: center;
+    
+    position: relative;
+    z-index: calc(var(--block-l) + 3);
+    
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    max-height: 80vh;
+    padding: 10%;
+    
+    background: transparent;
+    border-radius: calc(var(--ring-size) / 2);
+    
+    box-shadow:
+        0 0 calc(var(--ring-size) * 0.25)
+        hsl(from var(--cur-color) h calc(s * 0.6) calc(l * 0.4)),
+        inset 0 0 calc(var(--ring-size) * 0.2)
+        hsl(from var(--cur-color) h calc(s * 0.6), calc(l * 0.4));
+}
+
+.block > .inner-ring::before {
+    content: '';
+    pointer-events: none;
+    
+    position: absolute;
+    inset: 0;
+    z-index: calc(var(--block-l) + 2);
+    
+    background: var(--text-grad) border-box;
+    border-radius: inherit;
+    border: var(--brd-size) solid transparent;
+    
+    mask:
+        linear-gradient(#000 0 0),
+        linear-gradient(#000 0 0) padding-box;
+    mask-composite: exclude;
+}
+
+.block:not(.btn) > .inner-ring {
+    overflow-x: visible;
+    overflow-y: auto;
+}
+
+
+.block > .inner-ring > .icon {
+    display: grid;
+    place-content: center;
+    
+    position: relative;
+    z-index: calc(var(--block-l) + 4);
+    
+    min-width: var(--icon-size);
+    min-height: var(--icon-size);
+    width: fit-content;
+    height: auto;
+}
+
+.block > .inner-ring > .icon > svg {
+    width: var(--icon-size);
+    height: var(--icon-size);
+}

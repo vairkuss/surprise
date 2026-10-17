@@ -11,7 +11,7 @@ export default class VE { // sVg namespace Element
             : new DOMParser().parseFromString(data, "image/svg+xml").querySelector(name);
         this.raw = data ?? this.el.outerHTML;
         if (id != null) this.setAttribute("id", id);
-        if (cn != null) this.classList.add(cn);
+        if (cn != null) this.setAttribute("class", cn);
         if (donor != null) this.cloneChildren(donor);
         if (parent != null) this.appendTo(parent);
     }
@@ -91,31 +91,47 @@ export class VCE extends VE { // sVg Circle Element
 export class VSE extends VE { // sVg Svg Element
 
     static #count = 0;
-    static get id() { return `VSE${this.#count++}` }
+    static get id() {
+        return `VSE${this.#count++}`;
+    }
     
     constructor([w, h], options) {
         w = w ?? options?.parse?.getAttribute("width");
         h = h ?? options?.parse?.getAttribute("height") ?? w;
+        const { parse } = options;
+        delete options.parse;
         super("svg", options);
         if (w != null) {
             this.setAttribute("width", w);
             this.setAttribute("height", h);
             this.setAttribute("viewBox", `0 0 ${w} ${h}`);
         }
-        this.#genMask(w, h, options ?? {});
+        this.#genMask(w, h, options ?? {}, parse?.cloneNode(true));
     }
     
-    #genMask(w, h, { fill, parse: donor }) {
+    #genMask(w, h, { fill }, donor) {
         this.defs = new VE("defs", { parent: this.el });
         this.mask = new VE("mask", { id: `${VSE.id}-mask`, parent: this.defs.el });
         this.fill = new VRE([w, h], { parent: this.el });
         this.fill.setAttribute("mask", `url(#${this.mask.id})`);
-        if (fill != null) this.fill.setAttribute("fill", fill);
-        if (donor != null) this.maskFromDonor(donor);
+        this.fill.setAttribute("fill", fill ?? "currentColor");
+        if (donor != null) {
+            const donorDefs = donor.querySelector("defs");
+            if (donorDefs != null) {
+                [...donorDefs.childNodes].forEach(child => {
+                    this.defs.appendChild(child);
+                });
+                donorDefs.remove();
+            }
+            this.maskFromDonor(donor);
+        }
     }
     
     maskFromDonor(el) {
-        [...el.childNodes].forEach(shape => this.addToMask(shape));
+        [...el.childNodes].forEach(shape => {
+            shape.setAttribute("fill", "#fff");
+            this.addToMask(shape);
+        });
     }
     
     addToMask(el) {
