@@ -21,17 +21,34 @@ export default class PF { // Page Finiliser
         });
     }
     
-    static #adjustBlocks() {
-        document.querySelectorAll(".middle").forEach(block => {
-            const { width, height } = block.getBoundingClientRect();
-            block.style.setProperty("--rx", `${block.offsetWidth / 2}px`);
-            block.style.setProperty("--ry", `${block.offsetHeight / 2}px`);
+    static #adjustPosition() {
+        document.querySelectorAll(".middle").forEach(el => {
+            el.style.setProperty("--rx", `${el.offsetWidth / 2}px`);
+            el.style.setProperty("--ry", `${el.offsetHeight / 2}px`);
+        });
+    }
+    
+    static #takeInsertPlace() {
+        document.querySelectorAll(".vbox:has(> .insert)").forEach(el => {
+            const h = [...el.children].reduce((margin, child) => {
+                if (child.matches(".insert")) {
+                    const rect = child.getBoundingClientRect();
+                    return margin + rect.height;
+                }
+            }, 0);
+            const placeholder = document.createElement("div");
+            placeholder.className = "placeholder";
+            placeholder.style.position = "relative";
+            placeholder.style.width = "100%";
+            placeholder.style.height = `${h}px`;
+            el.appendChild(placeholder);
         });
     }
     
     static init() {
         this.#loadSVG();
-        this.#adjustBlocks();
+        this.#adjustPosition();
+        this.#takeInsertPlace();
         document.body.removeAttribute("style");
     }
 }

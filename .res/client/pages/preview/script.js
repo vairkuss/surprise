@@ -40,6 +40,9 @@ class Preview {
         current.classList.remove("active");
     }
     
+    // x20 -> &nbsp; в .btn
+    // найти че я сломал по совету глм
+    
     static init() {
         if (this.#inited) return;
         this.#inited = 1;

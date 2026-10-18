@@ -68,6 +68,10 @@
 
 
 .btn > .inner-ring {
+    display: grid;
+    place-content: center;
+    
+    margin: auto;
     padding: 0;
     
     border-radius: var(--ring-size);
@@ -127,7 +131,7 @@
 }
     
 
-.btn > .inner-ring > :is(.icon, .text) {
+.btn > .inner-ring > :is(.icon, .symbol, .text) {
     z-index: calc(var(--btn-l) + 4);
     
     will-change: transform, filter, opacity;
@@ -143,7 +147,7 @@
 /**/
 @media(hover: hover) {
 /**/
-    .btn:hover > .inner-ring > :is(.icon, .text) {
+    .btn:hover > .inner-ring > :is(.icon, .symbol, .text) {
         background: transparent;
         color: hsl(from var(--cur-color) h calc(s * 0.4) calc(l * 0.8));
        
@@ -167,7 +171,7 @@
 }
 /**/
 
-.btn:active > .inner-ring > :is(.icon, .text) {
+.btn:active > .inner-ring > :is(.icon, .symbol, .text) {
     transform: scale(0.32);
     opacity: 0;
     
@@ -210,7 +214,7 @@
 }
 
 
-.disabled > .inner-ring > :is(.icon, .text) {
+.disabled > .inner-ring > :is(.icon, .symbol, .text) {
     transform: scale(0.8);
 }
 
@@ -218,6 +222,6 @@
     fill: url(#dis-grad);
 }
 
-.disabled > .inner-ring > .text {
+.disabled > .inner-ring > :is(.symbol, .text) {
     background: var(--dis-grad) text;
 }

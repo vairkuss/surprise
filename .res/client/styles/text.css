@@ -17,17 +17,22 @@
 :root {
     user-select: none;
     font-family: "Goodhers Hooney", sans-serif;
-    font-size: 3.5vh;
+    font-size: 3vh;
     color: var(--cur-color);
 }
 
 .lable {
+    margin: auto;
+    text-align: center;
     font-family: fraiche, serif;
     font-size: 2rem;
 }
 
-.text {
+.symbol, .text {
     background: var(--text-grad) text;
     color: transparent;
+}
+
+.text {
     padding: 0.25rem 1rem;
 }

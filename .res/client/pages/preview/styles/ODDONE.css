@@ -1,11 +1,10 @@
 #buttons {
-    --gap-digit: 5;
-    --gap: calc(var(--gap-digit) * min(1vw, 1vh));
+    --gap: calc(5 * var(--sub-axis));
     
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: var(--gap);
     place-content: center;
+    gap: 1fr;
     
     width: 100%;
     height: auto;
