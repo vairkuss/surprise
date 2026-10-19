@@ -146,12 +146,14 @@ export default class DS { // Data Storage
         if (page !== "BEASTAXY") delete clone.beast;
         const replicas = this.data.dialogues[`${page}:${this.data.save.stage}`];
         clone.replicas = JSON.stringify(replicas);
-        console.debug(typeof chars, chars);
         const sprites = JSON.parse(chars).reduce((sprites, char) => {
             sprites[char] = this.data.sprites[char];
             return sprites;
         }, {});
         clone.sprites = JSON.stringify(sprites);
+        const timestamp = Date.now();
+        const gatheredAt = new Date(timestamp).toLocaleTimeString("ru-RU");
+        console.info(`$ [${gatheredAt}] <LOG> STORAGE: gathered data for "${page}"`);
         return clone;
     }
 }

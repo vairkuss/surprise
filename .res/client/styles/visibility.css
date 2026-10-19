@@ -1,6 +1,6 @@
 .hidden {
-    transform: scale(0.2) !important;
-    filter: opacity(0) !important;
+    transform: scale(0);
+    filter: opacity(0);
     
     will-change: transform, filter;
     transition:
@@ -47,8 +47,8 @@
 }
 
 .masked:not(:active):not(.hidden) {
-    filter: opacity(0.1);
-    transform: scale(0.6);
+    filter: opacity(0.02);
+    transform: scale(0.5);
 }
 
 .masked:hover {

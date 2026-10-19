@@ -1,9 +1,5 @@
 :root {
-    --m-hue: 270;
-    --m-sat: 90%;
-    --m-lum: 70%;
-    
-    --m-color: hsl(var(--m-hue) var(--m-sat) var(--m-lum));
+    --m-color: hsl(222 22% 100%);
     --cur-color: var(--m-color);
     
     --cur-color-light:        hsl(from var(--cur-color) h calc(s * 1.2) calc(l * 0.7));

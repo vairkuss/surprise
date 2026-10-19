@@ -17,7 +17,7 @@
 :root {
     user-select: none;
     font-family: "Goodhers Hooney", sans-serif;
-    font-size: 3vh;
+    font-size: calc(8 * var(--sub-axis));
     color: var(--cur-color);
 }
 

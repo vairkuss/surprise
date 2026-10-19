@@ -1,0 +1,15 @@
+<!-- ??? -->
+
+
+<img alt="a 3D-render of misterious black chest with beveled white edges and a complex locking mechanism"
+     src="local/imgs/misc/chest0.png"
+     id="chest"
+     class="mid" />
+
+
+<div id="infi" class="character"></div>
+
+
+<div class="btn block mid right">
+    <div class="load-svg icon" onclick="transition('25285', [1, 0])">arrowD</div>
+</div>

@@ -22,33 +22,39 @@ export default class PF { // Page Finiliser
     }
     
     static #adjustPosition() {
-        document.querySelectorAll(".middle").forEach(el => {
+        document.querySelectorAll(".mid").forEach(el => {
             el.style.setProperty("--rx", `${el.offsetWidth / 2}px`);
             el.style.setProperty("--ry", `${el.offsetHeight / 2}px`);
         });
     }
     
-    static #takeInsertPlace() {
-        document.querySelectorAll(".vbox:has(> .insert)").forEach(el => {
-            const h = [...el.children].reduce((margin, child) => {
-                if (child.matches(".insert")) {
-                    const rect = child.getBoundingClientRect();
-                    return margin + rect.height;
+    static #assignBtnFuncs() {
+        document.querySelectorAll("*[onclick]").forEach(btn => {
+            const func = btn.getAttribute("onclick");
+            btn.removeAttribute("onclick");
+            btn.addEventListener("pointerdown", () => {
+                if (btn.matches(".masked")) {
+                    btn.classList.remove("masked");
+                    btn.style.transform = "scale(1.2)";
+                    setTimeout(() => {
+                        btn.removeAttribute("style");
+                    }, 200);
+                } else {
+                    const timeout = setTimeout(() => eval(func), 200);
+                    sessionStorage.setItem("btnTimeout", `${timeout}`);
                 }
-            }, 0);
-            const placeholder = document.createElement("div");
-            placeholder.className = "placeholder";
-            placeholder.style.position = "relative";
-            placeholder.style.width = "100%";
-            placeholder.style.height = `${h}px`;
-            el.appendChild(placeholder);
+            });
+        });
+        document.body.addEventListener("pointerup", () => {
+            const timeout = sessionStorage.getItem("btnTimeout");
+            clearTimeout(timeout);
         });
     }
     
     static init() {
         this.#loadSVG();
         this.#adjustPosition();
-        this.#takeInsertPlace();
+        this.#assignBtnFuncs();
         document.body.removeAttribute("style");
     }
 }

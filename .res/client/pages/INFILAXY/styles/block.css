@@ -9,14 +9,20 @@
 
 
 .block {
-    display: grid;
-    place-items: center;
+    display: flex;
+    flex-direction: column;
+    place-content: start;
+    align-content: center;
     
     position: relative;
     z-index: calc(var(--block-l) + 1);
     
-    width: 76vw;
+    overflow: clip;
+    
+    width: auto;
     height: auto;
+    max-height: 90vh;
+    max-width: 84vh;
     padding: calc(var(--btn-size) - var(--ring-size));
     
     background: 
@@ -36,9 +42,9 @@
 
 
 .block > .inner-ring {
-    display: grid;
-    place-content: center;
-    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
     
     position: relative;
     z-index: calc(var(--block-l) + 3);
@@ -46,7 +52,7 @@
     box-sizing: border-box;
     width: 100%;
     height: 100%;
-    padding: 10%;
+    padding: calc(5 * var(--sub-axis)) calc(3 * var(--sub-axis));
     
     background: transparent;
     border-radius: calc(var(--ring-size) / 2);
@@ -84,14 +90,13 @@
     position: relative;
     z-index: calc(var(--block-l) + 4);
     
-    width: var(--icon-size);
+    min-width: var(--icon-size);
     min-height: var(--icon-size);
+    width: fit-content;
     height: auto;
 }
 
 .block > .inner-ring > .icon > svg {
     width: var(--icon-size);
     height: var(--icon-size);
-    
-    fill: currentColor;
 }

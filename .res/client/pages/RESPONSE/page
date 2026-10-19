@@ -1,6 +1,28 @@
-<div>CODE: MESSAGE</div>
-<div>вернуться в <span class="link" onclick="transition('25285', [0, -1])">главное меню</span>?</div>
-<!-- make it look like green hills with the -->
-<!-- black square on the background on -->
-<!-- the random state of being close to user -->
-<!-- the text should be flying in the sky like in the book -->
+<!-- Response -->
+
+
+<div id="grass">
+    <div id="clearing">
+        <div id="hills">
+            <div id="sky"><div>
+        </div>
+    </div>
+</div>
+
+
+<div id="message" class="vbox">
+    <div class="lable text">CODE: MESSAGE</div>
+    <div class="text">вернуться&nbsp;в главное&nbsp;меню?</div>
+    <div class="block btn">
+        <div class="load-svg icon" onclick="transition('25285', [0, 0])">play</div>
+    </div>
+</div>
+
+
+<!-- NOTE
+    parallax background: green hills
+    with the black square on the
+    background on the random
+    distance from user, the text is 
+    illustratively placed in the sky
+-->

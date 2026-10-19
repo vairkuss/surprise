@@ -1,0 +1,93 @@
+<!-- Presentation -->
+
+
+<!-- manga/comic/fairy/grim - different styles -->
+<ol id="pages">
+    
+    <li class="active page">
+        <div class="mid block">
+            <div class="btn block">
+                <div class="load-svg icon" onclick="transition('25285', [-1, 0])">arrowA</div>
+            </div>
+        </div>
+    </li>
+
+    <li class="page">
+        <div class="mid block">Знакомство</div>
+    </li>
+
+    <li class="page">
+        <div class="mid block">Программирование</div>
+    </li>
+
+    <li class="page">
+        <div class="mid block">Музыка</div>
+    </li>
+
+    <li class="page">
+        <div class="mid block">Империя</div>
+    </li>
+
+    <li class="page">
+        <div class="mid block">Интересные факты</div>
+    </li>
+
+    <li class="page">
+        <div class="mid block">Заключение</div>
+    </li>
+    
+</ol>
+
+
+<div id="navigation" class="mid bot vbox hidden">
+
+    <div id="buttons">
+        <div class="hidden btn block">
+            <div class="text" onclick="prev()">назад</div>
+        </div>
+        <div class="hidden btn block">
+            <div class="text" onclick="next()">дальше</div>
+        </div>
+    </div>
+    
+    <div class="frame">
+        <div class="hbox scroll">
+            <div class="hbox insert">
+            
+                <div class="btn block">
+                    <div class="load-svg icon">x</div>
+                </div>
+            
+                <div class="btn block">
+                    <div class="symbol">1</div>
+                </div>
+                
+                <div class="btn block">
+                    <div class="symbol">2</div>
+                </div>
+                
+                <div class="btn block">
+                    <div class="symbol">3</div>
+                </div>
+                
+                <div class="btn block">
+                    <div class="symbol">4</div>
+                </div>
+                
+                <div class="btn block">
+                    <div class="symbol">5</div>
+                </div>
+                
+                <div class="btn block">
+                    <div class="symbol">6</div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+        
+</div>
+
+
+<div id="infi" class="character"></div>
+<div id="virko" class="character"></div>

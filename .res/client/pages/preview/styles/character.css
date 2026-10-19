@@ -1,8 +1,8 @@
 .character {
     --char-size-digit: 40;
     --char-size: calc(var(--char-size-digit) * min(1vh, 1vw));
-    --sprite: url(/local/data/grads.svg);
-    --tail: url(/local/data/grads.svg);
+    --sprite: url(/local/data/defs.svg);
+    --tail: url(/local/data/defs.svg);
     --main-color: transparent;
     
     display: grid;

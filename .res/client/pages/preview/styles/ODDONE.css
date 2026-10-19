@@ -4,30 +4,45 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     place-content: center;
-    gap: 1fr;
+    gap: var(--gap);
     
     width: 100%;
     height: auto;
+}
+
+#buttons > .btn {
+    margin: auto;
 }
 
 #input {
     position: fixed;
     bottom: 3vh;
     
-    will-change: transition, filter;
+    width: 76vw;
+    left: 12vw;
+    gap: 5vh;
+    
+    will-change: transform, filter;
     transition:
         0.5s transform ease-out,
         0.5s filter ease-out;
 }
 
 #values {
-    margin: auto;
-    height: 2rem;
+    width: 100%;
+    height: auto;
+    
+    font-size: 0.5rem;
+    font-family: infex;
     
     background: var(--cur-color);
-    color: var(--cur-color-contrast);
+    color: var(--cur-color-dark);
     border-radius: 2rem;
     border: 0.2rem solid var(--cur-color-dark);
     
     text-align: center;
+}
+
+#values::placeholder {
+    color: var(cur-color-light);
 }

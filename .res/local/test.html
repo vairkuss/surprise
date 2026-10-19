@@ -1,0 +1,30 @@
+<DOCTYPE html>
+<html lang="ru">
+<head>
+<title>test</title>
+<style>
+body {
+    display: grid;
+    place-content: center;
+}
+#test {
+    width: 200px;
+    height: 200px;
+    box-sizing: border-box;
+    background: content-box yellow;
+    border-radius: 100px;
+    border: 50px solid blue;
+    outline: 50px solid red;
+}
+</style>
+</head>
+
+<body>
+<i id="test" onclick="a()"></i>
+<script>
+function a() {
+    console.log(new Date(Date.now()).toLocaleTimeString("en-GB"), "touched")
+}
+</script>
+</body>
+</html>

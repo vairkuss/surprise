@@ -2,18 +2,18 @@
     --sub-axis: min(1vw, 1vh);
 }
 
-.middle, .top, .right, .bottom, .left {
-    position: fixed;
+.mid, .top, .right, .bot, .left {
+    position: absolute;
 }
 
-.middle {
+.mid {
     --rx: 0;
     --ry: 0;
     left: calc(50vw - var(--rx));
     top: calc(50vh - var(--ry));
 }
 
-.top, .right, .bottom, .left {
+.top, .right, .bot, .left {
     --pad: calc(3 * var(--sub-axis));
 }
 
@@ -21,8 +21,9 @@
     top: var(--pad);
 }
 
-.bottom {
-    top: calc(100vh - var(--ry) * 2 - var(--pad));
+.bot {
+    top: unset;
+    bottom: var(--pad);
 }
 
 .left {
@@ -30,5 +31,6 @@
 }
 
 .right {
-    left: calc(100vw - var(--rx) * 2 - var(--pad));
+    left: unset;
+    right: var(--pad);
 }

@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "ideas.md",
+                "file": "presentation/presentation.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "ideas"
+              "title": "presentation"
             }
           },
           {
@@ -200,11 +200,11 @@
   },
   "active": "8ac4a97a96b97ff6",
   "lastOpenFiles": [
+    "ideas.md",
     "index.md",
     "web/layout/music-library-page.md",
     "chronology/stage3.md",
     "presentation/short-about.md",
-    "ideas.md",
     "web/characters/infi.md",
     "web/characters/virko.md",
     "web/characters/characters.md",

@@ -2,6 +2,17 @@
     --btn-l: 50;
 }
 
+.big.btn {
+    --btn-size: 2.5rem;
+    --ring-size: calc(var(--btn-size) * 0.9);
+    --brd-size: calc(var(--btn-size) * 0.08);
+    --icon-size: calc(var(--ring-size) - var(--brd-size));
+}
+
+.small.btn {
+    transform: scale(0.65);
+}
+
 
 .btn {
     user-select: none;
@@ -68,6 +79,10 @@
 
 
 .btn > .inner-ring {
+    display: grid;
+    place-content: center;
+    
+    margin: auto;
     padding: 0;
     
     border-radius: var(--ring-size);
@@ -127,11 +142,13 @@
 }
     
 
-.btn > .inner-ring > .icon {
+.btn > .inner-ring > :is(.icon, .symbol, .text) {
     z-index: calc(var(--btn-l) + 4);
     
     will-change: transform, filter, opacity;
     transition:
+        0.05s background,
+        0.05s color,
         0.03s transform ease-in,
         0.12s opacity ease-in 0.05s,
         0.2s color ease-in 0.1s,
@@ -141,7 +158,8 @@
 /**/
 @media(hover: hover) {
 /**/
-    .btn:hover > .inner-ring > .icon {
+    .btn:hover > .inner-ring > :is(.icon, .symbol, .text) {
+        background: transparent;
         color: hsl(from var(--cur-color) h calc(s * 0.4) calc(l * 0.8));
        
         transform: scale(1.21);
@@ -152,6 +170,8 @@
             );
         
         transition:
+        0.05s background,
+        0.05s color,
             0.03s transform ease-in,
             0.12s opacity ease-in 0.05s,
             0.2s color ease-in 0.1s,
@@ -162,16 +182,17 @@
 }
 /**/
 
-.btn:active > .inner-ring > .icon {
+.btn:active > .inner-ring > :is(.icon, .symbol, .text) {
     transform: scale(0.32);
     opacity: 0;
     
     transition:
+        0.05s background,
+        0.05s color,
         0.06s transform ease-in,
         0.12s opacity ease-in,
         0.2s color ease-in 0.1s,
         0.2s filter ease-in 0.1s;
-        
 }
 
 
@@ -204,8 +225,14 @@
 }
 
 
-.disabled > .inner-ring > .icon {
-    color: var(--dis-grad) !important;
-    
+.disabled > .inner-ring > :is(.icon, .symbol, .text) {
     transform: scale(0.8);
+}
+
+.disabled > .inner-ring > .icon > svg > rect {
+    fill: url(#dis-grad);
+}
+
+.disabled > .inner-ring > :is(.symbol, .text) {
+    background: var(--dis-grad) text;
 }

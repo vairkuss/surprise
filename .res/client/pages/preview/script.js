@@ -40,9 +40,6 @@ class Preview {
         current.classList.remove("active");
     }
     
-    // x20 -> &nbsp; в .btn
-    // найти че я сломал по совету глм
-    
     static init() {
         if (this.#inited) return;
         this.#inited = 1;
@@ -54,7 +51,7 @@ class Preview {
 }
 
 
-function newColor() {
+window.setColor = () => {
     const input = document.querySelector("#values");
     if (!input.value) return;
     const values = input.value.split(' ').map(v => {
@@ -62,7 +59,7 @@ function newColor() {
     });
     if (values.length !== 3) {
         input.placeholder = "bad input";
-        setTimeout(() => input.placeholder = "h, s, l", 3000);
+        setTimeout(() => input.placeholder = "h s l", 3000);
         return input.value = '';
     }
     input.value = '';
@@ -70,13 +67,16 @@ function newColor() {
     h %= 360;
     s = Math.max(5, Math.min(s, 100));
     l = Math.max(5, Math.min(l, 100));
-    root.style.setProperty("--m-color", `hsl(${h} ${s} ${l})`);
+    const color = `hsl(${h} ${s} ${l})`;
+    const htmlRoot = document.querySelector(":root");
+    htmlRoot.style.setProperty("--m-color", color);
+    localStorage.setItem("mColor", color);
 }
 
 
-function debug() {
+window.toggle = () => {
     const input = document.querySelector("#input");
-    const hidden = input.matches("hidden");
+    const hidden = input.matches(".hidden");
     input.classList.toggle("hidden", !hidden);
 }
 

@@ -1,2 +1,44 @@
-<div id="shelf"></div>
-<div id="player"></div>
+<!-- Collection -->
+
+
+<div id="carousel">
+    
+    <div id="projector" class="hidden">
+        <div id="blanket"></div>
+        <div id="control"></div>
+    </div>
+    
+    <div id="audio">
+        <table id="cartridges"></table>
+        <div id="console"></div>
+    </div>
+    
+    <div id="video" class="hidden">
+        <ul id="cassettes">
+            <li></li>
+        </ul>
+        <div id="cassette-player" class="mid bot">
+            <canvas id="screen" width="960" height="540"></canvas>
+        </div>
+        <div id="remote"></div>
+    </div>
+    
+</div>
+
+
+
+<div id="prev" class="mid left btn block">
+    <div class="load-svg icon"></div>
+</div>
+
+<div id="next" class="mid right btn block">
+    <div class="load-svg icon"></div>
+</div>
+
+
+<div id="virko" class="character"></div>
+
+
+<div class="mid bot btn block" onclick="transition('25285', [0, -1])">
+    <div class="load-svg icon">arrowS</div>
+</div>

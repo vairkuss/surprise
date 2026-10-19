@@ -8,8 +8,12 @@ export default class PC { // Page Controller
     
     static #setGlobals() {
         window.signal = new EventTarget();
+        window.html = document.querySelector(":root");
+        window.body = document.body;
         window.root = document.querySelector("#content");
-        window.transition = (url, [x, y]) => this.transition(url, [x, y]);
+        window.transition = (url, [x, y]) => {
+            this.#transition(url, [x, y]);
+        }
         window.log = (...args) => {
             const caller = new Error().stack.toString().split('\n')[2];
             console.debug(caller, ...args);
@@ -21,7 +25,17 @@ export default class PC { // Page Controller
         }
     }
     
-    static #spawn() {
+    static #setListeners() {
+        body.addEventListener("click", e => {
+            const now = Date.now();
+            const clickInterval = now - this.#lastClick;
+            const doubleTap = clickInterval < this.#dtl;
+            if (doubleTap) e.preventDefault();
+            this.#lastClick = now;
+        });
+    }
+    
+    static #appear() {
         const item = sessionStorage.getItem("transition");
         if (item != null) {
             const [x, y] = JSON.parse(item);
@@ -35,13 +49,20 @@ export default class PC { // Page Controller
                     root.style.translate = '';
                 }, 1/60 * 1000);
             }, 1/60 * 1000);
+            sessionStorage.removeItem("transition");
         }
-        document.body.removeAttribute("style");
-        const cover = document.querySelector("#cover");
-        cover.style.height = 0;
+        body.removeAttribute("style");
+        document.querySelector("#cover").style.height = 0;
     }
     
-    static transition(url, [x, y]) {
+    static #setColor() {
+        const mColor = localStorage.getItem("mColor");
+        if (mColor != null) {
+            html.style.setProperty("--m-color", mColor);
+        }
+    }
+    
+    static #transition(url, [x, y]) {
         root.style.translate = `calc(${-x} * 100vw) calc(${-y} * -100vh)`;
         root.style.filter = "opacity(0)";
         cover.style.height = "250vh";
@@ -56,13 +77,8 @@ export default class PC { // Page Controller
     
     static init() {
         this.#setGlobals();
-        this.#spawn();
-        document.addEventListener("click", e => {
-            const now = Date.now();
-            const clickInterval = now - this.#lastClick;
-            const doubleTap = clickInterval < this.#dtl;
-            if (doubleTap) e.preventDefault();
-            this.#lastClick = now;
-        });
+        this.#setListeners();
+        this.#setColor();
+        this.#appear();
     }
 }

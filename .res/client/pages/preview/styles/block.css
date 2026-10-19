@@ -19,9 +19,9 @@
     
     overflow: clip;
     
-    width: 76vw;
+    width: 84vw;
     height: auto;
-    max-height: 80vh;
+    max-height: 90vh;
     padding: calc(var(--btn-size) - var(--ring-size));
     
     background: 

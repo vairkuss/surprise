@@ -31,9 +31,9 @@ export default class FL { // File Loader
         }, '');
     }
     
-    #grads() {
-        const gradsPath = path.join("local", "data", "grads.svg");
-        return this.txt(gradsPath);
+    #defs() {
+        const defsPath = path.join("local", "data", "defs.svg");
+        return this.txt(defsPath);
     }
     
     #collection() {
@@ -92,7 +92,7 @@ export default class FL { // File Loader
         .split('NOSERVER').join(title)
         .split('content goes here').join(content.data)
         .split('scripts go here').join(this.#scripts())
-        .split('grads go here').join(this.#grads())
+        .split('defs go here').join(this.#defs())
         .split('collection goes here').join(this.#collection());
         return file;
     }
