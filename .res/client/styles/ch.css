@@ -9,14 +9,15 @@
 
 
 :root {
-    --cho-size: min(20vh, 20vw);
+    --cho-size: calc(20 * var(--sub-axis));
 }
 
 
-#choice {
+#choice { /* nest */
     user-select: none;
     
-    display: grid;
+    display: flex;
+    flex-direction: column;
     place-content: center;
     
     position: fixed;
@@ -26,6 +27,7 @@
     
     width: var(--cho-size);
     height: var(--cho-size);
+    
     background:
         radial-gradient(
             circle closest-corner at center,
@@ -36,7 +38,7 @@
             transparent,
             transparent
         );
-    border-radius: calc(var(--cho-size) * 40);
+    border-radius: var(--cho-size);
     
     color: var(--cur-color-light);
     font-size: calc(var(--cho-size) * 0.4);
@@ -46,7 +48,7 @@
         bottom 0.8s cubic-bezier(0.4, 0.2, 0.5, 2);
 }
 
-#choice::before {
+#choice::before { /* background */
     content: '';
     display: block;
     
@@ -69,7 +71,7 @@
         filter 0.4s ease-out;
 }
 
-#choice::after {
+#choice::after { /* hole */
     content: '';
     display: block;
     
@@ -81,8 +83,7 @@
     background: hsl(from var(--cur-color-dark) h calc(s * 2) calc(l * 0.4));
     border-radius: 100%;
     border:
-        calc(var(--cho-size) * 0.15)
-        solid
+        calc(var(--cho-size) * 0.15) solid
         hsl(from var(--cur-color-dark) h calc(s * 1.2) calc(l * 0.8));
     
     transition:
@@ -91,8 +92,11 @@
 }
 
 
-#chip {
+#chip { /* chip */
     touch-action: none;
+    /**
+    display: grid;
+    /**/
     place-content: center;
     
     position: relative;
@@ -103,7 +107,7 @@
     
     background:
         padding-box
-        hsl(from var(--cur-color) calc(h + 180) s calc(l * 0.2));
+        hsl(from var(--cur-color-reversed) h s calc(l * 0.2));
     border-radius: calc(var(--cho-size) * 1.3);
     border:
         calc(var(--cho-size) * 0.8)
@@ -118,7 +122,7 @@
         color 0.5s ease-out;
 }
 
-#chip::before {
+#chip::before { /* hitbox */
     content: '';
     display: block;
     
@@ -134,8 +138,7 @@
         solid
         var(--cur-color-dim);
     outline:
-        calc(var(--cho-size) * 0.02)
-        solid
+        calc(var(--cho-size) * 0.02) solid
         hsl(from var(--cur-color-light) calc(h + 180) s l);
 }
 
@@ -175,43 +178,50 @@
     position: absolute;
     inset: 10%;
     
-    width: 80%;
+    width: 100%;
     height: auto;
     
     fill: currentColor;
 }
 
 #choice.active > #chip > #chip-border > circle {
-    stroke: hsl( from var(--cur-color-light) calc(h + 180) calc(s * 0.7) calc(l * 1.5) );
+    stroke: hsl(from var(--cur-color-light) calc(h + 180) calc(s * 0.7) calc(l * 1.5));
     stroke-width: 1;
     transition: stroke-width 0.6s cubic-bezier(0.2, 0.6, 0.4, 2);
 }
 
 #choice.active > #chip {
-    color: hsl( from var(--cur-color-light) calc(h + 180) calc(s * 0.7) calc(l * 1.5) );
+    color: hsl(from var(--cur-color-light) calc(h + 180) calc(s * 0.7) calc(l * 1.5));
 }
 
-.cho-chain-seg, .cho-chain-ghost {
-    --seg-size: calc(var(--cho-size) * 0.25);
+
+.cho-chain-seg:has(.cho-chain-seg) {
+    position: relative;
+    /*left: var(--seg-bias);
+    top: var(--seg-bias);*/
+}
+
+.cho-chain-seg {
+    --seg-size: calc(var(--cho-size) / 4);
     --seg-bias: calc((var(--cho-size) - var(--seg-size)) / 2);
-    display: grid;
-    place-content: center;
-    position: absolute;
+    
+    position: fixed;
     z-index: 2019;
-    left: var(--seg-bias);
-    top: var(--seg-bias);
+    
     width: var(--seg-size);
     height: var(--seg-size);
+    
     border-radius: var(--seg-size);
 }
 
-.cho-chain-seg > .cho-chain-seg, .cho-chain-ghost {
+.cho-chain-seg > .cho-chain-seg {
     background: var(--cur-color);
 }
 
 
 #cho-menu {
     display: block;
+    
     position: fixed;
     z-index: 2000;
     top: 0;
@@ -219,6 +229,8 @@
     
     width: 100vw;
     height: 100vh;
+    
+    background: rgb(50 0 0 / 0.1);
     
     transition:
         filter 0.3s ease-in;
@@ -249,23 +261,24 @@
     
     filter:
         drop-shadow(
-            0.05em
-            0.05em
-            0
+            0.05em 0.05em 0
             hsl(from var(--cur-color) calc(h + 180) 100% 25%)
         );
     place-content: center;
     padding: 0.5rem;
     
     color: hsl(from var(--cur-color) calc(h + 180) calc(s * 1.2) 75%);
+    font-family: fraiche;
     text-align: center;
     white-space: pre-wrap;
+    
+    background: rgb(0 50 0 / 0.1);
 }
 
-#cho-menu:has(#cho-wheel > .cho-field.active) > #cho-text {
+#cho-menu:has(> #cho-wheel > .cho-field.active) > #cho-text {
     background:
         radial-gradient(closest-side ellipse at center,
-            hsl(0 0% 0% / 0.1),
+            rgb(0 0 0 / 0.1),
             transparent
         );
 }
