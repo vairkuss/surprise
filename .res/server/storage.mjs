@@ -79,21 +79,22 @@ export default class DS { // Data Storage
     static #loadSave() {
         this.data.save = {
             stage: 0,
-            cursor: {},
-            music: { id: null, time: 0 },
+            history: {},
             playlists: {},
-            score: { highest: [0, 0, 0], best: 0 },
-            pause: 1
+            highest: [],
+            best: 0
         }
         if (fs.existsSync(this.#savePath)) {
             const local = this.fl.json(this.#savePath);
             Object.apply(this.data.save, local);
         }
-        this.writeSave({ pause: 1 });
+        this.writeSave();
     }
     
     static writeSave(save) {
-        Object.apply(this.data.save, save);
+        if (save != null) {
+            this.data.save = save;
+        }
         const data = JSON.stringify(this.data.save);
         fs.writeFileSync(this.#savePath, data, "utf-8");
     }

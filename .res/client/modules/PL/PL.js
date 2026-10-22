@@ -27,9 +27,7 @@ class PL { // Page Loader
         this.#processIcons(data.icons);
         if (chars.length) {
             data.sprites = JSON.parse(data.sprites);
-            /**
             data.replicas = JSON.parse(data.replicas);  // только после написания всех диалогов
-            /**/
         }
         Object.assign(data, { page, chars });
         window.data = data;

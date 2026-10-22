@@ -27,16 +27,29 @@
 
 >  
 >  Haunting hope of being loved
->  Were leding to depression
+>  Was leding to depression
 >  That's untill you had enough
 >  And then decided to fetch me
 >  
 >  
 >  Feasting on dreams
->  In your hands, among the deep cuts, I am lying
->  Tearing my wings
+>  In your hands, among my cuts, I am lying
+>  Reaping off the wings
 >  
 >  .
 >  
 >  .
 >  
+
+
+старый текст говно
+
+i have cut my own flesh
+and i asked for the torment
+but endless frustration
+was not what you wanted
+
+we are doomed for my sins
+and forever feels moment
+you'll hide the regret
+but you never forgive me

@@ -39,18 +39,25 @@ class CS { // Choice Wheel Sector
     constructor(key, value, sizes, i, a) {
         this.text = key;
         this.value = value;
+        this.i = i;
+        this.color = "var(--m-color)";
         this.#calculateColor(key)
         .then(() => this.#fetchIcon());
         this.#generateSector(sizes, i, a);
     }
     
     async #calculateColor(key) {
-        this.color = "#000";
         const bytes = new TextEncoder().encode(key);
         const hash = await crypto.subtle.digest("SHA-256", bytes);
-        const rgb = hash.slice(0, 3);
-        this.color = "#" + new Uint8Array(rgb).toHex();
-        this.onColorGenerated();
+        const rgb = new Uint8Array(hash.slice(0, 3));
+        /**
+        alert([
+            { bytes, hash, rgb },
+            { type: rgb.constructor.name }
+        ].map(x => JSON.stringify(x)).join('\n'));
+        /**
+        this.color = "#" + rgb.toHex();
+        /**/
     }
     
     #fetchIcon() {
@@ -67,6 +74,7 @@ class CS { // Choice Wheel Sector
             const index = number % random.length;
             this.icon = random[index];
         }
+        signal.dispatchEvent(new Event("cfReady" + this.i));
     }
     
     #generateSector(sizes, sector, sectors) {
@@ -86,10 +94,13 @@ class CS { // Choice Wheel Sector
     activate() { this.field.classList.add("active") }
     deactivate() { this.field.classList.remove("active") }
     
-    onColorGenerated(func) {
-        if (typeof func !== "function") return;
-        if (this.color != null) func();
-        else this.onColorGenerated = func;
+    onReady(func, ...args) {
+        if (this.color !== "var(--m-color)") {
+            return func(...args);
+        }
+        return signal.addEventListener("cfReady" + this.i, () => {
+            func(...args);
+        }, { once: 1 });
     }
 }
 
@@ -122,8 +133,8 @@ class CW { // Choice Wheel
         const w = this.sizes.outR * 2;
         const h = this.sizes.outR + this.sizes.divW / 2;
         this.body = new VSE([w, h], { id: "cho-wheel", fill: "url(#cho-wheel-grad)" });
-        this.body.style.bottom = `calc(${baseStyle.bottom} + var(--cho-size) * 0.4)`;
-        this.body.style.left = `${root.offsetWidth / 2 - this.sizes.outR}px`;
+        this.body.el.style.bottom = `calc(${baseStyle.bottom} + var(--cho-size) * 0.4)`;
+        this.body.el.style.left = `${root.offsetWidth / 2 - this.sizes.outR}px`;
     }
     
     #genNegMask() {

@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "presentation/presentation.md",
+                "file": "ideas.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "presentation"
+              "title": "ideas"
             }
           },
           {
@@ -46,8 +46,47 @@
               "icon": "lucide-file",
               "title": "music-library-page"
             }
+          },
+          {
+            "id": "f15dbdc9ca2ef346",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "presentation/presentation.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "presentation"
+            }
+          },
+          {
+            "id": "a7e8e9fabf03b7de",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "Нова вкладка"
+            }
+          },
+          {
+            "id": "447d377caf15d181",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "music/write-lyrics.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "write-lyrics"
+            }
           }
-        ]
+        ],
+        "currentTab": 5
       }
     ],
     "direction": "vertical"
@@ -198,10 +237,16 @@
       "bases:Створити нову базу": false
     }
   },
-  "active": "8ac4a97a96b97ff6",
+  "active": "447d377caf15d181",
   "lastOpenFiles": [
-    "ideas.md",
     "index.md",
+    "presentation/presentation.md",
+    "web/layout/presentation-page.md",
+    "web/layout/navigation.md",
+    "web/layout/secret-page.md",
+    "games/secret-arg.md",
+    "ideas.md",
+    "surprise.md",
     "web/layout/music-library-page.md",
     "chronology/stage3.md",
     "presentation/short-about.md",
@@ -216,17 +261,11 @@
     "chronology",
     "web/elements/header.md",
     "web/web-design.md",
-    "surprise.md",
-    "presentation/presentation.md",
     "web/elements/blocks/buttons.md",
     "web/elements/blocks/pages-blocks.md",
     "web/elements/blocks/shelves.md",
     "chronology/script.md",
     "chronology/stage6.md",
-    "web/layout/website-plan.canvas",
-    "chronology/stage1.md",
-    "web/layout/navigation.md",
-    "web/layout/main-page.md",
-    "games/secret-arg.md"
+    "web/layout/website-plan.canvas"
   ]
 }

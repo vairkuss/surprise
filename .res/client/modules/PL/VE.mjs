@@ -136,7 +136,8 @@ export class VSE extends VE { // sVg Svg Element
     
     addToMask(el) {
         const id = el.getAttribute("id");
-        const use = new VUE(`#${id}`, { cn: el.className });
+        const cn = el.getAttribute("class");
+        const use = new VUE(`#${id}`, { cn });
         use.setAttribute("style", "filter: opacity(0)");
         use.appendTo(this.el);
         this.mask.appendChild(el.el ?? el);

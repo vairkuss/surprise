@@ -1,22 +1,21 @@
 <!-- Main Page -->
 
 
-<div class="mid top">
-    <div class="vbox">
-    
-        <div class="block">
-            <div class="icon text lable">INFILAXY</div>
-        </div>
-        <div class="small btn block" onclick="transition('collection', [0, 1])">
-            <div class="load-svg icon">arrowW</div>
-        </div>
-        
+<div class="vbox mid top">
+    <div class="block">
+        <div class="icon text lable">INFILAXY</div>
+    </div>
+    <div class="small btn block" onclick="transition('collection', [0, 1])">
+        <div class="load-svg icon">arrowW</div>
     </div>
 </div>
 
-<div class="top right">
+<div class="vbox top right">
     <div class="small btn block" onclick="transition('404', [0, 0])">
         <div class="symbol">x</div>
+    </div>
+    <div class="small btn block" onclick="transition('shutdown', [0, 0])">
+        <div class="symbol">!</div>
     </div>
 </div>
 
@@ -24,8 +23,14 @@
 <div class="vbox mid bot">
 
     <div class="hbox" id="chars">
-        <div id="infi" class="character"></div>
-        <div id="virko" class="character"></div>
+        <div id="infi" class="character" 
+            style="outline: 2px solid red" ><!--
+            -->
+        </div>
+        <div id="virko" class="character" 
+            style="outline: 2px solid red" ><!--
+            -->
+            </div>
     </div>
 
     <div class="hbox">
@@ -40,15 +45,15 @@
         </div>
     </div>
     
-    <div class="block">
-        <div id="player" class="hbox">
+    <div id="player" class="block">
+        <div class="hbox">
         
             <div class="btn block">
                 <div class="load-svg icon">arrowA</div>
             </div>
             
             <div class="big btn block" onclick="transition('preview', [0, -1])">
-                <div class="load-svg icon">play</div>
+                <div class="load-svg icon">play</div> <!-- спустится с интро -->
             </div>
             
             <div class="btn block">

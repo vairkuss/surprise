@@ -1,6 +1,8 @@
 /* Speech Bubble */
 
-import VE, { VPE } from "../PL/VE.mjs";
+import SF from "./SF.mjs"
+import CO from "./CO.mjs";
+import { VSE, VPE } from "../PL/VE.mjs";
 
 
 export default class SB { // Speech Bubble
@@ -10,18 +12,14 @@ export default class SB { // Speech Bubble
         return this.bubbles.find(sb => sb.face.writing);
     }
     static hit() {
-        this.bubbles.forEach(async sb => sb.hit());
+        this.bubbles.forEach(sb => sb.hit());
     }
     static remove() {
-        this.bubbles.forEach(async sb => sb.remove());
+        this.bubbles.forEach(sb => sb.remove());
     }
     
     constructor(char) {
-        const existing = SB.bubbles.find(sb => sb.char === char);
-        if (existing != null) {
-            existing.face.write(text);
-            return existing;
-        }
+        SB.bubbles.push(this);
         this.char = char;
         this.body = document.createElement("div");
         this.body.className = "hidden bubble";
@@ -38,8 +36,8 @@ export default class SB { // Speech Bubble
         const y = Math.sin(rad) / 2 + .5;
         setTimeout(() => {
             this.body.classList.remove("hidden");
-            this.body.style.left = `calc(${x} * min(30vh, 30vw))`;
-            this.body.style.top = `calc(${-y} * min(30vh, 30vw))`;
+            this.body.style.left = `calc(${x} * 30 * var(--sub-axis))`;
+            this.body.style.top = `calc(${-y} * 30 * var(--sub-axis))`;
         }, 1/60 * 1000);
     }
     
@@ -47,6 +45,8 @@ export default class SB { // Speech Bubble
         const faceStyle = getComputedStyle(this.face.el);
         const minW = parseFloat(faceStyle.minWidth);
         const pad = parseFloat(faceStyle.paddingLeft);
+        console.log(this.face.el.style.getPropertyValue("--bub-size"))
+        console.log({minW: faceStyle.minWidth, pad: faceStyle.paddingLeft});
         const r = parseFloat(faceStyle.borderRadius);
         this.drawInterval = setInterval(() => {
             this.tail = new ST(this);
@@ -63,14 +63,14 @@ export default class SB { // Speech Bubble
         const charMidY = charRect.top + charRect.height / 2;
         this.vx = 0;
         setTimeout(() => {
-            this.initial = this.face.getBoundingClientRect();
+            this.initial = this.face.el.getBoundingClientRect();
             const initialMidY = this.initial.top + this.initial.height / 2;
             const initialMidX = this.initial.left + this.initial.width / 2;
             this.y = -Math.abs(initialMidY - charMidY);
             this.x = initialMidX - charMidX;
             this.translationX = 0;
             this.#setCollisionInterval();
-        }, 400);
+        }, 0.4 * 1000);
     }
     
     #setCollisionInterval() {
@@ -80,9 +80,9 @@ export default class SB { // Speech Bubble
             const dirX = curRect.left < pageW * .02 ? 1
                 : curRect.right > pageW * .98 ? -1
                 : 0;
-            const dirBack = -Math.sign(this.vx);
             const step = Math.min(1, Math.abs(this.vx));
-            this.vx += dirX / 4 || dirBack * step / 2;
+            const back = -Math.sign(this.vx);
+            this.vx += dirX / 4 || step * back / 2;
             this.translationX += this.vx;
             this.body.style.left = this.x + this.growCompX + this.translationX + "px";
         
@@ -93,21 +93,24 @@ export default class SB { // Speech Bubble
                 if (sbRect.top > curRect.top) return h;
                 return h - sbRect.height - mrg;
             }, this.y)
-            this.body.style.top = fromBelow + this.initialRect.height + this.growCompY + "px";
+            this.body.style.top = fromBelow + this.initial.height + this.growCompY + "px";
         }, 1/30 * 1000);
     }
     
     jump() {
         const faceStyle = getComputedStyle(this.face.el);
-        const jumpH = parseFloat(faceStyle.borderRadius);
+        const faceH = parseFloat(faceStyle.borderRadius);
         const bodyStyle = getComputedStyle(this.body);
         const bodyTop = parseFloat(bodyStyle.top);
         clearInterval(this.collisionInterval);
-        this.body.style.top = bodyTop - jumpH * 2 + "px";
+        this.char.jump();
         setTimeout(() => {
-            this.body.style.top = bodyTop + "px";
-            this.#setCollisionInterval();
-        }, 100);
+            this.body.style.top = bodyTop - faceH * 2 + "px";
+            setTimeout(() => {
+                this.body.style.top = bodyTop + "px";
+                this.#setCollisionInterval();
+            }, 0.1 * 1000);
+        }, 0.1 * 1000);
     }
     
     hit() {
@@ -127,79 +130,8 @@ export default class SB { // Speech Bubble
         this.tail?.svg.remove();
         setTimeout(() => {
             this.body.classList.add("hidden");
-            setTimeout(() => this.body.remove(), 400);
+            setTimeout(() => this.body.remove(), 0.4 * 1000);
         }, 1/60 * 1000);
-    }
-}
-
-
-class SF { // Speech bubble Face
-    
-    constructor(sb) {
-        this.sb = sb;
-        this.el = document.createElement("div");
-        this.el.className = "face";
-    }
-    
-    #pause() {
-        this.paused = 1;
-        this.sb.char.src = this.sb.char.sprites.talk[`${this.sb.char.pose}0`];
-        setTimeout(() => this.paused = 0, 400);
-    }
-    
-    #processChar(c, i, text) {
-        const written = text.slice(0, i);
-        const escaped = written.endsWith('\\');
-        const meta = "\\®•§×√|¢π∆".includes(c);
-        if (escaped || !meta) this.el.textContent += c;
-
-        const stutter = "•!?-.,);3".includes(c);
-        const pause = c === '§';
-        const ignore = written.match(/(?::|\s|×.|√[^√|]*?)$/) != null;
-        const glitch = c === '¢';
-        const shake = c === 'π';
-        const jump = c === '∆';
-        const animation = glitch || shake || jump
-        const skip = ignore || animation;
-        
-        if (pause) this.#pause();
-        if (c === '®') {
-            this.sb.char.shock();
-            return this.sb.remove();
-        }
-        if (glitch) this.char.el.classList.toggle("glitch", !this.char.el.matches(".glitch"));
-        if (shake) this.sb.body.classList.toggle("shake", !this.sb.body.matches(".shake"));
-        if (jump) this.sb.jump();
-        
-        const wait = +!skip * (stutter * 2 + 1) * (pause * 7 + 1);
-        const waitSeconds = wait / this.writeSpeed;
-        setTimeout(() => {
-            if (i >= text.length) return signal.dispatch(new Event("sbWritingEnd"));
-            const next = i + 1;
-            if (next < text.length && text[next] !== '§') {
-                this.char.src = this.char.sprites.talk[`${pose}1`];
-            }
-        }, waitSeconds * 1000);
-    }
-    
-    write(text) {
-        this.el.textContent = '';
-        this.sb.lifes = 2;
-        this.speed = 20; 
-        document.body.addEventListener("click", () => {
-            if (!this.paused) this.speed *= 20;
-        }, { once: 1 });
-        const enumerated = Object.entries(Array.from(text));
-        this.writing = 1;
-        signal.addEventListener("sbWritingEnd", () => {
-            this.writing = 0;
-        }, { once: 1 });
-        for (const [i, c] of enumerated) {
-            this.#processChar(c, i, text);
-            if (!this.writing) {
-                return this.el.className = "face";
-            }
-        }
     }
 }
 
@@ -210,7 +142,7 @@ class ST { // Speech bubble Tail
         sb.tail?.svg.remove();
         
         const char = sb.body.parentElement;
-        const charRect = char.getBoundingClientRect();
+        const charRect = sb.char.el.getBoundingClientRect();
         const charMidX = charRect.left + charRect.width / 2;
         const charMidY = charRect.top + charRect.height / 2;
         
@@ -229,7 +161,7 @@ class ST { // Speech bubble Tail
         const c = Math.sqrt(a**2 + b**2);
         if (c < r) return;
 
-        this.svg = new VE([w, b], { cn: "tail", parent: sb.body });
+        this.svg = new VSE([w, b], { cn: "tail", parent: sb.body });
         
         const rad = Math.atan2(b, a);
         const dir = [Math.cos(rad), Math.sin(rad)];

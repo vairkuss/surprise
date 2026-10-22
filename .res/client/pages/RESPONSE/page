@@ -11,10 +11,12 @@
 
 
 <div id="message" class="vbox">
-    <div class="lable text">CODE: MESSAGE</div>
-    <div class="text">вернуться&nbsp;в главное&nbsp;меню?</div>
-    <div class="block btn">
-        <div class="load-svg icon" onclick="transition('25285', [0, 0])">play</div>
+    <div class="lable text"><span id="code">CODE</span>: MESSAGE</div>
+    <div id ="navigation">
+        <div class="text">вернуться&nbsp;в главное&nbsp;меню?</div>
+        <div class="block btn">
+            <div class="load-svg icon" onclick="transition('25285', [0, 0])">play</div>
+        </div>
     </div>
 </div>
 
