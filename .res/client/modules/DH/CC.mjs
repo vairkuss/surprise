@@ -76,7 +76,7 @@ export default class CC { // Choice Chip
         this.chip = document.createElement("div");
         this.chip.id = "chip";
         this.base.appendChild(this.chip);
-        /**/
+        /**
         this.chip.style.outline = "2px solid blue";
         /**/
         this.container = document.createElement("div");

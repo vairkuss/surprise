@@ -26,6 +26,7 @@
     
     width: var(--cho-size);
     height: var(--cho-size);
+    
     background:
         radial-gradient(
             circle closest-corner at center,
@@ -61,9 +62,7 @@
     
     filter: opacity(0);
     
-    will-change:
-        transform,
-        filter;
+    will-change: transform, filter;
     transition:
         transform 0.4s ease-out,
         filter 0.4s ease-out;
@@ -81,8 +80,7 @@
     background: hsl(from var(--cur-color-dark) h calc(s * 2) calc(l * 0.4));
     border-radius: 100%;
     border:
-        calc(var(--cho-size) * 0.15)
-        solid
+        calc(var(--cho-size) * 0.15) solid
         hsl(from var(--cur-color-dark) h calc(s * 1.2) calc(l * 0.8));
     
     transition:
@@ -93,6 +91,9 @@
 
 #chip {
     touch-action: none;
+    /**
+    display: grid;
+    /**/
     place-content: center;
     
     position: relative;
@@ -134,8 +135,7 @@
         solid
         var(--cur-color-dim);
     outline:
-        calc(var(--cho-size) * 0.02)
-        solid
+        calc(var(--cho-size) * 0.02) solid
         hsl(from var(--cur-color-light) calc(h + 180) s l);
 }
 
@@ -191,17 +191,28 @@
     color: hsl( from var(--cur-color-light) calc(h + 180) calc(s * 0.7) calc(l * 1.5) );
 }
 
+
+.cho-chain-seg:has(.cho-chain-seg) {
+    /* position: relative; */
+    /* left: var(--seg-bias); */
+    /* top: var(--seg-bias); */
+}
+
 .cho-chain-seg, .cho-chain-ghost {
     --seg-size: calc(var(--cho-size) * 0.25);
     --seg-bias: calc((var(--cho-size) - var(--seg-size)) / 2);
+    
     display: grid;
     place-content: center;
+    
     position: absolute;
     z-index: 2019;
     left: var(--seg-bias);
     top: var(--seg-bias);
+    
     width: var(--seg-size);
     height: var(--seg-size);
+    
     border-radius: var(--seg-size);
 }
 
@@ -212,6 +223,7 @@
 
 #cho-menu {
     display: block;
+    
     position: fixed;
     z-index: 2000;
     top: 0;
@@ -219,6 +231,8 @@
     
     width: 100vw;
     height: 100vh;
+    
+    /* ... */
     
     transition:
         filter 0.3s ease-in;
@@ -249,17 +263,18 @@
     
     filter:
         drop-shadow(
-            0.05em
-            0.05em
-            0
+            0.05em 0.05em 0
             hsl(from var(--cur-color) calc(h + 180) 100% 25%)
         );
     place-content: center;
     padding: 0.5rem;
     
     color: hsl(from var(--cur-color) calc(h + 180) calc(s * 1.2) 75%);
+    /* ... */
     text-align: center;
     white-space: pre-wrap;
+    
+    /* ... */
 }
 
 #cho-menu:has(#cho-wheel > .cho-field.active) > #cho-text {

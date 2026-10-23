@@ -23,12 +23,12 @@
 <div class="vbox mid bot">
 
     <div class="hbox" id="chars">
-        <div id="infi" class="character" 
-            style="outline: 2px solid red" ><!--
+        <div id="infi" class="character" ><!--
+            style="outline: 2px solid red" 
             -->
         </div>
-        <div id="virko" class="character" 
-            style="outline: 2px solid red" ><!--
+        <div id="virko" class="character" ><!--
+            style="outline: 2px solid red" 
             -->
             </div>
     </div>

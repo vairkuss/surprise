@@ -16,8 +16,7 @@
 #choice { /* nest */
     user-select: none;
     
-    display: flex;
-    flex-direction: column;
+    display: grid;
     place-content: center;
     
     position: fixed;
@@ -63,9 +62,7 @@
     
     filter: opacity(0);
     
-    will-change:
-        transform,
-        filter;
+    will-change: transform, filter;
     transition:
         transform 0.4s ease-out,
         filter 0.4s ease-out;
@@ -197,16 +194,22 @@
 
 .cho-chain-seg:has(.cho-chain-seg) {
     position: relative;
-    /*left: var(--seg-bias);
-    top: var(--seg-bias);*/
+    /* left: var(--seg-bias); */
+    /* top: var(--seg-bias); */
+    
 }
 
 .cho-chain-seg {
     --seg-size: calc(var(--cho-size) / 4);
-    --seg-bias: calc((var(--cho-size) - var(--seg-size)) / 2);
+    /* --seg-bias: calc((var(--cho-size) - var(--seg-size)) / 2); */
     
-    position: fixed;
+    /* display: grid; */
+    /* place-content: center; */
+    
+    position: absolute;
     z-index: 2019;
+    /* left: var(--seg-bias); */
+    /* top: var(--seg-bias); */
     
     width: var(--seg-size);
     height: var(--seg-size);
