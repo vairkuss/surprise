@@ -75,14 +75,16 @@ export default class CC { // Choice Chip
         
         this.chip = document.createElement("div");
         this.chip.id = "chip";
+        this.base.appendChild(this.chip);
         /**/
         this.chip.style.outline = "2px solid blue";
         /**/
-        this.chip.textContent = "...";
-        this.base.appendChild(this.chip);
+        this.container = document.createElement("div");
+        this.container.appendChild(new Text("..."));
+        this.chip.appendChild(this.container);
         
-        this.chipBorder = new VSE([14], { id: "chip-border", parent: this.chip });
-        new VCE(6, { x: 7, parent: this.chipBorder });
+        this.border = new VSE([14], { id: "chip-border", parent: this.chip });
+        new VCE(6, { x: 7, parent: this.border });
         
         this.chain = new CN();
         this.base.appendChild(this.chain.root);
@@ -134,16 +136,16 @@ export default class CC { // Choice Chip
     }
     
     #changeIcon() {
-        this.chip.textContent = '';
+        this.container.firstChild.remove();
         if (this.changingTo == null) {
             this.icon = null;
-            this.chip.textContent = "...";
+            this.container.appendChild(new Text("..."));
         } else {
             this.icon = new VSE([], {
                 id: "chip-icon",
                 cn: "hidden",
                 parse: this.changingTo,
-                parent: this.chip
+                parent: this.container
             });
         }
     }
@@ -163,6 +165,6 @@ export default class CC { // Choice Chip
             this.chip.style.left = Math.abs(x) < .5 ? 0 : x + "px";
             this.chip.style.top = Math.abs(y) < .5 ? 0 : y + "px";
             this.updateChain();
-        });
+        }, 1/60 * 1000);
     }
 }

@@ -1,5 +1,7 @@
 /* sVg namespace Element */
 
+import IG from "./IG.mjs";
+
 
 export default class VE { // sVg namespace Element
 
@@ -51,7 +53,7 @@ export class VPE extends VE { // sVg Path Element
         this.setAttribute("d", d);
     }
     
-    setPath(d) { this.setAttribute("d", d) }
+    set d(d) { this.setAttribute("d", d) }
 }
 
 
@@ -78,7 +80,6 @@ export class VCE extends VE { // sVg Circle Element
         const { x, y } = options;
         const cx = x ?? r;
         const cy = y ?? cx;
-        //console.debug({r,x,y});
         if (r != null) {
             this.setAttribute("r", r);
             this.setAttribute("cx", cx);
@@ -89,18 +90,13 @@ export class VCE extends VE { // sVg Circle Element
 
 
 export class VSE extends VE { // sVg Svg Element
-
-    static #count = 0;
-    static get id() {
-        return `VSE${this.#count++}`;
-    }
     
-    constructor([w, h], options) {
-        w = w ?? options?.parse?.getAttribute("width");
-        h = h ?? options?.parse?.getAttribute("height") ?? w;
+    constructor([w, h], options={}) {
         const { parse } = options;
-        delete options.parse;
+        w = w ?? parse?.getAttribute("width");
+        h = h ?? parse?.getAttribute("height") ?? w;
         super("svg", options);
+        if (!this.id) IG.add(this.el, "VSE");
         if (w != null) {
             this.setAttribute("width", w);
             this.setAttribute("height", h);
@@ -111,20 +107,19 @@ export class VSE extends VE { // sVg Svg Element
     
     #genMask(w, h, { fill }, donor) {
         this.defs = new VE("defs", { parent: this.el });
-        this.mask = new VE("mask", { id: `${VSE.id}-mask`, parent: this.defs.el });
+        this.mask = new VE("mask", { id: `${this.id}-mask`, parent: this.defs.el });
         this.fill = new VRE([w, h], { parent: this.el });
         this.fill.setAttribute("mask", `url(#${this.mask.id})`);
         this.fill.setAttribute("fill", fill ?? "currentColor");
-        if (donor != null) {
-            const donorDefs = donor.querySelector("defs");
-            if (donorDefs != null) {
-                [...donorDefs.childNodes].forEach(child => {
-                    this.defs.appendChild(child);
-                });
-                donorDefs.remove();
-            }
-            this.maskFromDonor(donor);
+        if (donor == null) return;
+        const donorDefs = donor.querySelector("defs");
+        if (donorDefs != null) {
+            [...donorDefs.childNodes].forEach(child => {
+                this.defs.appendChild(child);
+            });
+            donorDefs.remove();
         }
+        this.maskFromDonor(donor);
     }
     
     maskFromDonor(el) {
@@ -135,7 +130,7 @@ export class VSE extends VE { // sVg Svg Element
     }
     
     addToMask(el) {
-        const id = el.getAttribute("id");
+        const id = el.getAttribute("id") ?? IG.add(el, this.mask.id);
         const cn = el.getAttribute("class");
         const use = new VUE(`#${id}`, { cn });
         use.setAttribute("style", "filter: opacity(0)");

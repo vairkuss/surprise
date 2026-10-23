@@ -2,6 +2,7 @@
 
 import CC from "./CC.mjs";
 import CM from "./CM.mjs";
+import SB from "./SB.mjs";
 
 
 export default class CH { // Choice Handler
@@ -23,8 +24,8 @@ export default class CH { // Choice Handler
     static dragChip(e) {
         if (!this.cc.active) return;
         e.preventDefault();
-        this.cc.chip.style.left = e.screenX - this.cc.dp.x + "px";
-        this.cc.chip.style.top = e.screenY - this.cc.dp.y + "px";
+        this.cc.chip.style.left = e.clientX - this.cc.dp.x + "px";
+        this.cc.chip.style.top = e.clientY - this.cc.dp.y + "px";
         this.cc.updateChain();
         const fired = document.elementsFromPoint(e.clientX, e.clientY);
         const field = fired.find(el => el.matches(".cho-field"));
@@ -53,6 +54,7 @@ export default class CH { // Choice Handler
         this.cc.dp = null;
         const fired = document.elementsFromPoint(e.clientX, e.clientY);
         const field = fired.find(el => el.matches(".cho-field"));
+        if (field != null) alert(field.getAttribute("href"));
         const digit = field?.getAttribute("href").slice(3);
         const id = Number.isNaN(digit) ? digit : parseInt(digit);
         const cs = this.cm.wheel.sectors[id];

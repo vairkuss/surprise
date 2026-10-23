@@ -54,7 +54,7 @@ class DH { // Dialogue Handler
                 CO.find(id).say(text, pose, i);
             }, { once: 1 });
         });
-        const passLast = 0;//typeof choice === "number" ? choice >= 0 : choice != null;
+        const passLast = 0; //typeof choice === "number" ? choice < 0 : choice == null;
         const end = replicas.length - passLast;
         const term = () => this.#replica >= end;
         const func = () => CH.setChoice(choice);
@@ -142,7 +142,7 @@ class DH { // Dialogue Handler
             const chipStyle = getComputedStyle(CH.cc.chip);
             const x = parseFloat(chipStyle.left);
             const y = parseFloat(chipStyle.top);
-            CH.cc.dp = { x: e.screenX - x, y: e.screenY - y }
+            CH.cc.dp = { x: e.clientX - x, y: e.clientY - y }
             CH.cc.base.classList.add("active");
             CH.cm.show();
         }, true);
