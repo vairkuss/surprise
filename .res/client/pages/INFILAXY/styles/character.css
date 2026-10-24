@@ -4,6 +4,7 @@
     --sprite: url(/local/data/defs.svg);
     --tail: url(/local/data/defs.svg);
     --main-color: transparent;
+    --sec-color: transparent;
     
     display: grid;
     place-content: center;
@@ -15,9 +16,7 @@
     height: var(--char-size);
     width: var(--char-size);
     
-    background-image:
-        var(--sprite),
-        var(--tail),
+    background-image: 
         radial-gradient(ellipse 50% 10% at 50% 90%,
             hsl(from var(--main-color) h 30% 10%),
             transparent
@@ -26,9 +25,26 @@
             hsl(from var(--sec-color) h s l / 0.1),
             transparent
         );
+    background-repeat: inherit;
+    background-position: inherit;
+    background-size: 100% 100%;
+}
+
+.character > .sprite {
+    position: absolute;
+    z-index: 100;
+    left: 0;
+    bottom: 0;
+    
+    width: inherit;
+    height: inherit;
+    
+    background-image:
+        var(--sprite),
+        var(--tail);
     background-repeat: no-repeat;
     background-position: center;
-    background-size: contain, contain, 100% 100%, 100% 100%;
+    background-size: contain;
     
     transition: bottom 0.3s ease-in;
 }

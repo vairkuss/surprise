@@ -5,6 +5,17 @@ export default class IG { // Id Generator
     
     static #bank = {};
     
+    static #remove(el) {
+        const id = el.getAttribute("id") ?? "";
+        const [, tag, index] = id.match(/(\w+)(\d+)/) ?? [];
+        const group = this.#bank[tag];
+        if (group == null) return;
+        group[index] = undefined;
+        const last = group.findLastIndex(x => x !== undefined);
+        group.splice(last + 1);
+        if (!group.length) delete this.#bank[tag];
+    }
+    
     static add(el, tag) {
         tag = tag ?? el.tagName;
         if (!(tag in this.#bank)) {
@@ -17,26 +28,12 @@ export default class IG { // Id Generator
         const id = tag + index;
         group.splice(index, 1, id);
         el.setAttribute("id", id);
-        // ловить ивент ремува и подставлять свою функцию
-        // TODO: найти ивент ремува в интернете
-        /**
-        el.addEventListener("remove", () => {
-            this.remove(el);
-        }, { capture: 1, once: 1 });
-        /**/
+        new MutationObserver((_, obs) => {
+            if (!el.isConnected) {
+                this.#remove(el);
+                obs.disconnect();
+            }
+        }).observe(document, { childList: 1, subtree: 1 });
         return id;
-    }
-    
-    static remove(el) {
-        const id = el.getAttribute("id") ?? "";
-        const [, tag, index] = id.match(/(\w+)(\d+)/) ?? [];
-        const group = this.#bank[tag];
-        if (group == null) return;
-        group[index] = undefined;
-        const last = group.findLastIndex(x => x !== undefined);
-        group.splice(last + 1);
-        if (!group.length) delete this.#bank[tag];
-        el.remove();
-        return el;
     }
 }

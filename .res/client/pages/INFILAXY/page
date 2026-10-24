@@ -26,11 +26,13 @@
         <div id="infi" class="character" ><!--
             style="outline: 2px solid red" 
             -->
+            <div class="sprite"></div>
         </div>
         <div id="virko" class="character" ><!--
             style="outline: 2px solid red" 
             -->
-            </div>
+            <div class="sprite"></div>
+        </div>
     </div>
 
     <div class="hbox">

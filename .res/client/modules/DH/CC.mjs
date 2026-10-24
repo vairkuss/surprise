@@ -75,19 +75,50 @@ export default class CC { // Choice Chip
         
         this.chip = document.createElement("div");
         this.chip.id = "chip";
+        this.chip.style.top = 0;
+        this.chip.style.left = 0;
         this.base.appendChild(this.chip);
-        /**
-        this.chip.style.outline = "2px solid blue";
-        /**/
+        this.#assignAnim(this.chip);
+        
         this.container = document.createElement("div");
         this.container.appendChild(new Text("..."));
         this.chip.appendChild(this.container);
         
         this.border = new VSE([14], { id: "chip-border", parent: this.chip });
         new VCE(6, { x: 7, parent: this.border });
+        this.#assignAnim(this.border.el);
         
         this.chain = new CN();
         this.base.appendChild(this.chain.root);
+    }
+    
+    #assignAnim(el) {
+        const pulse = [
+            { filter: "brightness(1)" },
+            { filter: "brightness(0.6)" },
+            { filter: "brightness(1.3)" },
+            { filter: "brightness(1)" }
+        ];
+        const conf = {
+            duration: 4000,
+            easing: "ease-in-out",
+            iterations: Infinity
+        };
+        const anim = el.animate(pulse, conf);
+        new MutationObserver((records) => {
+            for (const record of records) {
+                if (record.attributeName !== "class") continue;
+                if (this.base.matches(".active")) {
+                    return anim.play();
+                }
+                const current = anim.currentTime ?? 0;
+                const left = conf.duration - current;
+                anim.effect.updateTiming({
+                    iterations: 1,
+                    duration: left
+                });
+            }
+        }).observe(this.base, { attributes: 1});
     }
     
     get active() {
@@ -154,10 +185,14 @@ export default class CC { // Choice Chip
         /**
         if (this.chain.govn1) return;
         /**/
-        const retrieval  = setInterval(() => {
+        const retrieve = setInterval(() => {
             const nested = this.cords.every(v => !v);
             const held = this.dp != null;
-            if (nested || held) return clearInterval(retrieval);
+            if (nested || held) {
+                const detail = held;
+                const retrieveEnd = new CustomEvent("ccRetrieveEnd", { detail });
+                return signal.dispatchEvent(retrieveEnd);
+            }
             const rad = Math.atan2(...this.cords.toReversed());
             const dir = [Math.cos(rad), Math.sin(rad)];
             const c = Math.sqrt(this.cords.reduce((s, v) => s + v**2, 0));
@@ -166,5 +201,9 @@ export default class CC { // Choice Chip
             this.chip.style.top = Math.abs(y) < .5 ? 0 : y + "px";
             this.updateChain();
         }, 1/60 * 1000);
+        signal.addEventListener("retrieveEnd", e => {
+            if (e.detail) 
+            clearInterval(retrieval);
+        }, { once: 1 })
     }
 }

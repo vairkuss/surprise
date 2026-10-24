@@ -3,7 +3,7 @@
 import SB from "./SB.mjs";
 
 
-export default class CO {
+export default class CO { // Character Object
     
     static chars = [];
     static hide() {
@@ -16,10 +16,11 @@ export default class CO {
         return this.chars.find(char => char.name === name);
     }
     
-    constructor(el) { // Character Object
+    constructor(el) {
         CO.chars.push(this);
         this.el = el;
         this.name = el.id;
+        this.sprite = el.querySelector(".sprite");
         this.sprites = window.data.sprites[el.id];
         this.idle();
     }
@@ -78,11 +79,11 @@ export default class CO {
     }
     
     jump() {
-        this.el.style.bottom = "calc(2 * var(--sub-axis))";
+        this.sprite.style.bottom = "calc(2 * var(--sub-axis))";
         setTimeout(() => {
-            this.el.style.removeProperty("bottom");
-            if (!this.el.getAttribute("style")) {
-                this.el.removeAtrribute("style");
+            this.sprite.style.removeProperty("bottom");
+            if (!this.sprite.getAttribute("style")) {
+                this.sprite.removeAtrribute("style");
             }
         }, 0.2 * 1000);
     }

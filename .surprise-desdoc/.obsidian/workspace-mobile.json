@@ -85,8 +85,7 @@
               "title": "write-lyrics"
             }
           }
-        ],
-        "currentTab": 5
+        ]
       }
     ],
     "direction": "vertical"
@@ -237,7 +236,7 @@
       "bases:Створити нову базу": false
     }
   },
-  "active": "447d377caf15d181",
+  "active": "8ac4a97a96b97ff6",
   "lastOpenFiles": [
     "index.md",
     "presentation/presentation.md",

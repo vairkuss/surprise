@@ -41,23 +41,20 @@ class CS { // Choice Wheel Sector
         this.value = value;
         this.i = i;
         this.color = "var(--m-color)";
-        this.#calculateColor(key)
-        .then(() => this.#fetchIcon());
+        this.#calculateColor(key);
+        this.onReady(() => this.#fetchIcon());
         this.#generateSector(sizes, i, a);
     }
     
     async #calculateColor(key) {
         const bytes = new TextEncoder().encode(key);
         const hash = await crypto.subtle.digest("SHA-256", bytes);
-        const rgb = new Uint8Array(hash.slice(0, 3));
-        /**
-        alert([
-            { bytes, hash, rgb },
-            { type: rgb.constructor.name }
-        ].map(x => JSON.stringify(x)).join('\n'));
-        /**
-        this.color = "#" + rgb.toHex();
-        /**/
+        const rgb = new Uint8Array(hash, 0, 3);
+        this.color = rgb.reduce((hex, byte) => {
+            return hex + byte.toString(16).padStart(2, '0');
+        }, "#");
+        const ready = new Event("cfReady" + this.i);
+        signal.dispatchEvent(ready);
     }
     
     #fetchIcon() {
@@ -74,7 +71,6 @@ class CS { // Choice Wheel Sector
             const index = number % random.length;
             this.icon = random[index];
         }
-        signal.dispatchEvent(new Event("cfReady" + this.i));
     }
     
     #generateSector(sizes, sector, sectors) {
@@ -94,13 +90,14 @@ class CS { // Choice Wheel Sector
     activate() { this.field.classList.add("active") }
     deactivate() { this.field.classList.remove("active") }
     
-    onReady(func, ...args) {
+    onReady(func) {
         if (this.color !== "var(--m-color)") {
-            return func(...args);
+            func();
+        } else {
+            signal.addEventListener("cfReady" + this.i, () => {
+                func();
+            }, { once: 1 });
         }
-        return signal.addEventListener("cfReady" + this.i, () => {
-            func(...args);
-        }, { once: 1 });
     }
 }
 

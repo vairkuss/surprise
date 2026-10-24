@@ -108,15 +108,15 @@ class DH { // Dialogue Handler
         this.#readDialogueFor(char);
     }
     
-    static init() {
-        if (this.#branch != null) return;
-        
+    static #loadBranch() {
         this.#branch = data.replicas;
         if (data.save.history[data.page] == null) {
             data.save.history[data.page] = {};
         }
         this.#history = data.save.history[data.page];
-        
+    }
+    
+    static #loadChars() {
         document.querySelectorAll(".character").forEach(el => {
             const char = new CO(el);
             el.addEventListener("pointerout", () => {
@@ -129,6 +129,12 @@ class DH { // Dialogue Handler
                 if (this.ready) this.#readDialogueFor(char);
             });
         });
+    }
+    
+    static init() {
+        if (this.#branch != null) return;
+        this.#loadBranch();
+        this.#loadChars();
         
         if (CO.chars.length) {
             root.appendChild(CH.cc.base);
