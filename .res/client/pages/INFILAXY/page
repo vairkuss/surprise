@@ -27,11 +27,13 @@
             style="outline: 2px solid red" 
             -->
             <div class="sprite"></div>
+            <div class="anchor"></div>
         </div>
         <div id="virko" class="character" ><!--
             style="outline: 2px solid red" 
             -->
             <div class="sprite"></div>
+            <div class="anchor"></div>
         </div>
     </div>
 

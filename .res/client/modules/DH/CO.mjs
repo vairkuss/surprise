@@ -20,6 +20,7 @@ export default class CO { // Character Object
         CO.chars.push(this);
         this.el = el;
         this.name = el.id;
+        this.anchor = el.querySelector(".anchor");
         this.sprite = el.querySelector(".sprite");
         this.sprites = window.data.sprites[el.id];
         this.idle();
@@ -70,20 +71,21 @@ export default class CO { // Character Object
     say(text, pose, replica) {
         this.pose = pose;
         this.jump();
-        let sb = SB.bubbles.find(({ char }) => char === this);
+        let sb = SB.getByChar(this);
         if (sb == null) {
             sb = new SB(this);
-            this.el.appendChild(sb.body);
+        } else {
+            sb.jump();
         }
-        sb.face.write({ text, replica });
+        sb.writer.write({ text, replica });
     }
     
     jump() {
-        this.sprite.style.bottom = "calc(2 * var(--sub-axis))";
+        this.sprite.style.bottom = "calc(3 * var(--sub-axis))";
         setTimeout(() => {
             this.sprite.style.removeProperty("bottom");
             if (!this.sprite.getAttribute("style")) {
-                this.sprite.removeAtrribute("style");
+                this.sprite.removeAttribute("style"); //
             }
         }, 0.2 * 1000);
     }

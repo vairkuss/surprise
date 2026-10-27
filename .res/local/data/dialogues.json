@@ -5,11 +5,14 @@
     
       [
         {
-          "before": [{ "id": "infi", "pose": "smile"}],
+          "before": [{ "id": "infi", "pose": "wave"}],
           "replicas": [
-            { "id": "virko", "pose": "wave", "text": "Привет!" },
+            { "id": "virko", "pose": "show", "text": "Привет!" },
             { "id": "virko", "pose": "show", "text": "Это тестовый диалог."},
-            { "id": "infi", "pose": "shock", "text": "Капец, мы разговариваем  :0" }
+            { "id": "virko", "pose": "show", "text": "Сейчас я скажу ∆много слов, чтобы занять эфир."},
+            { "id": "virko", "pose": "show", "text": "Инфи,§ скажите что-то,§§ √пожалуйста√.✓"},
+            { "id": "infi", "pose": "wave", "text": "Капец, мы разговариваем  :0" },
+            { "id": "infi", "pose": "wave", "text": "А сейчас мы скажем...§¥virko:show¥...парное предложение!"}
           ],
           "choice": { "Хорошо": null, "Пока": 1, "??": 2, "3": 3}
         },

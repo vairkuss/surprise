@@ -27,7 +27,7 @@ class DH { // Dialogue Handler
         });
         signal.addEventListener("dhDialogueEnd", () => {
             this.#updateHistory(char, 1, true);
-            CO.chars.idle();
+            CO.idle();
             document.querySelectorAll(".frozen").forEach(btn => {
                 btn.classList.remove("frozen");
             });
@@ -67,6 +67,7 @@ class DH { // Dialogue Handler
             signal.dispatchEvent(nextReplica);
             const ready = term();
             if (ready) return func();
+            SB.hit();
         }
         body.addEventListener("click", () => {
             this.#onExcerptEnd(term, func);
@@ -141,14 +142,13 @@ class DH { // Dialogue Handler
         }
         
         CH.cc.chip.addEventListener("pointerdown", e => {
-            const chosen = CH.chosen !== undefined;
-            const chipHidden = CH.cc.chip.matches("hidden");
-            if (chosen && SB.active == null || chipHidden) return;
+            const hidden = CH.cc.chip.matches(".hidden");
+            if (hidden || SB.active == null) return;
             e.preventDefault();
             const chipStyle = getComputedStyle(CH.cc.chip);
-            const x = parseFloat(chipStyle.left);
-            const y = parseFloat(chipStyle.top);
-            CH.cc.dp = { x: e.clientX - x, y: e.clientY - y }
+            const x = e.clientX - parseFloat(chipStyle.left);
+            const y = e.clientY - parseFloat(chipStyle.top);
+            CH.cc.dp = { x, y };
             CH.cc.base.classList.add("active");
             CH.cm.show();
         }, true);

@@ -9,6 +9,7 @@ class CN { // Choice chip chaiN
         this.root = document.createElement("div");
         this.root.className = "cho-chain-seg";
         this.ghost = this.root.cloneNode();
+        this.ghost.id = "cho-chain-ghost";
         this.root.appendChild(this.ghost);
     }
     
@@ -16,9 +17,6 @@ class CN { // Choice chip chaiN
     get margin() { return this.size / 2 }
     
     update([chipX, chipY]) {
-        /**
-        if (this.govn1) return;
-        /**/
         const chipR = this.size / 1.5 + this.margin;
         const c = Math.sqrt(chipX**2 + chipY**2);
         const length = c - chipR;
@@ -30,23 +28,17 @@ class CN { // Choice chip chaiN
         if (diff < 0) this.#lose(diff);
         
         const rest = length % seg;
-        const restFraction = rest / seg;
-        this.ghost.style.filter = `opacity(${restFraction * 100}%)`;
+        this.ghost.style.filter = `opacity(${rest / seg})`;
         
         const rad = Math.atan2(chipY, chipX);
         const dir = [Math.cos(rad), Math.sin(rad)];
         [...this.root.children].forEach((child, i) => {
-            if (!i) return;
+            if (child.id === "cho-chain-ghost") return;
             const dist = (i - 1) * seg + rest;
             const [x, y] = dir.map(v => v * dist);
-            child.style.left = x;
-            child.style.top = y;
+            child.style.left = `${x}px`;
+            child.style.top = `${y}px`;
         });
-        /**
-        if (!this.timeoutgovn1) {
-            this.timeoutgovn1 = setTimeout(() => this.govn1 = 1, 2000);
-        }
-        /**/
     }
     
     #gain(count) {
@@ -57,7 +49,7 @@ class CN { // Choice chip chaiN
     
     #lose(count) {
         for (let i = count; i < 0; i++) {
-            this.root.firstChild.remove();
+            this.root.lastChild.remove();
         }
     }
 }
@@ -75,8 +67,6 @@ export default class CC { // Choice Chip
         
         this.chip = document.createElement("div");
         this.chip.id = "chip";
-        this.chip.style.top = 0;
-        this.chip.style.left = 0;
         this.base.appendChild(this.chip);
         this.#assignAnim(this.chip);
         
@@ -111,7 +101,7 @@ export default class CC { // Choice Chip
                 if (this.base.matches(".active")) {
                     return anim.play();
                 }
-                const current = anim.currentTime ?? 0;
+                const current = anim.currentTime % conf.duration;
                 const left = conf.duration - current;
                 anim.effect.updateTiming({
                     iterations: 1,
@@ -150,11 +140,9 @@ export default class CC { // Choice Chip
         this.chip.style.color = "transparent";
         signal.addEventListener("ccChangeIcon", () => {
             this.#changeIcon();
-            setTimeout(() => {
-               this.icon?.classList.remove("hidden");
-               this.chip.style.removeProperty("color");
-               this.blinking = false;
-           }, 1/60 * 1000);
+           this.icon?.classList.remove("hidden");
+           this.chip.style.removeProperty("color");
+           this.blinking = false;
         }, { once: 1 });
         const counter = setInterval(() => {
             this.transition--;
@@ -178,21 +166,15 @@ export default class CC { // Choice Chip
                 parse: this.changingTo,
                 parent: this.container
             });
+            void this.icon.el.offsetWidth;
         }
     }
     
     retrieve() {
-        /**
-        if (this.chain.govn1) return;
-        /**/
         const retrieve = setInterval(() => {
             const nested = this.cords.every(v => !v);
             const held = this.dp != null;
-            if (nested || held) {
-                const detail = held;
-                const retrieveEnd = new CustomEvent("ccRetrieveEnd", { detail });
-                return signal.dispatchEvent(retrieveEnd);
-            }
+            if (nested || held) return clearInterval(retrieve);
             const rad = Math.atan2(...this.cords.toReversed());
             const dir = [Math.cos(rad), Math.sin(rad)];
             const c = Math.sqrt(this.cords.reduce((s, v) => s + v**2, 0));
@@ -201,9 +183,5 @@ export default class CC { // Choice Chip
             this.chip.style.top = Math.abs(y) < .5 ? 0 : y + "px";
             this.updateChain();
         }, 1/60 * 1000);
-        signal.addEventListener("retrieveEnd", e => {
-            if (e.detail) 
-            clearInterval(retrieval);
-        }, { once: 1 })
     }
 }

@@ -1,52 +1,48 @@
-:root {
-    --bub-size: min(10vh, 10vw);
-}
-
-.bubble {
-    display: grid;
-    place-content: center;
+.sb-body {
+    --sb-size: min(10 * var(--sub-axis));
     
     position: absolute;
-    z-index: 100;
-    left: 0;
-    bottom: 0;
-    height: fit-content;
     
-    will-change: transform, filter;
-    transition:
-        all 0.4s ease-out;
-}
-
-
-.face {
-    display: grid;
-    min-width: calc(var(--bub-size) * 1.8);
+    min-width: calc(var(--sb-size) * 1.8);
+    min-height: var(--sb-size);
     width: max-content;
-    max-width: calc(var(--bub-size) * 5);
-    min-height: var(--bub-size);
     height: fit-content;
-    margin-bottom: calc(var(--bub-size) * -0.1);
+    max-width: calc(var(--sb-size) * 5);
+    padding: calc(var(--sb-size) * 0.2) calc(var(--sb-size) * 0.4);
     
     background: #fff;
-    padding: calc(var(--bub-size) * 0.2) calc(var(--bub-size) * 0.5);
-    border: calc(var(--bub-size) * 0.1) solid #000;
-    border-radius: var(--bub-size);
+    border-radius: var(--sb-size);
+    border: var(--sub-axis) solid #000;
     
     color: #000;
-    font-size: calc(var(--bub-size) * 0.4);
+    font-size: calc(var(--sb-size) * 0.4);
+    font-family: sans-serif;
+    justify-content: center;
     text-align: center;
     place-content: center;
     white-space: pre-line;
+    
+    will-change: transform, filter;
+    transition:
+        all 0.4s ease-out,
+        top 0.2s ease-in;
 }
 
 
-.tail {
+.sb-tail {
+    position: absolute;
+    top: 100%;
+    left: 0%;
+    
     fill: #fff;
     stroke: #000;
-    stroke-width: calc(var(--bub-size) * 0.1);
-    transition: all 0.3s ease-in, width 0s;
+    stroke-width: var(--sub-axis);
+    
+    transition: all 0.3s ease-in;
+    
+    outline: 0.25vh solid blue;
 }
 
-.tail path {
+.sb-tail path {
     stroke-linejoin: round;
 }
