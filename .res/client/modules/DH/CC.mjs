@@ -62,7 +62,7 @@ export default class CC { // Choice Chip
         this.transition = 0;
         
         this.base = document.createElement("div");
-        this.base.id = "choice";
+        this.base.id = "choice antifreeze";
         this.base.className = "hidden";
         
         this.chip = document.createElement("div");

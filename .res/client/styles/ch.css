@@ -8,12 +8,9 @@
 }
 
 
-:root {
-    --cho-size: calc(20 * var(--sub-axis));
-}
-
-
 #choice { /* nest */
+    --cho-size: 20vh;
+    
     user-select: none;
     
     display: grid;

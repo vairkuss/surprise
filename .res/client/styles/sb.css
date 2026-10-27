@@ -1,5 +1,5 @@
 .sb-body {
-    --sb-size: min(10 * var(--sub-axis));
+    --sb-size: 10vh;
     
     position: absolute;
     
@@ -12,7 +12,7 @@
     
     background: #fff;
     border-radius: var(--sb-size);
-    border: var(--sub-axis) solid #000;
+    border: calc(var(--sb-size) * 0.1) solid #000;
     
     color: #000;
     font-size: calc(var(--sb-size) * 0.4);
@@ -36,7 +36,7 @@
     
     fill: #fff;
     stroke: #000;
-    stroke-width: var(--sub-axis);
+    stroke-width: calc(var(--sb-size) * 0.1);
     
     transition: all 0.3s ease-in;
     

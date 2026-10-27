@@ -41,7 +41,11 @@ class PV { // Protructed Values
         ent[key] = value;
         this[tag] = Object.assign(this[tag] ?? {
             get some() {
-                return Object.values(this).some(x => x);
+                for (const key in this) {
+                    if (key === "some") continue;
+                    if (this[key]) return true;
+                }
+                return false;
             }
         }, ent);
     }
@@ -68,6 +72,7 @@ class TS { // Trigger Storage
             const { tag, term } = this[key];
             const value = term(ref, processed);
             pv.add(tag, key, value);
+            return pv;
         }, new PV());
     }
 }
@@ -183,7 +188,7 @@ export default class SW { // Speech Writer
         } else if (detail.text[next] !== '§') {
             this.sb.char.talking = true;
         }
-        const call = `sfWrite${i}:${detail.replica}`;
+        const call = `sfWrite${next}:${detail.replica}`;
         const event = new CustomEvent(call, { detail });
         signal.dispatchEvent(event);
     }

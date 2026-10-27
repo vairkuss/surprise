@@ -1,7 +1,3 @@
-:root {
-    --sub-axis: min(1vw, 1vh);
-}
-
 .mid, .top, .right, .bot, .left {
     position: absolute;
 }
@@ -14,7 +10,7 @@
 }
 
 .top, .right, .bot, .left {
-    --pad: calc(3 * var(--sub-axis));
+    --pad: 3vh;
 }
 
 .top {

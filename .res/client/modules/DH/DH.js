@@ -65,9 +65,7 @@ class DH { // Dialogue Handler
         if (SB.active == null) {
             const nextReplica = new Event("dhReplica" + this.#replica++);
             signal.dispatchEvent(nextReplica);
-            const ready = term();
-            if (ready) return func();
-            SB.hit();
+            term() ? func() : SB.hit();
         }
         body.addEventListener("click", () => {
             this.#onExcerptEnd(term, func);
