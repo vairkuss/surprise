@@ -58,7 +58,7 @@ class TS { // Trigger Storage
         const type = trigger.constructor.name;
         const term = (ref, processed) => type === "RegExp"
                 ? processed.match(trigger) != null
-                ? trigger.includes(ref);
+                : trigger.includes(ref);
         this[key] = { tag, term };
         this.__KEYS.push(key);
     }
