@@ -1,5 +1,6 @@
 .sb-body {
     --sb-size: 10vh;
+    --sb-bord: 1vh;
     
     position: absolute;
     
@@ -12,7 +13,7 @@
     
     background: #fff;
     border-radius: var(--sb-size);
-    border: calc(var(--sb-size) * 0.1) solid #000;
+    border: var(--sb-bord) solid #000;
     
     color: #000;
     font-size: calc(var(--sb-size) * 0.4);
@@ -36,7 +37,7 @@
     
     fill: #fff;
     stroke: #000;
-    stroke-width: calc(var(--sb-size) * 0.1);
+    stroke-width: var(--sb-bord);
     
     transition: all 0.3s ease-in;
     
