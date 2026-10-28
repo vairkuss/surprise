@@ -2,6 +2,17 @@
     --btn-l: 50;
 }
 
+.big.btn {
+    --btn-size: 2.5rem;
+    --ring-size: calc(var(--btn-size) * 0.9);
+    --brd-size: calc(var(--btn-size) * 0.08);
+    --icon-size: calc(var(--ring-size) - var(--brd-size));
+}
+
+.small.btn {
+    transform: scale(0.65);
+}
+
 
 .btn {
     user-select: none;
@@ -14,10 +25,10 @@
     
     will-change: transform;
     transition:
-        0.09s transform ease-in 0.09s,
-        0.1s background ease-in,
-        0.1s box-shadow ease-in 0.1s,
-        0s z-index 0.42s;
+        transform 0.09s ease-in 0.09s,
+        background 0.1s ease-in,
+        box-shadow 0.1s ease-in 0.1s,
+        z-index 0s;
 }
 
 /**/
@@ -38,10 +49,10 @@
         transform: scale(1.2);
     
         transition:
-            0.09s transform ease-in 0.09s,
-            0.1s background ease-in,
-            0.1s box-shadow ease-in 0.1s,
-            0s z-index;
+            transform 0.09s ease-in 0.09s,
+            background 0.1s ease-in,
+            box-shadow 0.1s ease-in 0.1s,
+            z-index 0s;
     }
 /**/
 }
@@ -60,10 +71,10 @@
     transform: scale(0.5);
     
     transition:
-        0.09s transform ease-in 0.09s,
-        0.1s background ease-in,
-        0.1s box-shadow ease-in 0.1s,
-        0s z-index;
+        transform 0.09s ease-in 0.09s,
+        background 0.1s ease-in,
+        box-shadow 0.1s ease-in 0.1s,
+        z-index 0s;
 }
 
 
@@ -77,13 +88,13 @@
     border-radius: var(--ring-size);
     
     transition:
-        0.2s box-shadow ease-in 0.1s,
-        0.06s width ease-in 0.06s,
-        0.06s height ease-in 0.06s;
+        box-shadow 0.2s ease-in 0.1s,
+        width 0.06s ease-in 0.06s,
+        height 0.06s ease-in 0.06s;
 }
 
 .btn > .inner-ring::before {
-    transition: 0.8s background ease-in;
+    transition: background 0.8s ease-in;
 }
 
 /**/
@@ -106,9 +117,9 @@
             );
         
         transition:
-            0.2s box-shadow ease-in 0.1s,
-            0.06s width ease-in 0.06s,
-            0.06s height ease-in 0.06s;  
+            box-shadow 0.2s ease-in 0.1s,
+            width 0.06s ease-in 0.06s,
+            height 0.06s ease-in 0.06s;  
     }
 /**/
 }
@@ -125,9 +136,9 @@
         hsl(from var(--cur-color) h calc(s * 0.6), calc(l * 0.8));
         
     transition:
-        0.2s box-shadow ease-in 0.1s,
-        0.06s width ease-in 0.06s,
-        0.06s height ease-in 0.06s;
+        box-shadow 0.2s ease-in 0.1s,
+        width 0.06s ease-in 0.06s,
+        height 0.06s ease-in 0.06s;
 }
     
 
@@ -136,12 +147,12 @@
     
     will-change: transform, filter, opacity;
     transition:
-        0.05s background,
-        0.05s color,
-        0.03s transform ease-in,
-        0.12s opacity ease-in 0.05s,
-        0.2s color ease-in 0.1s,
-        0.2s filter ease-in 0.1s;
+        background 0.05s,
+        color 0.05s,
+        transform 0.03s ease-in,
+        opacity 0.12s ease-in 0.05s,
+        color 0.2s ease-in 0.1s,
+        filter 0.2s ease-in 0.1s;
 }
     
 /**/
@@ -159,13 +170,13 @@
             );
         
         transition:
-        0.05s background,
-        0.05s color,
-            0.03s transform ease-in,
-            0.12s opacity ease-in 0.05s,
-            0.2s color ease-in 0.1s,
-            0.2s filter ease-in 0.1s
-            0s position 0.3s;
+            background 0.05s,
+            color 0.05s,
+            transform 0.03s ease-in,
+            opacity 0.12s ease-in 0.05s,
+            color 0.2s ease-in 0.1s,
+            filter 0.2s ease-in 0.1s
+            position 0.3s;
     }
 /**/
 }
@@ -176,12 +187,12 @@
     opacity: 0;
     
     transition:
-        0.05s background,
-        0.05s color,
-        0.06s transform ease-in,
-        0.12s opacity ease-in,
-        0.2s color ease-in 0.1s,
-        0.2s filter ease-in 0.1s;
+        background 0.05s,
+        color 0.05s,
+        transform 0.06s ease-in,
+        opacity 0.12s ease-in,
+        color 0.2s ease-in 0.1s,
+        filter 0.2s ease-in 0.1s;
 }
 
 
@@ -200,8 +211,8 @@
     box-shadow: none;
     
     transition:
-        0.2s box-shadow ease-in 0.1s,
-        0.06s transform ease-in 0.06s;
+        box-shadow 0.2s ease-in 0.1s,
+        transform 0.06s ease-in 0.06s;
 }
 
 .disabled > .inner-ring::before {
@@ -210,7 +221,7 @@
     border: var(--brd-size) dashed transparent;
     
     transition:
-        0.8s background ease-in;
+        background 0.8s ease-in;
 }
 
 
