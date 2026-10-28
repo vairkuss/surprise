@@ -9,7 +9,7 @@ export default class SB { // Speech Bubble
     
     static bubbles = [];
     static get active() {
-        return this.bubbles.find(sb => sb.face.writing);
+        return this.bubbles.find(sb => sb.writer.writing);
     }
     static getByChar(char) {
         return SB.bubbles.find(sb => sb.char === char);
@@ -177,7 +177,7 @@ class ST { // Speech bubble Tail
             cn: "sb-tail",
             parent: this.sb.body
         }).el;
-        this.svg.style.left = `-${beyond * (a < 0)}px`;
+        this.svg.style.left = `${-beyond * (a < 0)}px`;
         
         if (c < r || !b) return;
         
@@ -185,7 +185,7 @@ class ST { // Speech bubble Tail
         const dir = [Math.cos(rad), Math.sin(rad)];
         const [raw, y] = dir.map(v => v * (c - r));
         
-        const bias = beyond * (a > 0);
+        const bias = beyond * (a < 0);
         
         const mid = bias + half;
         const left = half - r / 2;

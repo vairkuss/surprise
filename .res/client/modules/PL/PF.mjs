@@ -4,6 +4,14 @@ import { VSE } from "./VE.mjs";
 
 
 export default class PF { // Page Finiliser
+
+    static #adjustParticles() {
+        const bodyRect = document.body.getBoundingClientRect();
+        const { width, height } = bodyRect;
+        const canvas = document.querySelector("#canvas");
+        canvas.setAttribute("width", width);
+        canvas.setAttribute("height", height);
+    }
     
     static #loadSVG() {
         const xmlns = "http://www.w3.org/2000/svg";

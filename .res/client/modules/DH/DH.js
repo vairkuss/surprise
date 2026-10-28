@@ -50,25 +50,29 @@ class DH { // Dialogue Handler
             CO.find(id).pose = pose;
         });
         replicas?.forEach(({ id, text, pose }, i) => {
+            console.debug("added", {i});
             signal.addEventListener("dhReplica" + i, () => {
                 CO.find(id).say(text, pose, i);
             }, { once: 1 });
         });
         const passLast = 0; //typeof choice === "number" ? choice < 0 : choice == null;
         const end = replicas.length - passLast;
-        const term = () => this.#replica >= end;
-        const func = () => CH.setChoice(choice);
-        this.#onExcerptEnd(term, func);
+        this.#onReplicaEnd(end, choice);
     }
     
-    static #onExcerptEnd(term, func) {
+    static #onReplicaEnd(end, choice) {
+        console.debug({ replica: this.#replica, term: term() });
         if (SB.active == null) {
             const nextReplica = new Event("dhReplica" + this.#replica++);
             signal.dispatchEvent(nextReplica);
-            term() ? func() : SB.hit();
+            if (this.#replica >= end) {
+                CH.setChoice(choice);
+            } else {
+                SB.hit();
+            }
         }
         body.addEventListener("click", () => {
-            this.#onExcerptEnd(term, func);
+            this.#onReplicaEnd(end, choice);
         }, { capture: 1, once: 1 });
     }
     
