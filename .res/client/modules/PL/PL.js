@@ -17,6 +17,19 @@ class PL { // Page Loader
             return tree.querySelector(":root");
         });
     }
+
+    static #preloadImgs(imgs) {
+        for (const name in imgs) {
+            const char = imgs[name];
+            for (const state in char) {
+                const collection = char[state];
+                for (const sprite in collection) {
+                    const img = new Image();
+                    img.src = collection[sprite];
+                }
+            }
+        }
+    }
     
     static async load() {
         if (window.data != null) return;
@@ -27,6 +40,7 @@ class PL { // Page Loader
         this.#processIcons(data.icons);
         if (chars.length) {
             data.sprites = JSON.parse(data.sprites);
+            this.#preloadImgs(data.sprites);
             data.replicas = JSON.parse(data.replicas);  // только после написания всех диалогов
         }
         Object.assign(data, { page, chars });

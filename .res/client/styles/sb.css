@@ -31,6 +31,8 @@
 
 
 .sb-tail {
+    pointer-events: none;
+    
     position: absolute;
     top: 100%;
     left: 0%;

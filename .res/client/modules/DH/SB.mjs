@@ -107,7 +107,8 @@ export default class SB { // Speech Bubble
             this.body.style.left = `${this.x + this.growCompX + this.translationX}px`;
         
             const style = getComputedStyle(this.body);
-            const size = parseFloat(style.minHeight);
+            const sizeStyle = parseFloat(style.minHeight);
+            const size = Number.isNaN(sizeStyle) ? 0 : sizeStyle
             const mrg = size / 2;
             const fromBelow = SB.bubbles.reduce((h, sb) => {
                 const sbRect = sb.body.getBoundingClientRect();
@@ -195,12 +196,13 @@ class ST { // Speech bubble Tail
         new VPE(d, { parent: this.svg });
         
         /**/
-        new VCE(0.5, { cn: "balda", x: left, y: 0, parent: this.svg });
-        new VCE(0.5, { cn: "balda", x: mid, y: 0, parent: this.svg });
-        new VCE(0.5, { cn: "balda", x, y, parent: this.svg });
-        new VCE(0.5, { cn: "balda", x: right, y: 0, parent: this.svg });
-        document.querySelectorAll(".balda").forEach((x, i) => {
-            x.style.setProperty("fill", ["blue", "magenta","white", "red"][i]);
+        const cn = "balda" + this.sb.char.name;
+        new VCE(1, { cn, x: left, y: 0, parent: this.svg });
+        new VCE(1, { cn, x: mid, y: 0, parent: this.svg });
+        new VCE(1, { cn, x, y, parent: this.svg });
+        new VCE(1, { cn, x: right, y: 0, parent: this.svg });
+        document.querySelectorAll(`.${cn}`).forEach((x, i) => {
+            x.setAttribute("fill", ["blue", "magenta","white", "red"][i]);
         });
         /**/
     }

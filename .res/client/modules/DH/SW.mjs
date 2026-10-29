@@ -11,7 +11,7 @@ class AP { // Action Plotter
     }
     
     plot(trigger, func) {
-        const expr = new RegExp(String.raw`(?<!\\)${trigger}(.+?)(?=${trigger}|$)`);
+        const expr = new RegExp(String.raw`(?<!\\)${trigger}(.+?)(?:${trigger}|$)`);
         func = typeof func === "function" ? func : new Function();
         this.plots.push({ trigger, expr, func });
     }
@@ -22,7 +22,7 @@ class AP { // Action Plotter
             const processing = trigger !== ref;
             if (outside || processing) return false;
             let content;
-            this.detail.text = this.detail.text.replace(expr, (match, cut, ...rest) => {
+            this.detail.text = this.detail.text.replace(expr, (_, cut) => {
                 content = cut;
                 return `.${cut}.`
             });
@@ -107,7 +107,6 @@ export default class SW { // Speech Writer
         this.ap.plot('¥', (csv, next) => {
             const [name, pose] = csv.split(':');
             const char = CO.find(name);
-            console.log("interfering:", {name, pose, char})
             if (char == null) return;
             this.sb.char.talking = false;
             const text = detail.text.slice(next);
