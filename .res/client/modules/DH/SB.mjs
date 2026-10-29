@@ -171,11 +171,11 @@ class ST { // Speech bubble Tail
         const b = Math.max(0, anchor.top - rect.bottom);
         const c = Math.sqrt(a**2 + b**2);
         
-        const beyond = Math.max(0, Math.abs(a) - half);
-        const w = rect.width + beyond + bordR;
+        const beyond = Math.max(0, Math.abs(a) - half + bordR);
+        const w = rect.width + beyond;
 
         this.svg = new VSE([w, b], { cn: "sb-tail", parent: this.sb.body }).el;
-        this.svg.style.left = `calc(${bordR * Math.sign(a)}px - ${beyond * (a < 0)}px)`;
+        this.svg.style.left = `calc(${-beyond * (a < 0)}px)`;
         
         if (c < r || !b) return;
         
@@ -195,10 +195,10 @@ class ST { // Speech bubble Tail
         new VPE(d, { parent: this.svg });
         
         /**/
-        new VCE(0.5, { cn: "balda", x: left, y: 0, parent: this.svg });
-        new VCE(0.5, { cn: "balda", x: mid, y: 0, parent: this.svg });
-        new VCE(0.5, { cn: "balda", x, y, parent: this.svg });
-        new VCE(0.5, { cn: "balda", x: right, y: 0, parent: this.svg });
+        new VCE(1, { cn: "balda", x: right, y: 0, parent: this.svg });
+        new VCE(1, { cn: "balda", x: left, y: 0, parent: this.svg });
+        new VCE(1, { cn: "balda", x: mid, y: 0, parent: this.svg });
+        new VCE(1, { cn: "balda", x, y, parent: this.svg });
         document.querySelectorAll(".balda").forEach((x, i) => {
             x.style.setProperty("fill", ["blue", "magenta","white", "red"][i]);
         });
