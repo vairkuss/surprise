@@ -2,7 +2,6 @@
 
 import CC from "./CC.mjs";
 import CM from "./CM.mjs";
-import SB from "./SB.mjs";
 
 
 export default class CH { // Choice Handler
@@ -35,15 +34,15 @@ export default class CH { // Choice Handler
         this.cm.wheel.sectors.forEach(sec => sec.deactivate());
         if (cs == null)  {
             root.style.setProperty("--cur-color", "var(--m-color)");
-            return;
+        } else {
+            cs.activate();
+            this.cm.text.textContent = cs.text;
+            cs.onReady(() => {
+                this.cc.setIcon(cs.icon);
+                this.cm.blinkText();
+                root.style.setProperty("--cur-color", cs.color);
+            });
         }
-        cs.activate();
-        this.cm.text.textContent = cs.text;
-        cs.onReady(() => {
-            this.cc.setIcon(cs.icon);
-            this.cm.blinkText();
-            root.style.setProperty("--cur-color", cs.color);
-        });
     }
     
     static makeChoice(e) {
