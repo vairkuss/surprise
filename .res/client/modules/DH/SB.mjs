@@ -9,7 +9,7 @@ export default class SB { // Speech Bubble
     
     static bubbles = [];
     static get active() {
-        return this.bubbles.find(sb => sb.face.writing);
+        return this.bubbles.find(sb => sb.writer.writing);
     }
     static getByChar(char) {
         return SB.bubbles.find(sb => sb.char === char);
@@ -107,7 +107,8 @@ export default class SB { // Speech Bubble
             this.body.style.left = `${this.x + this.growCompX + this.translationX}px`;
         
             const style = getComputedStyle(this.body);
-            const size = parseFloat(style.minHeight);
+            const sizeStyle = parseFloat(style.minHeight);
+            const size = Number.isNaN(sizeStyle) ? 0 : sizeStyle
             const mrg = size / 2;
             const fromBelow = SB.bubbles.reduce((h, sb) => {
                 const sbRect = sb.body.getBoundingClientRect();
@@ -183,7 +184,7 @@ class ST { // Speech bubble Tail
         const dir = [Math.cos(rad), Math.sin(rad)];
         const [raw, y] = dir.map(v => v * (c - r));
         
-        const bias = beyond * (a > 0);
+        const bias = beyond * (a < 0);
         
         const mid = bias + half;
         const left = half - r / 2;
@@ -195,12 +196,13 @@ class ST { // Speech bubble Tail
         new VPE(d, { parent: this.svg });
         
         /**/
-        new VCE(1, { cn: "balda", x: right, y: 0, parent: this.svg });
-        new VCE(1, { cn: "balda", x: left, y: 0, parent: this.svg });
-        new VCE(1, { cn: "balda", x: mid, y: 0, parent: this.svg });
-        new VCE(1, { cn: "balda", x, y, parent: this.svg });
-        document.querySelectorAll(".balda").forEach((x, i) => {
-            x.style.setProperty("fill", ["blue", "magenta","white", "red"][i]);
+        const cn = "balda" + this.sb.char.name;
+        new VCE(1, { cn, x: left, y: 0, parent: this.svg });
+        new VCE(1, { cn, x: mid, y: 0, parent: this.svg });
+        new VCE(1, { cn, x, y, parent: this.svg });
+        new VCE(1, { cn, x: right, y: 0, parent: this.svg });
+        document.querySelectorAll(`.${cn}`).forEach((x, i) => {
+            x.setAttribute("fill", ["blue", "magenta","white", "red"][i]);
         });
         /**/
     }

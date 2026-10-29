@@ -40,19 +40,17 @@ export default class PC { // Page Controller
         if (item != null) {
             const [x, y] = JSON.parse(item);
             root.style.transition = "none";
-            setTimeout(() => {
-                root.style.filter = "opacity(0)";
-                root.style.translate = `calc(${x} * 100vw) calc(${y} * -100vh)`;
-                setTimeout(() => {
-                    root.style.transition = '';
-                    root.style.filter = '';
-                    root.style.translate = '';
-                }, 1/60 * 1000);
-            }, 1/60 * 1000);
-            sessionStorage.removeItem("transition");
+            void root.offsetWidth;
+            root.style.filter = "opacity(0)";
+            root.style.translate = `calc(${x} * 100vw) calc(${y} * -100vh)`;
+            void root.offsetWidth;
+            root.style.transition = '';
+            root.style.filter = '';
+            root.style.translate = '';
         }
+        sessionStorage.removeItem("transition");
         body.removeAttribute("style");
-        document.querySelector("#cover").style.height = 0;
+        cover.style.height = 0;
     }
     
     static #setColor() {
@@ -65,7 +63,7 @@ export default class PC { // Page Controller
     static #transition(url, [x, y]) {
         root.style.translate = `calc(${-x} * 100vw) calc(${-y} * -100vh)`;
         root.style.filter = "opacity(0)";
-        cover.style.height = "250vh";
+        cover.removeAttribute("style");
         sessionStorage.setItem("transition", JSON.stringify([x, y]));
         fetch(`${location.origin}/post/data`, {
             method: "POST",

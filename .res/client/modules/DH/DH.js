@@ -56,19 +56,26 @@ class DH { // Dialogue Handler
         });
         const passLast = 0; //typeof choice === "number" ? choice < 0 : choice == null;
         const end = replicas.length - passLast;
-        const term = () => this.#replica >= end;
-        const func = () => CH.setChoice(choice);
-        this.#onExcerptEnd(term, func);
+        console.debug("end", {end});
+        this.#onReplicaEnd(end, choice);
     }
     
-    static #onExcerptEnd(term, func) {
+    static #onReplicaEnd(end, choice) {
+        console.debug("this.#replica", this.#replica)
         if (SB.active == null) {
             const nextReplica = new Event("dhReplica" + this.#replica++);
+            console.debug("nextReplica", nextReplica.type);
             signal.dispatchEvent(nextReplica);
-            term() ? func() : SB.hit();
+            if (this.#replica >= end) {
+                CH.setChoice(choice);
+            } else {
+                SB.hit();
+            }
+        } else {
+            console.debug("oopsie daisy", SB.active, SB.active.writer.ap);
         }
         body.addEventListener("click", () => {
-            this.#onExcerptEnd(term, func);
+            this.#onReplicaEnd(end, choice);
         }, { capture: 1, once: 1 });
     }
     
