@@ -187,8 +187,8 @@ class ST { // Speech bubble Tail
         const bias = beyond * (a < 0);
         
         const mid = bias + half;
-        const left = half - r / 2;
-        const right = half + r / 2;
+        const left = mid - r / 2;
+        const right = mid + r / 2;
         
         const x = mid + raw;
         

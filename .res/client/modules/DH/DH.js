@@ -61,18 +61,14 @@ class DH { // Dialogue Handler
     }
     
     static #onReplicaEnd(end, choice) {
-        console.debug("this.#replica", this.#replica)
         if (SB.active == null) {
             const nextReplica = new Event("dhReplica" + this.#replica++);
-            console.debug("nextReplica", nextReplica.type);
             signal.dispatchEvent(nextReplica);
             if (this.#replica >= end) {
                 CH.setChoice(choice);
             } else {
                 SB.hit();
             }
-        } else {
-            console.debug("oopsie daisy", SB.active, SB.active.writer.ap);
         }
         body.addEventListener("click", () => {
             this.#onReplicaEnd(end, choice);
