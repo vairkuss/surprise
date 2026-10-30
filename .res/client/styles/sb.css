@@ -42,8 +42,6 @@
     stroke-width: var(--sb-bord);
     
     transition: all 0.3s ease-in;
-    
-    outline: 0.25vh solid blue;
 }
 
 .sb-tail path {

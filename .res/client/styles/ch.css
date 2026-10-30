@@ -8,9 +8,12 @@
 }
 
 
-#choice { /* nest */
+:root {
     --cho-size: 20vh;
-    
+}
+
+
+#choice { /* nest */
     user-select: none;
     
     display: grid;
