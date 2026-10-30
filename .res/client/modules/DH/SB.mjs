@@ -194,16 +194,5 @@ class ST { // Speech bubble Tail
         
         const d = `M${left} 0C${left} 0 ${mid} 0 ${x} ${y} ${mid} 0 ${right} 0 ${right} 0`;
         new VPE(d, { parent: this.svg });
-        
-        /**/
-        const cn = "balda" + this.sb.char.name;
-        new VCE(1, { cn, x: left, y: 0, parent: this.svg });
-        new VCE(1, { cn, x: mid, y: 0, parent: this.svg });
-        new VCE(1, { cn, x, y, parent: this.svg });
-        new VCE(1, { cn, x: right, y: 0, parent: this.svg });
-        document.querySelectorAll(`.${cn}`).forEach((x, i) => {
-            x.setAttribute("fill", ["blue", "magenta","white", "red"][i]);
-        });
-        /**/
     }
 }

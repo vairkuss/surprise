@@ -9,7 +9,7 @@
 
 
 :root {
-    --cho-size: 20vh;
+    --cho-size: 15vh;
 }
 
 
@@ -28,8 +28,7 @@
     height: var(--cho-size);
     
     background:
-        radial-gradient(
-            circle closest-corner at center,
+        radial-gradient(circle closest-corner at center,
             var(--cur-color-dark),
             var(--cur-color-dark),
             var(--cur-color-dark),
@@ -195,7 +194,6 @@
 
 .cho-chain-seg {
     --seg-size: calc(var(--cho-size) / 4);
-    --seg-bias: calc((var(--cho-size) - var(--seg-size)) / 2);
     
     position: absolute;
     z-index: 2019;
@@ -206,10 +204,13 @@
     border-radius: var(--seg-size);
 }
 
-#choice > .cho-chain-seg, .cho-chain-seg:first-child {
-    background: transparent;
+#choice > .cho-chain-seg {
+    --seg-bias: calc((var(--cho-size) - var(--seg-size)) / 2);
+    
     left: var(--seg-bias);
     top: var(--seg-bias);
+
+    background: transparent;
 }
 
 .cho-chain-seg > .cho-chain-seg {

@@ -4,17 +4,8 @@ import { VSE } from "./VE.mjs";
 
 
 export default class PF { // Page Finiliser
-
-    static #adjustParticles() {
-        const bodyRect = document.body.getBoundingClientRect();
-        const { width, height } = bodyRect;
-        const canvas = document.querySelector("#canvas");
-        canvas.setAttribute("width", width);
-        canvas.setAttribute("height", height);
-    }
     
     static #loadSVG() {
-        const xmlns = "http://www.w3.org/2000/svg";
         document.querySelectorAll(".load-svg").forEach(icon => { 
             icon.classList.remove("load-svg");
             const text = [...icon.childNodes].find(child => {
@@ -29,11 +20,20 @@ export default class PF { // Page Finiliser
         });
     }
     
-    static #adjustPosition() {
-        document.querySelectorAll(".mid").forEach(el => {
-            el.style.setProperty("--rx", `${el.offsetWidth / 2}px`);
-            el.style.setProperty("--ry", `${el.offsetHeight / 2}px`);
+    static #startAdjusting() {
+        window.addEventListener("resize", () => {
+            document.querySelectorAll(".mid").forEach(el => {
+                el.style.setProperty("--rx", `${el.offsetWidth / 2}px`);
+                el.style.setProperty("--ry", `${el.offsetHeight / 2}px`);
+            });
+            
+            const bodyRect = document.body.getBoundingClientRect();
+            const { width, height } = bodyRect;
+            const canvas = document.querySelector("#particles");
+            canvas.setAttribute("width", width);
+            canvas.setAttribute("height", height);
         });
+        window.dispatchEvent(new Event("resize"));
     }
     
     static #assignBtnFuncs() {
@@ -61,7 +61,7 @@ export default class PF { // Page Finiliser
     
     static init() {
         this.#loadSVG();
-        this.#adjustPosition();
+        this.#startAdjusting();
         this.#assignBtnFuncs();
         document.body.removeAttribute("style");
     }

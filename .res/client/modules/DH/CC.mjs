@@ -19,7 +19,7 @@ class CN { // Choice chip chaiN
     update([chipX, chipY]) {
         const chipR = this.size / 1.5 + this.margin;
         const c = Math.sqrt(chipX**2 + chipY**2);
-        const length = c - chipR;
+        const length = Math.max(0, c - chipR);
         const seg = this.size + this.margin;
         const segments = Math.floor(length / seg);
         
@@ -62,8 +62,8 @@ export default class CC { // Choice Chip
         this.transition = 0;
         
         this.base = document.createElement("div");
-        this.base.id = "choice antifreeze";
-        this.base.className = "hidden";
+        this.base.id = "choice";
+        this.base.className = "antifreeze hidden";
         
         this.chip = document.createElement("div");
         this.chip.id = "chip";
@@ -108,7 +108,7 @@ export default class CC { // Choice Chip
                     duration: left
                 });
             }
-        }).observe(this.base, { attributes: 1});
+        }).observe(this.base, { attributes: 1 });
     }
     
     get active() {

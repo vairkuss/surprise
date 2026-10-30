@@ -122,7 +122,7 @@ class CW { // Choice Wheel
         this.sizes = {};
         this.sizes.divW = baseSize / 5;
         this.sizes.inR = baseSize / 2 + this.sizes.divW * 2;
-        this.sizes.outR = baseSize * 3;
+        this.sizes.outR = baseSize * 2;
     }
     
     #genBody(base) {

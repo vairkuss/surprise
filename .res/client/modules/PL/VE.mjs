@@ -123,18 +123,22 @@ export class VSE extends VE { // sVg Svg Element
     }
     
     maskFromDonor(el) {
-        [...el.childNodes].forEach(shape => {
-            shape.setAttribute("fill", "#fff");
-            this.addToMask(shape);
+        [...el.childNodes].forEach(child => {
+            if (child.nodeType === Node.ELEMENT_NODE) {
+                child.setAttribute("fill", "#fff");
+            }
+            this.addToMask(child);
         });
     }
     
     addToMask(el) {
-        const id = el.getAttribute("id") ?? IG.add(el, this.mask.id);
-        const cn = el.getAttribute("class");
-        const use = new VUE(`#${id}`, { cn });
-        use.setAttribute("style", "filter: opacity(0)");
-        use.appendTo(this.el);
+        if (el.nodeType === Node.ELEMENT_NODE) {
+            const id = el.getAttribute("id") ?? IG.add(el, this.mask.id);
+            const cn = el.getAttribute("class");
+            const use = new VUE(`#${id}`, { cn });
+            use.setAttribute("style", "filter: opacity(0)");
+            use.appendTo(this.el);
+        }
         this.mask.appendChild(el.el ?? el);
     }
 }

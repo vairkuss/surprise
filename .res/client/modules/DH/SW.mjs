@@ -95,22 +95,22 @@ export default class SW { // Speech Writer
     
     constructor(sb) { this.sb = sb }
     
-    #plot(detail) {
-        this.ap = new AP(detail);
+    #plot() {
+        this.ap = new AP(this.detail);
         this.ap.plot('√', (_, next) => {
-            this.#callNext(next, detail);
+            this.#callNext(next);
         });
         this.ap.plot('©', (pose, next) => {
             this.sb.char.pose = pose;
-            this.#callNext(next, detail);
+            this.#callNext(next);
         });
         this.ap.plot('¥', (csv, next) => {
             const [name, pose] = csv.split(':');
             const char = CO.find(name);
             if (char == null) return;
             this.sb.char.talking = false;
-            const text = detail.text.slice(next);
-            char.say(text, detail.replica, pose);
+            const text = this.detail.text.slice(next);
+            char.say(text, this.detail.replica, pose);
         });
     }
     
@@ -132,8 +132,8 @@ export default class SW { // Speech Writer
         this.ts.add("func", '✓', "hit");
     }
         
-    #assign(detail) {
-        this.tr = new TR(detail);
+    #assign() {
+        this.tr = new TR(this.detail);
         this.tr.hit = () => this.sb.hit();
         this.tr.jump = () => this.sb.jump();
         this.tr.glitch = () => {
@@ -154,11 +154,11 @@ export default class SW { // Speech Writer
             this.sb.char.pose = "shocked";
             this.tr.pause();
             this.sb.remove();
-            this.#callNext(detail.text.length, detail);
+            this.#callNext(this.detail.text.length);
         };
     }
     
-    #processChar(ref, processed, detail) {
+    #processChar(ref, processed) {
         const next = processed.length + 1;
         const plotted = this.ap.check(ref, processed);
         if (plotted) return;
@@ -177,18 +177,18 @@ export default class SW { // Speech Writer
         } else {
             this.sb.text += ref;
         }
-        setTimeout(() => this.#callNext(next, detail), wait * 1000);
+        setTimeout(() => this.#callNext(next), wait * 1000);
     }
     
-    #callNext(next, detail) {
-        if (next >= detail.text.length && this.writing) {
-            const end = new Event(`sfWriteEnd:${detail.replica}`);
+    #callNext(next) {
+        if (next >= this.detail.text.length && this.writing) {
+            const end = new Event(`sfWriteEnd:${this.detail.replica}`);
             return signal.dispatchEvent(end);
-        } else if (detail.text[next] !== '§') {
+        } else if (this.detail.text[next] !== '§') {
             this.sb.char.talking = true;
         }
-        const call = `sfWrite${next}:${detail.replica}`;
-        const event = new CustomEvent(call, { detail });
+        const call = `sfWrite${next}:${this.detail.replica}`;
+        const event = new CustomEvent(call, { detail: this.detail });
         signal.dispatchEvent(event);
     }
     
@@ -198,32 +198,41 @@ export default class SW { // Speech Writer
             body.removeEventListener("click", signature, true);
         }
     }
+
+    get writing() { return this.detail != null }
     
     async write(detail) {
         this.sb.text = '';
         this.sb.lifes = 2;
         this.frequency = 20;
-        this.writing = true;
-        this.#plot(detail);
+        this.pending = [];
+        this.detail = detail;
+        this.#plot();
         this.#set();
-        this.#assign(detail);
+        this.#assign();
         const signature = () => this.#boost(signature);
         body.addEventListener("click", signature, true);
-        signal.addEventListener(`sfWriteEnd:${detail.replica}`, () => {
+        signal.addEventListener(`sfWriteEnd:${this.detail.replica}`, () => {
             this.sb.className = "sb-body";
             this.sb.char.talking = false;
-            this.writing = false;
+            this.detail = null;
+            this.pending.forEach(func => func());
         }, { once: 1 });
         detail.text.split('').forEach((ref, i) => {
             signal.addEventListener(`sfWrite${i}:${detail.replica}`, e => {
                 if (this.writing) {
                     const processed = detail.text.slice(0, i);
-                    return this.#processChar(ref, processed, detail);
+                    return this.#processChar(ref, processed);
                 }
                 const next = i + 1;
-                this.#callNext(next, detail);
+                this.#callNext(next);
             }, { once: 1 });
         });
-        this.#callNext(0, detail);
+        this.#callNext(0);
+    }
+
+    onWriteEnd(func) {
+        if (!this.writing) return func();
+        this.pending.push(func);
     }
 }

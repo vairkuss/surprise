@@ -65,11 +65,16 @@ class DH { // Dialogue Handler
             const nextReplica = new Event("dhReplica" + this.#replica++);
             signal.dispatchEvent(nextReplica);
             if (this.#replica >= end) {
-                CH.setChoice(choice);
+                const { writer } = SB.active ?? {}
+                if (writer != null) {
+                    writer.onWriteEnd(() => CH.setChoice(choice));
+                } else {
+                    CH.setChoice(choice);
+                }
             } else {
                 SB.hit();
             }
-        }
+        } else console.log(SB.active)
         body.addEventListener("click", () => {
             this.#onReplicaEnd(end, choice);
         }, { capture: 1, once: 1 });
