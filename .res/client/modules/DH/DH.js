@@ -54,8 +54,8 @@ class DH { // Dialogue Handler
                 CO.find(id).say(text, pose, i);
             }, { once: 1 });
         });
-        const passLast = 0; //typeof choice === "number" ? choice < 0 : choice == null;
-        const end = replicas.length - passLast;
+        const addLast = typeof choice === "number" ? choice >= 0 : choice?.constructor.name !== "Object";
+        const end = replicas.length + addLast;
         console.debug("end", {end});
         this.#onReplicaEnd(end, choice);
     }

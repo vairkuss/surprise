@@ -52,7 +52,7 @@ class CS { // Choice Wheel Sector
         const rgb = new Uint8Array(hash, 0, 3);
         this.color = rgb.reduce((hex, byte) => {
             return hex + byte.toString(16).padStart(2, '0');
-        }, "#");
+        }, '#');
         const ready = new Event("cfReady" + this.i);
         signal.dispatchEvent(ready);
     }

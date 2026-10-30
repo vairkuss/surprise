@@ -111,6 +111,10 @@ export default class SW { // Speech Writer
             this.sb.char.talking = false;
             const text = this.detail.text.slice(next);
             char.say(text, this.detail.replica, pose);
+            const recipient = SB.getByChar(char).writer;
+            for (let i = 0; i < this.pending.length; i++) {
+                recipient.push(this.pending.pop());
+            }
         });
     }
     
@@ -216,6 +220,7 @@ export default class SW { // Speech Writer
             this.sb.className = "sb-body";
             this.sb.char.talking = false;
             this.detail = null;
+            console.log(this.pending)
             this.pending.forEach(func => func());
         }, { once: 1 });
         detail.text.split('').forEach((ref, i) => {
