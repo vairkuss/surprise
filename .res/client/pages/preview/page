@@ -57,6 +57,9 @@
                     <div class="btn block">
                         <div class="text">test</div>
                     </div>
+                    <div class="btn block">
+                        <div class="load-svg icon">bell</div>
+                    </div>
                 </div>
     
                 <div class="vbox">

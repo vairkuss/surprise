@@ -22,21 +22,6 @@
 
 <div class="vbox mid bot">
 
-    <div class="hbox" id="chars">
-        <div id="infi" class="character" ><!--
-            style="outline: 2px solid red" 
-            -->
-            <div class="sprite"></div>
-            <div class="anchor"></div>
-        </div>
-        <div id="virko" class="character" ><!--
-            style="outline: 2px solid red" 
-            -->
-            <div class="sprite"></div>
-            <div class="anchor"></div>
-        </div>
-    </div>
-
     <div class="hbox">
         <div class="small btn block" onclick="transition('4eRn1j_kW@dr4T', [-1, 0])">
             <div class="load-svg icon">arrowA</div>
@@ -52,7 +37,7 @@
     <div id="player" class="block">
         <div class="hbox">
         
-            <div class="btn block">
+            <div class="btn block active">
                 <div class="load-svg icon">arrowA</div>
             </div>
             
@@ -60,11 +45,27 @@
                 <div class="load-svg icon">play</div> <!-- спустится с интро -->
             </div>
             
-            <div class="btn block">
+            <div class="btn block hover">
                 <div class="load-svg icon">arrowD</div>
             </div>
             
         </div>
     </div>
     
+</div>
+
+
+<div class="hbox mid" id="chars">
+    <div id="infi" class="character" ><!--
+        style="outline: 2px solid red" 
+        -->
+        <div class="sprite"></div>
+        <div class="anchor"></div>
+    </div>
+    <div id="virko" class="character" ><!--
+        style="outline: 2px solid red" 
+        -->
+        <div class="sprite"></div>
+        <div class="anchor"></div>
+    </div>
 </div>

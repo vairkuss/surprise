@@ -17,7 +17,7 @@ class DH { // Dialogue Handler
     
     static #updateHistory(char, value, relative) {
         const now = relative * (this.#history[char.name] ?? 0) + value;
-        this.#history[name] = Math.min(now, this.#branch[char.name].length - 1);
+        this.#history[char.name] = Math.min(now, this.#branch[char.name].length - 1);
     }
     
     static #readDialogueFor(char) {
@@ -81,7 +81,6 @@ class DH { // Dialogue Handler
     }
     
     static #processChoice(chosen, char) {
-        alert(JSON.stringify({ chosen }));
         if (chosen?.constructor.name === "Array") {
             return this.#jumpToChosen(chosen);
         } else if (chosen < 0) {

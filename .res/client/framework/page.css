@@ -39,8 +39,6 @@ body {
     
     width: 100vw;
     
-    font-style: normal;
-    
     will-change: filter, translate;
     transition:
         0.6s filter ease-in-out,

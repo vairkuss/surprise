@@ -181,7 +181,9 @@ export default class CC { // Choice Chip
             const [x, y] = this.cords.map((v, i) => v - dir[i] * c / 10);
             this.chip.style.left = Math.abs(x) < .5 ? 0 : x + "px";
             this.chip.style.top = Math.abs(y) < .5 ? 0 : y + "px";
-            this.updateChain();
+            if (!this.base.matches(".hidden")) {
+                this.updateChain();
+            }
         }, 1/60 * 1000);
     }
 }

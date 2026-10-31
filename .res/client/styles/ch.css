@@ -173,7 +173,7 @@
     position: absolute;
     inset: 10%;
     
-    width: 100%;
+    width: 80%;
     height: auto;
     
     fill: currentColor;
@@ -229,8 +229,6 @@
     width: 100vw;
     height: 100vh;
     
-    background: rgb(50 0 0 / 0.1);
-    
     transition:
         filter 0.3s ease-in;
 }
@@ -270,8 +268,6 @@
     font-family: fraiche;
     text-align: center;
     white-space: pre-wrap;
-    
-    background: rgb(0 50 0 / 0.1);
 }
 
 #cho-menu:has(> #cho-wheel > .cho-field.active) > #cho-text {

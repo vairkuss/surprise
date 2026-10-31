@@ -1,5 +1,6 @@
 /* Speech Writer */
 
+import SB from "./SB.mjs";
 import CO from "./CO.mjs";
 
 
@@ -113,7 +114,7 @@ export default class SW { // Speech Writer
             char.say(text, this.detail.replica, pose);
             const recipient = SB.getByChar(char).writer;
             for (let i = 0; i < this.pending.length; i++) {
-                recipient.push(this.pending.pop());
+                recipient.pending.push(this.pending.pop());
             }
         });
     }

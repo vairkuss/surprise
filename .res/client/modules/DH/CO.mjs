@@ -91,7 +91,9 @@ export default class CO { // Character Object
     }
     
     hide() {
+        console.log("hiding")
         this.el.classList.add("frozen");
+        this.el.style.position = "absolute";
         const rect = () => this.el.getBoundingClientRect();
         const init = rect();
         const dir = [
@@ -107,9 +109,8 @@ export default class CO { // Character Object
             const key = dir[0][0];
             const term = opp <= 0 || opp >= edges[key];
             if (term) return clearInterval(transition);
-            const dist = html.style.getProperty("--sub-axis");
-            this.el.style[key] = `${cur + parseInt(dist) * dir[1]}px`;
-        }, 1/30 * 1000);
+            this.el.style[key] = `calc(${cur}px + ${dir[1]} * 1vh)`;
+        }, 1000);
     }
     
     pat() {
@@ -120,3 +121,5 @@ export default class CO { // Character Object
         // end animation or phrase
     }
 }
+
+window.hide = () => CO.hide()
