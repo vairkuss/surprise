@@ -55,7 +55,7 @@ if __name__ == "__main__":
     )
     
     try_to_connect(HOST, PORT, 10)
-    open_in_browser(f"http://{HOST}:{PORT}/25285")
+    #open_in_browser(f"http://{HOST}:{PORT}/25285")
     
     try:
         server.wait()

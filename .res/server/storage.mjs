@@ -8,50 +8,46 @@ class NC { // Node Collection
     
     #hrefToKeys(href) {
         const { name, dir } = path.parse(href);
-        const raw = dir.split(path.sep).concat([name]);
-        return raw.filter(x => x);
+        const keys = dir.split(path.sep).filter(Boolean);
+        return { keys, name };
     }
     
     constructor(href, data) {
-        if (href == null || !href.length) return;
-        const keys = this.#hrefToKeys(href);
-        const primal = keys.shift();
-        const last = keys.pop();
-        if (last != null) {
-            const name = last.replace(/\.(.*)/, '');
-            keys.push(name);
+        if (!href) return;
+        const { keys, name } = this.#hrefToKeys(href);
+        if (name) {
+            const extlessName = name.replace(/\..*/, '');
+            keys.push(extlessName);
         }
-        this[primal] = keys.toReversed().reduce((prev, key) => {
-            return new NC(key, prev);
-        }, data);
+        const [key, ...rest] = keys;
+        this[key] = rest.length
+            ? new NC(rest.join(path.sep), data)
+            : data;
     }
     
     append(href, data) {
-        const keys = this.#hrefToKeys(href);
-        const last = keys.pop();
-        if (last != null) {
-            const name = last.replace(/\.(.*)/, '');
-            keys.push(name); 
+        const { keys, name } = this.#hrefToKeys(href);
+        if (name) {
+            const extlessName = name.replace(/\..*/, '');
+            keys.push(extlessName); 
         }
-        const key = keys.shift();
-        const child = keys.join(path.sep);
-        if (!keys.length) {
+        const [key, ...rest] = keys;
+        if (!rest.length) {
             this[key] = data;
-        } else if (key in this) {
-            this[key].append(child, data);
+        } else if (this[key] instanceof NC) {
+            this[key].append(rest.join(path.sep), data);
         } else {
-            this[key] = new NC(child, data);
+            this[key] = new NC(rest.join(path.sep), data);
         }
     }
     
     get(href) {
-        const keys = this.#hrefToKeys(href);
-        const last = keys.pop();
-        if (last != null) {
-            const name = last.replace(/\.(.*)/, '');
-            keys.push(name); 
+        const { keys, name } = this.#hrefToKeys(href);
+        if (name != null) {
+            const extlessName = name.replace(/\..*/, '');
+            keys.push(extlessName); 
         }
-        return keys.reduce((folder, key) => folder[key] ?? {}, this);
+        return keys.reduce((folder, key) => folder?.[key], this);
     }
 }
 
@@ -64,10 +60,10 @@ export default class DS { // Data Storage
         return files.map(ent => path.join(ent.parentPath, ent.name));
     }
     
-    static #loadRoot(dir, process) {
+    static #loadRoot(dir, func) {
         const hrefs = this.#filePaths(dir);
         const root = hrefs.reduce((root, href) => {
-            const data = process != null ? process(href) : href;
+            const data = !func ? href.replace(/\\/g, '/') : func(href);
             root.append(href, data);
             return root;
         }, new NC());
