@@ -132,7 +132,7 @@ export class VSE extends VE { // sVg Svg Element
     }
     
     addToMask(el) {
-        if (el.nodeType === Node.ELEMENT_NODE) {
+        if (el instanceof Element) {
             const id = el.getAttribute("id") ?? IG.add(el, this.mask.id);
             const cn = el.getAttribute("class");
             const use = new VUE(`#${id}`, { cn });

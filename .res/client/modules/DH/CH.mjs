@@ -50,20 +50,15 @@ export default class CH { // Choice Handler
     static makeChoice(e) {
         if (!this.cc.active) return;
         e.preventDefault();
+        const fired = document.elementsFromPoint(e.clientX, e.clientY);
+        const field = fired.find(el => el.matches(".cho-field"));
         this.cm.hide();
         this.cc.base.classList.remove("active");
         this.cc.dp = null;
-        const fired = document.elementsFromPoint(e.clientX, e.clientY);
-        const field = fired.find(el => el.matches(".cho-field"));
-        console.log({fired: fired.map(el => { 
-            return { name: el.tagName, class: el.classList.value, id: el.id, href: el.getAttribute("href") }
-        }), href: field?.getAttribute("href")});
-        if (field != null) alert(field.getAttribute("href"));
         const digit = field?.getAttribute("href").slice(3);
         const id = Number.isNaN(digit) ? digit : parseInt(digit);
         const cs = this.cm.wheel.sectors[id];
         const detail = cs?.value;
-        console.log({field, digit, id, cs, detail})
         if (detail === undefined) {
             return this.cc.retrieve();
         }

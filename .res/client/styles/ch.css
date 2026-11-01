@@ -155,10 +155,10 @@
     
     --r: 6;
     --sectors: 7;
-    stroke-dasharray:
-        calc((4 / 7) / var(--sectors) * (2 * pi * var(--r)))
-        calc((3 / 7) / var(--sectors) * (2 * pi * var(--r)));
-    
+    --first: calc((4 / 7) * (2 * pi * var(--r)) / var(--sectors));
+    --second: calc((3 / 7) * (2 * pi * var(--r)) / var(--sectors));
+    stroke-dasharray: var(--first) var(--second);
+
     will-change: transform, filter;
     transform-origin: 50% 50%;
     animation: 4s rotate linear infinite;
