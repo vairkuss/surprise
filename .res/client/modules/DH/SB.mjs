@@ -1,15 +1,17 @@
 /* Speech Bubble */
 
 import SW from "./SW.mjs"
-import CO from "./CO.mjs";
-import { VSE, VPE, VCE } from "../PL/VE.mjs";
+import { VSE, VPE } from "../PL/VE.mjs";
 
 
 export default class SB { // Speech Bubble
     
     static bubbles = [];
     static get active() {
-        return this.bubbles.find(sb => sb.writer.writing);
+        return this.bubbles.reduce((active, sb, i) => {
+            if (sb.writer.writing) active.push(i);
+            return active;
+        }, []);
     }
     static getByChar(char) {
         return SB.bubbles.find(sb => sb.char === char);

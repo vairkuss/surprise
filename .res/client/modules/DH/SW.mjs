@@ -96,7 +96,7 @@ export default class SW { // Speech Writer
     
     constructor(sb) { this.sb = sb }
     
-    #plot() {
+    #plotActions() {
         this.ap = new AP(this.detail);
         this.ap.plot('√', (_, next) => {
             this.#callNext(next);
@@ -108,18 +108,19 @@ export default class SW { // Speech Writer
         this.ap.plot('¥', (csv, next) => {
             const [name, pose] = csv.split(':');
             const char = CO.find(name);
-            if (char == null) return;
+            if (!char) return;
             this.sb.char.talking = false;
             const text = this.detail.text.slice(next);
-            char.say(text, this.detail.replica, pose);
+            char.say(text, pose, this.detail.replica);
             const recipient = SB.getByChar(char).writer;
             for (let i = 0; i < this.pending.length; i++) {
                 recipient.pending.push(this.pending.pop());
             }
+            this.detail = null;
         });
     }
     
-    #set() {
+    #storeTriggers() {
         const source = this.ap.plots.reduce((source, { expr }) => {
             return `${source}|${expr.source}`;
         });
@@ -137,7 +138,7 @@ export default class SW { // Speech Writer
         this.ts.add("func", '✓', "hit");
     }
         
-    #assign() {
+    #assignFuncs() {
         this.tr = new TR(this.detail);
         this.tr.hit = () => this.sb.hit();
         this.tr.jump = () => this.sb.jump();
@@ -152,7 +153,7 @@ export default class SW { // Speech Writer
         this.tr.pause = () => {
             this.sb.char.talking = false;
             this.paused = true;
-            const cooldown = 12 / this.frequency;
+            const cooldown = 24 / this.frequency;
             setTimeout(() => this.paused = false, cooldown * 1000);
         }
         this.tr.interrupt = () => {
@@ -177,8 +178,7 @@ export default class SW { // Speech Writer
             const ignore = pv.ignore.some;
             const skip = anim || ignore;
             const { stutter, pause } = pv.time;
-            wait *= !skip * ((stutter * 4) + (pause * 8));
-            console.log(wait);
+            wait *= !skip * ((stutter * 8) + (pause * 16));
         } else {
             this.sb.text += ref;
         }
@@ -186,15 +186,20 @@ export default class SW { // Speech Writer
     }
     
     #callNext(next) {
-        if (next >= this.detail.text.length && this.writing) {
-            const end = new Event(`sfWriteEnd:${this.detail.replica}`);
-            return signal.dispatchEvent(end);
-        } else if (this.detail.text[next] !== '§') {
-            this.sb.char.talking = true;
+        if (next >= this.detail.text.length) {
+            console.log("sw done:", {detail: this.detail, next, char: this.sb.char.name});
+            this.sb.className = "sb-body";
+            this.sb.char.talking = false;
+            this.detail = null;
+            this.pending.forEach(func => func());
+        } else {
+            if (this.detail.text[next] !== '§') {
+                this.sb.char.talking = true;
+            }
+            const call = `sfWrite${next}:${this.detail.replica}`;
+            const event = new CustomEvent(call, { detail: this.detail });
+            signal.dispatchEvent(event);
         }
-        const call = `sfWrite${next}:${this.detail.replica}`;
-        const event = new CustomEvent(call, { detail: this.detail });
-        signal.dispatchEvent(event);
     }
     
     #boost(signature) {
@@ -212,22 +217,15 @@ export default class SW { // Speech Writer
         this.frequency = 20;
         this.pending = [];
         this.detail = detail;
-        this.#plot();
-        this.#set();
-        this.#assign();
+        this.#plotActions();
+        this.#storeTriggers();
+        this.#assignFuncs();
         const signature = () => this.#boost(signature);
         body.addEventListener("click", signature, true);
-        signal.addEventListener(`sfWriteEnd:${this.detail.replica}`, () => {
-            this.sb.className = "sb-body";
-            this.sb.char.talking = false;
-            this.detail = null;
-            console.log(this.pending)
-            this.pending.forEach(func => func());
-        }, { once: 1 });
         detail.text.split('').forEach((ref, i) => {
             signal.addEventListener(`sfWrite${i}:${detail.replica}`, e => {
                 if (this.writing) {
-                    const processed = detail.text.slice(0, i);
+                    const processed = e.detail.text.slice(0, i);
                     return this.#processChar(ref, processed);
                 }
                 const next = i + 1;

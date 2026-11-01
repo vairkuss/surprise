@@ -132,31 +132,27 @@ export default class CC { // Choice Chip
         }
     }
     
-    #blinkIcon(transition) {
-        this.transition += transition;
-        if (this.blinking) return;
+    #blinkIcon(wait) {
         this.blinking = true;
         this.icon?.classList.add("hidden");
         this.chip.style.color = "transparent";
         signal.addEventListener("ccChangeIcon", () => {
             this.#changeIcon();
-           this.icon?.classList.remove("hidden");
-           this.chip.style.removeProperty("color");
-           this.blinking = false;
+            this.icon?.classList.remove("hidden");
+            this.chip.style.removeProperty("color");
+            this.blinking = false;
         }, { once: 1 });
-        const counter = setInterval(() => {
-            this.transition--;
-            if (!this.transition) {
-                clearInterval(counter);
-                const changeIcon = new Event("ccChangeIcon");
-                signal.dispatchEvent(changeIcon);
-            }
-        }, 1);
+        if (this.transition) clearTimeout(this.transition);
+        this.transition = setTimeout(() => {
+            this.transition = null;
+            const changeIcon = new Event("ccChangeIcon");
+            signal.dispatchEvent(changeIcon);
+        }, wait);
     }
     
     #changeIcon() {
         this.container.firstChild.remove();
-        if (this.changingTo == null) {
+        if (!this.changingTo) {
             this.icon = null;
             this.container.appendChild(new Text("..."));
         } else {
@@ -166,7 +162,6 @@ export default class CC { // Choice Chip
                 parse: this.changingTo,
                 parent: this.container
             });
-            void this.icon.el.offsetWidth;
         }
     }
     

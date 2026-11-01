@@ -36,10 +36,12 @@ export default class CH { // Choice Handler
             root.style.setProperty("--cur-color", "var(--m-color)");
         } else {
             cs.activate();
-            this.cm.text.textContent = cs.text;
+            this.cm.text.nodeValue = cs.text;
             cs.onReady(() => {
+                if (!this.cc.blinking) {
+                    this.cm.blinkText();
+                }
                 this.cc.setIcon(cs.icon);
-                this.cm.blinkText();
                 root.style.setProperty("--cur-color", cs.color);
             });
         }
@@ -53,6 +55,9 @@ export default class CH { // Choice Handler
         this.cc.dp = null;
         const fired = document.elementsFromPoint(e.clientX, e.clientY);
         const field = fired.find(el => el.matches(".cho-field"));
+        console.log({fired: fired.map(el => { 
+            return { name: el.tagName, class: el.classList.value, id: el.id, href: el.getAttribute("href") }
+        }), href: field?.getAttribute("href")});
         if (field != null) alert(field.getAttribute("href"));
         const digit = field?.getAttribute("href").slice(3);
         const id = Number.isNaN(digit) ? digit : parseInt(digit);

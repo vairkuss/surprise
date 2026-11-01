@@ -54,30 +54,30 @@ class DH { // Dialogue Handler
                 CO.find(id).say(text, pose, i);
             }, { once: 1 });
         });
-        const addLast = typeof choice === "number" ? choice >= 0 : choice?.constructor.name !== "Object";
-        const end = replicas.length + addLast;
-        console.debug("end", {end});
+        const passLast = 0; // typeof choice === "number" ? choice < 0 : choice?.constructor.name === "Object";
+        const end = replicas.length - passLast;
         this.#onReplicaEnd(end, choice);
     }
     
     static #onReplicaEnd(end, choice) {
-        if (SB.active == null) {
+        if (!SB.active.length) {
+            SB.hit();
             const nextReplica = new Event("dhReplica" + this.#replica++);
             signal.dispatchEvent(nextReplica);
-            if (this.#replica >= end) {
-                const { writer } = SB.active ?? {}
-                if (writer != null) {
-                    writer.onWriteEnd(() => CH.setChoice(choice));
-                } else {
-                    CH.setChoice(choice);
-                }
+        }
+        if (this.#replica >= end) {
+            const { writer } = SB.active.at(-1) ?? {};
+            if (writer != null) {
+                writer.onWriteEnd(() => CH.setChoice(choice));
             } else {
-                SB.hit();
+                CH.setChoice(choice);
             }
-        } else console.log(SB.active)
-        body.addEventListener("click", () => {
-            this.#onReplicaEnd(end, choice);
-        }, { capture: 1, once: 1 });
+        } else {
+            body.addEventListener("click", () => {
+                this.#onReplicaEnd(end, choice);
+            }, { capture: 1, once: 1 });
+        }
+        
     }
     
     static #processChoice(chosen, char) {
@@ -148,7 +148,7 @@ class DH { // Dialogue Handler
         
         CH.cc.chip.addEventListener("pointerdown", e => {
             const hidden = CH.cc.chip.matches(".hidden");
-            if (hidden || SB.active == null) return;
+            if (hidden || SB.active.length) return console.log(SB.active);
             e.preventDefault();
             const chipStyle = getComputedStyle(CH.cc.chip);
             const x = e.clientX - parseFloat(chipStyle.left);

@@ -194,28 +194,30 @@ export default class CM { // Choice Menu
         this.menu = document.createElement("div");
         this.menu.id = "cho-menu";
         this.menu.className = "hidden";
+        this.pre = document.createElement("pre");
+        this.pre.id = "cho-text";
+        this.text = new Text();
+        this.pre.appendChild(this.text);
         this.choices = choices;
     }
         
     updateMenu() {
+        this.text.nodeValue = '';
         this.wheel?.body.remove();
-        this.text?.remove();
         const base = this.menu.parentElement;
-        if (base == null) return;
-        this.wheel = new CW(base, this.choices);
-        this.wheel.body.appendTo(this.menu);
-        this.text = document.createElement("pre");
-        this.text.id = "cho-text";
-        const wheelStyle = getComputedStyle(this.wheel.body.el);
-        const wheelBottom = parseFloat(wheelStyle.bottom);
-        this.text.style.bottom = wheelBottom + this.wheel.sizes.outR + "px";
-        this.menu.appendChild(this.text);
+        if (base) {
+            this.wheel = new CW(base, this.choices);
+            this.wheel.body.appendTo(this.menu);
+            const wheelStyle = getComputedStyle(this.wheel.body.el);
+            const wheelBottom = parseFloat(wheelStyle.bottom);
+            this.pre.style.bottom = `${wheelBottom + this.wheel.sizes.outR}px`;
+        }
     }
     
     blinkText() {
-        this.text.classList.add("hidden");
-        signal.addEventListener("chipIconChanged", () => {
-            this.text.classList.remove("hidden");
+        this.pre.classList.add("hidden");
+        signal.addEventListener("ccChangeIcon", () => {
+            this.pre.classList.remove("hidden");
         }, { once: 1 });
     }
     
