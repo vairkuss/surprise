@@ -17,6 +17,7 @@ export default class CH { // Choice Handler
             const detail = choice ?? null;
             const chosen = new CustomEvent("chChosen", { detail });
             signal.dispatchEvent(chosen);
+            // ??
         }
     }
     

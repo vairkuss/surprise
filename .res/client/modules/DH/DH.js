@@ -39,6 +39,7 @@ class DH { // Dialogue Handler
         const excerpt = dialogue[this.#excerpt];
         signal.addEventListener("chChosen", e => {
             SB.remove();
+            // пачму не рабоаит ремув
             this.#processChoice(e.detail, char);
         }, { once: 1 });
         this.#readExcerpt(excerpt);

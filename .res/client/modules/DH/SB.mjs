@@ -58,6 +58,7 @@ export default class SB { // Speech Bubble
     }
     
     #flyOut() {
+        // сделать так, чтобы вылетало из середины и с анимацией, а не просто появлялось
         const rad = Math.PI / 4 + Math.random() * Math.PI / 2;
         const x = Math.cos(rad);
         const y = -(Math.sin(rad) + 1) / 2;
@@ -107,6 +108,7 @@ export default class SB { // Speech Bubble
             this.vx += dirX / 4 || step * back / 2;
             this.translationX += this.vx;
             this.body.style.left = `${this.x + this.growCompX + this.translationX}px`;
+            // тут мб тоже
         
             const style = getComputedStyle(this.body);
             const sizeStyle = parseFloat(style.minHeight);
@@ -118,6 +120,7 @@ export default class SB { // Speech Bubble
                 return h + sbRect.height + mrg;
             }, this.y)
             this.body.style.bottom = `${fromBelow + size + this.growCompY}px`;
+            // тута ошибка
         }, 1/30 * 1000);
     }
     
@@ -146,6 +149,7 @@ export default class SB { // Speech Bubble
         const rect = this.body.getBoundingClientRect();
         const anchor = this.char.anchor.getBoundingClientRect();
         this.body.style.bottom = `${rect.bottom - anchor.top}px`;
+        // или здесь
         this.tail?.svg.remove();
         this.body.classList.add("hidden");
         setTimeout(() => {
@@ -179,6 +183,7 @@ class ST { // Speech bubble Tail
 
         this.svg = new VSE([w, b], { cn: "sb-tail", parent: this.sb.body }).el;
         this.svg.style.left = `calc(${-beyond * (a < 0)}px)`;
+        // мб и здесь
         
         if (c < r || !b) return;
         

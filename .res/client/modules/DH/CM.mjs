@@ -198,6 +198,7 @@ export default class CM { // Choice Menu
         this.pre.id = "cho-text";
         this.text = new Text();
         this.pre.appendChild(this.text);
+        this.menu.appendChild(this.pre);
         this.choices = choices;
     }
         
