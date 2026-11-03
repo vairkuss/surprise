@@ -19,27 +19,32 @@ class DH { // Dialogue Handler
         const now = relative * (this.#history[char.name] ?? 0) + value;
         this.#history[char.name] = Math.min(now, this.#branch[char.name].length - 1);
     }
+
+    static #startDialogue(char) {
+        this.#excerpt = 0;
+        this.#readDialogue(char);
+    }
     
-    static #readDialogueFor(char) {
+    static #readDialogue(char) {
         const freeze = ":not(.antifreeze) .btn";
         document.querySelectorAll(freeze).forEach(btn => {
             btn.classList.add("frozen");
         });
         signal.addEventListener("dhDialogueEnd", () => {
+            SB.remove();
             this.#updateHistory(char, 1, true);
             CO.idle();
             document.querySelectorAll(".frozen").forEach(btn => {
                 btn.classList.remove("frozen");
             });
         }, { once: 1 });
-        this.#excerpt = this.#excerpt ?? 0;
         const dialogues = this.#branch[char.name];
         const now = this.#history[char.name] ?? 0;
         const dialogue = dialogues[now];
         const excerpt = dialogue[this.#excerpt];
+        console.log({excerpt, exNo: this.#excerpt, dialogue})
         signal.addEventListener("chChosen", e => {
             SB.remove();
-            // пачму не рабоаит ремув
             this.#processChoice(e.detail, char);
         }, { once: 1 });
         this.#readExcerpt(excerpt);
@@ -55,9 +60,7 @@ class DH { // Dialogue Handler
                 CO.find(id).say(text, pose, i);
             }, { once: 1 });
         });
-        const passLast = 0; // typeof choice === "number" ? choice < 0 : choice?.constructor.name === "Object";
-        const end = replicas.length - passLast;
-        this.#onReplicaEnd(end, choice);
+        this.#onReplicaEnd(replicas.length, choice);
     }
     
     static #onReplicaEnd(end, choice) {
@@ -78,24 +81,29 @@ class DH { // Dialogue Handler
                 this.#onReplicaEnd(end, choice);
             }, { capture: 1, once: 1 });
         }
-        
     }
     
     static #processChoice(chosen, char) {
         if (chosen?.constructor.name === "Array") {
+            console.log("dialogue jump")
             return this.#jumpToChosen(chosen);
-        } else if (chosen < 0) {
+        } else if (typeof chosen === "number" && chosen < 0) {
+            console.log("patpatted")
             char.pat();
             this.#excerpt = null;
         } else {
+            console.log("did nothing, before:",{excerpt: this.#excerpt, chosen})
             this.#excerpt = chosen;
+            console.log("after:",{excerpt: this.#excerpt, chosen})
         }
-        
+
         setTimeout(() => {
+            console.log("process choice",{excerpt: this.#excerpt, chosen});
             if (this.#excerpt != null) {
-                this.#readDialogueFor(char);
+                this.#readDialogue(char);
             } else {
                 signal.dispatchEvent(new Event("dhDialogueEnd"));
+                console.log("dialogue end");
             }
         }, 0.4 * 1000);
     }
@@ -112,7 +120,7 @@ class DH { // Dialogue Handler
             const value = parseInt(history);
             this.#updateHistory(char, value, false);
         }
-        this.#readDialogueFor(char);
+        this.#readDialogue(char);
     }
     
     static #loadBranch() {
@@ -133,7 +141,7 @@ class DH { // Dialogue Handler
                 if (this.ready) char.hover();
             });
             el.addEventListener("click", () => {
-                if (this.ready) this.#readDialogueFor(char);
+                if (this.ready) this.#startDialogue(char);
             });
         });
     }
@@ -149,7 +157,7 @@ class DH { // Dialogue Handler
         
         CH.cc.chip.addEventListener("pointerdown", e => {
             const hidden = CH.cc.chip.matches(".hidden");
-            if (hidden || SB.active.length) return console.log(SB.active);
+            if (hidden || SB.active.length) return;
             e.preventDefault();
             const chipStyle = getComputedStyle(CH.cc.chip);
             const x = e.clientX - parseFloat(chipStyle.left);

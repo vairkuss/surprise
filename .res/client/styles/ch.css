@@ -105,7 +105,7 @@
         hsl(from var(--cur-color-reversed) h s calc(l * 0.2));
     border-radius: calc(var(--cho-size) * 1.3);
     border:
-        calc(var(--cho-size) * 0.8)
+        calc(var(--cho-size) * 0.5)
         solid
         transparent;
     
@@ -117,7 +117,7 @@
         color 0.5s ease-out;
 }
 
-#chip::before { /* hitbox */
+#chip::before {
     content: '';
     display: block;
     

@@ -24,33 +24,24 @@ class CN { // Choice chip chaiN
         const segments = Math.floor(length / seg);
         
         const diff = segments + 1 - this.root.children.length;
-        if (diff > 0) this.#gain(diff);
-        if (diff < 0) this.#lose(diff);
         
+        for (let i = 0; i < Math.abs(diff); i++) {
+            if (diff > 0) this.root.appendChild(this.root.cloneNode());
+            if (diff < 0) this.root.lastChild.remove();
+        }
+           
         const rest = length % seg;
         this.ghost.style.filter = `opacity(${rest / seg})`;
         
         const rad = Math.atan2(chipY, chipX);
         const dir = [Math.cos(rad), Math.sin(rad)];
-        [...this.root.children].forEach((child, i) => {
-            if (child.id === "cho-chain-ghost") return;
-            const dist = (i - 1) * seg + rest;
+        const toMove = ".cho-chain-seg:not(#cho-chain-ghost)";
+        [...this.root.querySelectorAll(toMove)].forEach((child, i) => {
+            const dist = i * seg + rest;
             const [x, y] = dir.map(v => v * dist);
             child.style.left = `${x}px`;
             child.style.top = `${y}px`;
         });
-    }
-    
-    #gain(count) {
-        for (let i = 0; i < count; i++) {
-            this.root.appendChild(this.root.cloneNode());
-        }
-    }
-    
-    #lose(count) {
-        for (let i = count; i < 0; i++) {
-            this.root.lastChild.remove();
-        }
     }
 }
 
@@ -176,7 +167,7 @@ export default class CC { // Choice Chip
             const [x, y] = this.cords.map((v, i) => v - dir[i] * c / 10);
             this.chip.style.left = Math.abs(x) < .5 ? 0 : x + "px";
             this.chip.style.top = Math.abs(y) < .5 ? 0 : y + "px";
-            if (!this.base.matches(".hidden")) {
+            if(!this.base.matches(".hidden")) {
                 this.updateChain();
             }
         }, 1/60 * 1000);

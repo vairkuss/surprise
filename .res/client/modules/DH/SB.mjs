@@ -8,10 +8,7 @@ export default class SB { // Speech Bubble
     
     static bubbles = [];
     static get active() {
-        return this.bubbles.reduce((active, sb, i) => {
-            if (sb.writer.writing) active.push(i);
-            return active;
-        }, []);
+        return this.bubbles.filter(sb => sb.writer.writing);
     }
     static getByChar(char) {
         return SB.bubbles.find(sb => sb.char === char);
@@ -33,6 +30,7 @@ export default class SB { // Speech Bubble
         this.body = document.createElement("div");
         this.body.className = "hidden sb-body";
         char.el.appendChild(this.body);
+        void this.body.offsetWidth;
         this.face = new Text();
         this.body.appendChild(this.face);
         this.writer = new SW(this);
@@ -108,7 +106,10 @@ export default class SB { // Speech Bubble
             this.vx += dirX / 4 || step * back / 2;
             this.translationX += this.vx;
             this.body.style.left = `${this.x + this.growCompX + this.translationX}px`;
-            // тут мб тоже
+            if(this.body.style.left.includes("NaN")) {
+                console.log("setCollisionInterval X",{translationX: this.translationX, x: this.x, growCompX: this.growCompX, vx: this.vx});
+                // тут мб тоже
+            }
         
             const style = getComputedStyle(this.body);
             const sizeStyle = parseFloat(style.minHeight);
@@ -120,6 +121,10 @@ export default class SB { // Speech Bubble
                 return h + sbRect.height + mrg;
             }, this.y)
             this.body.style.bottom = `${fromBelow + size + this.growCompY}px`;
+            if(this.body.style.bottom.includes("NaN")) {
+                console.log("setCollisionInterval Y",{fromBelow, y: this.y, growCompY: this.growCompY, size, mrg});
+                this.a = this.lifes;
+            }
             // тута ошибка
         }, 1/30 * 1000);
     }
@@ -150,7 +155,8 @@ export default class SB { // Speech Bubble
         const anchor = this.char.anchor.getBoundingClientRect();
         this.body.style.bottom = `${rect.bottom - anchor.top}px`;
         // или здесь
-        this.tail?.svg.remove();
+        console.log("remove",{bottom: this.body.style.bottom, rect, anchor})
+        this.tail.svg?.remove();
         this.body.classList.add("hidden");
         setTimeout(() => {
             this.char.talking = false;
@@ -182,9 +188,13 @@ class ST { // Speech bubble Tail
         const w = rect.width + beyond;
 
         this.svg = new VSE([w, b], { cn: "sb-tail", parent: this.sb.body }).el;
-        this.svg.style.left = `calc(${-beyond * (a < 0)}px)`;
+        this.svg.style.left = `${-beyond * (a < 0)}px`;
+        if (this.svg.style.left === "NaNpx") {
+            console.count("update tail",{beyond, a})
+            this.b = this.sb.lifes;
+        }
         // мб и здесь
-        
+
         if (c < r || !b) return;
         
         const rad = Math.atan2(b, a);
@@ -203,3 +213,6 @@ class ST { // Speech bubble Tail
         new VPE(d, { parent: this.svg });
     }
 }
+
+
+window.sb = SB.bubbles;
