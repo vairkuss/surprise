@@ -164,7 +164,8 @@ export default class SW { // Speech Writer
         };
     }
     
-    #processChar(ref, processed) {
+    #processChar(current) {
+        const [processed, ref] = current.match(/(.*)(.)$/)
         const next = processed.length + 1;
         const plotted = this.ap.check(ref, processed);
         if (plotted) return;
@@ -210,8 +211,8 @@ export default class SW { // Speech Writer
 
     #write(e, i) {
         if (this.writing) {
-            const processed = e.detail.text.slice(0, i);
-            return this.#processChar(ref, processed);
+            const current = e.detail.text.slice(0, i + 1);
+            return this.#processChar(current);
         }
         this.#callNext(i);
     }
