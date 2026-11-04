@@ -55,7 +55,7 @@
 </div>
 
 
-<div class="hbox mid" id="chars">
+<div class="hbox mid bot" id="chars">
     <div id="infi" class="character" ><!--
         style="outline: 2px solid red" 
         -->

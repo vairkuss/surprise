@@ -62,8 +62,8 @@ class TS { // Trigger Storage
     add(tag, trigger, key) {
         const type = trigger.constructor.name;
         const term = (ref, processed) => type === "RegExp"
-                ? processed.match(trigger) != null
-                : trigger.includes(ref);
+            ? processed.match(trigger) != null
+            : trigger.includes(ref);
         this[key] = { tag, term };
         this.__KEYS.push(key);
     }
@@ -85,7 +85,6 @@ class TR { // Trigger Reactor
         for (const key in this) {
             if (storage[key]) {
                 this[key]();
-                console.log("tr did:", key, "\n\t", this[key]);
             }
         }
     }
@@ -113,6 +112,10 @@ export default class SW { // Speech Writer
             const text = this.detail.text.slice(next);
             char.say(text, pose, this.detail.replica);
             const recipient = SB.getByChar(char).writer;
+            for (let i = next; i < this.detail.text.length; i++) {
+                const call = `swCancel${i}:${this.detail.replica}`;
+                signal.dispatchEvent(new Event(call));
+            }
             for (let i = 0; i < this.pending.length; i++) {
                 recipient.pending.push(this.pending.pop());
             }
@@ -121,14 +124,15 @@ export default class SW { // Speech Writer
     }
     
     #storeTriggers() {
-        const source = this.ap.plots.reduce((source, { expr }) => {
-            return `${source}|${expr.source}`;
-        });
+        const source = this.ap.plots.slice(1).reduce((source, plot) => {
+            return `${source}|${plot.expr.source}`;
+        }, this.ap.plots[0].expr.source);
         const plotted = new RegExp(`(?:${source})`);
         this.ts = new TS();
         this.ts.add("ignore", plotted, "plot")
         this.ts.add("ignore", /[\s:]$/, "space");
-        this.ts.add("ignore", /×.$/, "poke");
+        this.ts.add("ignore", /°.$/, "pokeout");
+        this.ts.add("ignore", "\\", "escape");
         this.ts.add("anim", '¢', "glitch");
         this.ts.add("anim", 'π', "shake");
         this.ts.add("anim", '∆', "jump");
@@ -153,7 +157,7 @@ export default class SW { // Speech Writer
         this.tr.pause = () => {
             this.sb.char.talking = false;
             this.paused = true;
-            const cooldown = 24 / this.frequency;
+            const cooldown = 12 / this.frequency;
             setTimeout(() => this.paused = false, cooldown * 1000);
         }
         this.tr.interrupt = () => {
@@ -166,13 +170,12 @@ export default class SW { // Speech Writer
     
     #processChar(current) {
         const [, processed, ref] = current.match(/(.*)(.)$/);
-        console.log({processed, ref, current})
         const next = processed.length + 1;
         const plotted = this.ap.check(ref, processed);
         if (plotted) return;
         let wait = 1 / this.frequency;
         const escaped = processed.endsWith('\\');
-        const meta = "\\¥©®✓•§×√|¢π∆".includes(ref);
+        const meta = "\\¥©®✓•§°√|¢π∆".includes(ref);
         if (!escaped && meta) {
             const pv = this.ts.protruct(ref, processed);
             this.tr.apply(pv);
@@ -180,7 +183,7 @@ export default class SW { // Speech Writer
             const ignore = pv.ignore.some;
             const skip = anim || ignore;
             const { stutter, pause } = pv.time;
-            wait *= !skip * ((stutter * 8) + (pause * 16));
+            wait *= !skip * ((stutter * 4) + (pause * 8));
         } else {
             this.sb.text += ref;
         }
@@ -191,7 +194,6 @@ export default class SW { // Speech Writer
         const replica = this.detail.replica;
         if (i >= this.detail.text.length) {
             const writeEnd = new Event(`swWriteEnd:${replica}`);
-            console.log(`swWriteEnd:${replica}`)
             signal.dispatchEvent(writeEnd);
         } else {
             if (this.detail.text[i + 1] !== '§') {
@@ -200,12 +202,9 @@ export default class SW { // Speech Writer
             const call = `swWrite${i + 1}:${replica}`;
             const callEvent = new CustomEvent(call, this);
             signal.dispatchEvent(callEvent);
-            console.log(`swWrite${i + 1}:${replica}`)
         }
-        console.log(i)
         const cancelPrevious = new Event(`swCancel${i}:${replica}`);
         signal.dispatchEvent(cancelPrevious);
-        console.log(`swCancel${i}:${replica}`)
     }
     
     #boost(signature) {
@@ -218,7 +217,6 @@ export default class SW { // Speech Writer
     #write(e, i) {
         if (this.writing) {
             const current = e.detail.text.slice(0, i);
-            console.log({current, i})
             return this.#processChar(current);
         }
         this.#callNext(i);
@@ -238,7 +236,6 @@ export default class SW { // Speech Writer
         const boost = () => this.#boost(boost);
         body.addEventListener("click", boost, true);
         for (let i = 0; i <= detail.text.length; i++) {
-            console.log("adding", `swWrite${i}:${detail.replica},`,`swCancel${i}:${detail.replica}`)
             signal.addEventListener(`swWrite${i}:${detail.replica}`, e => {
                 this.#write(e, i);
             }, { once: 1 });

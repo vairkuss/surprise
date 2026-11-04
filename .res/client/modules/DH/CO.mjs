@@ -91,26 +91,33 @@ export default class CO { // Character Object
     }
     
     hide() {
-        console.log("hiding")
-        this.el.classList.add("frozen");
-        this.el.style.position = "absolute";
-        const rect = () => this.el.getBoundingClientRect();
-        const init = rect();
-        const dir = [
-            [["top", "bottom"], -1, init.top],
-            [["right", "left"], 1, body.offsetWidth - init.right],
-            [["bottom", "top"], 1, body.offsetHeight - init.bottom],
-            [["left", "right"],  -1, init.left]
-        ].reduce((last, item) => item[2] > last[2] ? last : item);
-        const transition = setInterval(() => {
-            const curRect = rect();
-            const [cur, opp] = dir[0].map(key => curRect[key]);
-            const edges = body.getBoundingClientRect();
-            const key = dir[0][0];
-            const term = opp <= 0 || opp >= edges[key];
-            if (term) return clearInterval(transition);
-            this.el.style[key] = `calc(${cur}px + ${dir[1]} * 1vh)`;
-        }, 1000);
+        if (this.el.matches(".frozen")) {
+            this.el.style.removeProperty("filter");
+            if (this.dir) {
+                this.el.style.removeProperty(this.dir);
+                this.dir = null;
+            }
+            setTimeout(() => {
+                this.el.classList.remove("frozen");
+            }, 0.8 * 1000);
+        } else {
+            this.el.classList.add("frozen");
+            this.idle();
+            this.el.style.filter = "opacity(0)";
+            const rect = this.el.getBoundingClientRect();
+            const terms = {
+                right: body.offsetWidth - rect.right,
+                bottom: body.offsetHeight - rect.bottom,
+                left: rect.left
+            };
+            const [dir, offset, sizeAxis] = Array.from(Object.entries(terms), (term, i) => {
+                return term.concat(["width", "height"][i % 2]);
+            }).sort((prev, next) => prev[1] - next[1])[0];
+            console.log({dir, offset, sizeAxis})
+            void this.el.offsetWidth;
+            this.el.style[dir] = `-${offset + rect[sizeAxis]}px`;
+            this.dir = dir;
+        }
     }
     
     pat() {

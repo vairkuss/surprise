@@ -36,7 +36,7 @@ export default class CH { // Choice Handler
         const cs = this.cm.wheel?.sectors[id];
         this.cm.wheel.sectors.forEach(sec => sec.deactivate());
         if (cs == null)  {
-            root.style.setProperty("--cur-color", "var(--m-color)");
+            html.style.setProperty("--cur-color", "var(--m-color)");
         } else {
             cs.activate();
             this.cm.text.nodeValue = cs.text;
@@ -70,7 +70,7 @@ export default class CH { // Choice Handler
             this.cc.setIcon();
             this.cm.menu.remove();
             this.cc.base.classList.add("hidden");
-            root.style.setProperty("--cur-color", "var(--m-color)");
+            html.style.setProperty("--cur-color", "var(--m-color)");
             const chosen = new CustomEvent("chChosen", { detail });
             signal.dispatchEvent(chosen);
         }, 0.4 * 1000);

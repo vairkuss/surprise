@@ -20,7 +20,7 @@ class CN { // Choice chip chaiN
         const chipR = this.size / 1.5 + this.margin;
         const c = Math.sqrt(chipX**2 + chipY**2);
         const length = Math.max(0, c - chipR);
-        const seg = this.size + this.margin;
+        const seg = Math.max(1, this.size + this.margin);
         const segments = Math.floor(length / seg);
         
         const diff = segments + 1 - this.root.children.length;
@@ -167,9 +167,7 @@ export default class CC { // Choice Chip
             const [x, y] = this.cords.map((v, i) => v - dir[i] * c / 10);
             this.chip.style.left = Math.abs(x) < .5 ? 0 : x + "px";
             this.chip.style.top = Math.abs(y) < .5 ? 0 : y + "px";
-            if(!this.base.matches(".hidden")) {
-                this.updateChain();
-            }
+            this.updateChain();
         }, 1/60 * 1000);
     }
 }

@@ -28,6 +28,13 @@
     background-repeat: inherit;
     background-position: inherit;
     background-size: 100% 100%;
+
+    will-change: filter;
+    transition:
+        right 0.8s ease-in,
+        bottom 0.8s ease-in,
+        left 0.8s ease-in,
+        filter 0.75s ease-out;
 }
 
 .anchor {

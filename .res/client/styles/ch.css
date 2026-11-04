@@ -168,13 +168,11 @@
 }
 
 #chip-icon {
-    place-content: center;
-    
     position: absolute;
     inset: 10%;
     
     width: 80%;
-    height: auto;
+    height: 80%;
     
     fill: currentColor;
     

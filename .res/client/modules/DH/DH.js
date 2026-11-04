@@ -12,7 +12,8 @@ class DH { // Dialogue Handler
     static #excerpt = null;
     static #replica = null;
     static get ready() {
-        return this.#excerpt == null;
+        console.log({excerpt: this.#excerpt})
+        return this.#excerpt == null && !SB.active.length;
     }
     
     static #updateHistory(char, value, relative) {
@@ -56,7 +57,7 @@ class DH { // Dialogue Handler
             CO.find(id).pose = pose;
         });
         replicas?.forEach(({ id, text, pose }, i) => {
-            signal.addEventListener("dhReplica" + i, () => {
+            signal.addEventListener(`dhReplica${i}`, () => {
                 CO.find(id).say(text, pose, i);
             }, { once: 1 });
         });
@@ -86,7 +87,7 @@ class DH { // Dialogue Handler
     static #processChoice(chosen, char) {
         if (chosen?.constructor.name === "Array") {
             console.log("dialogue jump")
-            return this.#jumpToChosen(chosen);
+            this.#jumpToChosen(chosen, char);
         } else if (typeof chosen === "number" && chosen < 0) {
             console.log("patpatted")
             char.pat();
@@ -108,9 +109,9 @@ class DH { // Dialogue Handler
         }, 0.4 * 1000);
     }
     
-    static #jumpToChosen(chosen) {
+    static #jumpToChosen(chosen, char) {
         const [csv, replicas] = chosen;
-        this.#excerpt = replicas;
+        this.#excerpt = replicas ?? 0;
         const [charName, history] = csv.split(":");
         if (charName !== char.name) {
             this.#updateHistory(char.name, 1, true);
@@ -120,7 +121,6 @@ class DH { // Dialogue Handler
             const value = parseInt(history);
             this.#updateHistory(char, value, false);
         }
-        this.#readDialogue(char);
     }
     
     static #loadBranch() {
