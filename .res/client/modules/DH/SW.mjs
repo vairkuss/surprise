@@ -165,7 +165,8 @@ export default class SW { // Speech Writer
     }
     
     #processChar(current) {
-        const [processed, ref] = current.match(/(.*)(.)$/)
+        const [, processed, ref] = current.match(/(.*)(.)$/);
+        console.log({processed, ref, current})
         const next = processed.length + 1;
         const plotted = this.ap.check(ref, processed);
         if (plotted) return;
@@ -187,19 +188,24 @@ export default class SW { // Speech Writer
     }
     
     #callNext(i) {
-        if (i + 1 >= this.detail.text.length) {
-            const cancelPrevious = new Event(`swCancel${i - 1}:${detail.replica}`);
-            const writeEnd = new Event(`swWriteEnd:${this.detail.replica}`);
-            signal.dispatchEvent(cancelPrevious);
+        const replica = this.detail.replica;
+        if (i >= this.detail.text.length) {
+            const writeEnd = new Event(`swWriteEnd:${replica}`);
+            console.log(`swWriteEnd:${replica}`)
             signal.dispatchEvent(writeEnd);
         } else {
             if (this.detail.text[i + 1] !== '§') {
                 this.sb.char.talking = true;
             }
-            const call = `swWrite${i + 1}:${this.detail.replica}`;
+            const call = `swWrite${i + 1}:${replica}`;
             const callEvent = new CustomEvent(call, this);
             signal.dispatchEvent(callEvent);
+            console.log(`swWrite${i + 1}:${replica}`)
         }
+        console.log(i)
+        const cancelPrevious = new Event(`swCancel${i}:${replica}`);
+        signal.dispatchEvent(cancelPrevious);
+        console.log(`swCancel${i}:${replica}`)
     }
     
     #boost(signature) {
@@ -211,7 +217,8 @@ export default class SW { // Speech Writer
 
     #write(e, i) {
         if (this.writing) {
-            const current = e.detail.text.slice(0, i + 1);
+            const current = e.detail.text.slice(0, i);
+            console.log({current, i})
             return this.#processChar(current);
         }
         this.#callNext(i);
@@ -219,7 +226,7 @@ export default class SW { // Speech Writer
 
     get writing() { return this.detail != null }
     
-    async write(detail) {
+    write(detail) {
         this.sb.text = '';
         this.sb.lifes = 2;
         this.frequency = 20;
@@ -230,7 +237,8 @@ export default class SW { // Speech Writer
         this.#assignFuncs();
         const boost = () => this.#boost(boost);
         body.addEventListener("click", boost, true);
-        for (let i = 0; i < detail.text.length; i++) {
+        for (let i = 0; i <= detail.text.length; i++) {
+            console.log("adding", `swWrite${i}:${detail.replica},`,`swCancel${i}:${detail.replica}`)
             signal.addEventListener(`swWrite${i}:${detail.replica}`, e => {
                 this.#write(e, i);
             }, { once: 1 });
