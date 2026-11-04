@@ -42,7 +42,7 @@ class DH { // Dialogue Handler
         const now = this.#history[char.name] ?? 0;
         const dialogue = dialogues[now];
         const excerpt = dialogue[this.#excerpt];
-        console.log({excerpt, exNo: this.#excerpt, dialogue})
+        // console.log({excerpt, exNo: this.#excerpt, dialogue})
         signal.addEventListener("chChosen", e => {
             SB.remove();
             this.#processChoice(e.detail, char);
