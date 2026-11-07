@@ -1,7 +1,5 @@
 /* Tiles */
 
-import DF from "./DF.mjs";
-
 
 export default class T { // Tile
     
@@ -9,18 +7,17 @@ export default class T { // Tile
     get cords() { return [this.x, this.y] }
     set cords(cords) { [this.x, this.y] = cords }
     get area() {
-        return [...Array(3 * 3)].map((_, i) => [
+        return Array.from({ length: 3 * 3 }, (_, i) => [
             this.x - (i % 3) + 1,
             this.y - Math.trunc(i / 3) + 1
         ]);
     }
     
-    draw(ctx, color, strokeFunc, fillFunc, bColor) {
-        if (fillFunc != null) {
-            ctx.fillStyle = color;
-            fillFunc();
-        }
-        ctx.strokeStyle = bColor ?? color;
-        strokeFunc();
+    draw([ctx, tileSize], ...dfs) {
+        dfs?.forEach((df, i) => {
+            const draw = df.b ? "stroke" : "fill";
+            ctx[`${draw}Style`] = df.color; 
+            df.draw(ctx, tileSize);
+        })
     }
 }

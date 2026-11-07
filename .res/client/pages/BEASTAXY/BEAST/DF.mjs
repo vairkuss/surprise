@@ -1,57 +1,85 @@
-/* Draw Functions */
+/* Drawing Function */
 
 
-export default class DF { // Draw Functions
-    
-    static rect(ctx, tileSize, [x, y], [w, h], b=0, mode=0) {
-        const bBias = tileSize * b * mode / 2;
-        return () => {
-            ctx.lineWidth = tileSize * b;
-            (b ? ctx.strokeRect : ctx.fillRect)(
-                tileSize * (x + (1 - w) / 2) + bBias,
-                tileSize * (y + (1 - h) / 2) + bBias,
-                tileSize * w - bBias,
-                tileSize * h - bBias
-            );
-        }
+export default class Figure {
+
+    constructor(color, cords, b=0, mode=0, bias=[0, 0]) {
+        this.color = color;
+        this.b = b;
+        this.bBias = b * mode / 2;
+        [this.x, this.y] = cords;
+        this.bias = bias;
     }
-    
-    static square(ctx, tileSize, cords, w, b, mode) {
-        return this.rect(ctx, tileSize, cords, [w, w], b, mode);
+}
+
+
+export class Rect extends Figure {
+
+    constructor(color, cords, size, radii, b, mode, bias) {
+        super(color, cords, b, mode, bias);
+        [this.w, this.h] = size;
+        this.radii = radii ?? 0;
     }
-    
-    static tile(ctx, tileSize, cords, b, mode) {
-        return this.square(ctx, tileSize, cords, 1, b, mode);
+
+    draw(ctx, tileSize) {
+        ctx.lineWidth = tileSize * this.b;
+        ctx.beginPath();
+        ctx.roundRect(
+            tileSize * (this.x + (1 - this.w) / 2 + this.bBias + this.bias[0]),
+            tileSize * (this.y + (1 - this.h) / 2 + this.bBias + this.bias[1]),
+            tileSize * (this.w - this.bBias),
+            tileSize * (this.h - this.bBias),
+            this.radii.constructor.name === "Array"
+                ? this.radii.map(r => r * tileSize)
+                : this.radii * tileSize
+        );
+        ctx[this.b ? "stroke" : "fill"]();
     }
+}
+
+
+export class Square extends Rect{
     
-    static circle(ctx, tileSize, [x, y], [bx, by], r, b=0, mode=0) {
-        const bBias = tileSize * b * mode / 2;
-        return () => {
-            ctx.lineWidth = tileSize * b;
-            ctx.beginPath();
-            ctx.arc(
-                tileSize * (x + bx + .5),
-                tileSize * (y + by + .5),
-                tileSize * r + bBias,
-                0, Math.PI * 2
-            );
-            (b ? ctx.stroke : ctx.fill)();
-        }
+    constructor(color, cords, w, radii, b, mode, bias) {
+        super(color, cords, [w, w], radii, b, mode, bias);
     }
+}
+
+
+export class Circle extends Square {
+    constructor(color, cords, r, b, mode, bias) {
+        super(color, cords, r, r, b, mode, bias);
+    }
+}
+
+
+export class Tile extends Square {
     
-    static side(ctx, tileSize, cords, dir, b, mode=-1) {
-        const bBias = tileSize * b * mode / 2;
+    constructor(color, cords, b, mode, bias) {
+        super(color, cords, 1, 0, b, mode, bias);
+    }
+}
+
+export class Side extends Figure {
+    constructor(color, cords, dir, b, mode=-1, bias) {
+        super(color, cords, b, mode, bias);
+        this.dir = dir;
         const corners = [[0, 0], [1, 0], [1, 1], [0, 1]].map(corner => {
-            return corner.map((v, i) => tileSize * (cords[i] + v) + (v ? -bBias : bBias));
+            return corner.map((v, i) => cords[i] + v);
         });
-        const [x1, y1] = corners[dir];
-        const [x2, y2] = corners[(dir + 1) % 4];
-        return () => {
-            ctx.lineWidth = tileSize * b;
-            ctx.beginPath();
-            ctx.moveTo(x1, y1);
-            ctx.lineTo(x2, y2);
-            ctx.stroke();
-        }
+        this.begin = corners[dir];
+        this.end = corners[(dir + 1) % 4];
+    }
+
+    draw(ctx, tileSize) {
+        const calc = arr => arr.map((v, i) => (v + this.bias[i]) * tileSize + (-this.bBias) ** v);
+        const [x1, y1] = calc(this.begin);
+        const [x2, y2] = calc(this.end);
+        ctx.fillStyle = "transparent";
+        ctx.lineWidth = tileSize * this.b;
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.stroke();
     }
 }

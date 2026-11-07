@@ -1,29 +1,30 @@
 /* Apple */
 
-import DF from "./DF.mjs";
 import T from "./T.mjs";
+import { Circle } from "./DF.mjs";
 
 
 export default class A extends T { // Apple
     
     constructor(cords) {
-        const randDeg = () => Math.random() * 360;
-        const randPercent = () => Math.random() * 100;
-        const color = `hsl(${randDeg()} ${randPercent()}% ${randPercent()}%)`;
-        const bColor = `hsl(from ${color} calc(h + 180) s calc(100% - l))`;
-        super(cords, color, 2, bColor);
+        super(cords);
         this.appended = 0;
+        const randDeg = () => Math.trunc(Math.random() * 360);
+        const randPercent = () => Math.trunc(Math.random() * 50 + 50);
+        this.color = `hsl(${randDeg()} ${randPercent()}% ${randPercent()}%)`;
+        this.bColor = `hsl(from ${this.color} calc(h + 180) s calc((100 - l) * 1%))`;
     }
     
-    draw(ctx, tileSize) {
-        super.draw(ctx,
-            DF.circle(ctx, tileSize, this.cords, 1, 1),
-            DF.circle(ctx, tileSize, this.cords, [0, 0])
+    draw(meta) {
+        console.log("Acords:",this.cords)
+        super.draw(meta,
+            new Circle(this.bColor, this.cords, 1, 1 -1),
+            new Circle(this.color, this.cords, 1, 0, -1)
         );
     }
     
     appendTo(arr) {
         this.appended = 1;
-        arr.append(this);
+        arr.unshift(this);
     }
 }

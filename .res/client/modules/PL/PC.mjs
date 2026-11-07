@@ -7,12 +7,22 @@ export default class PC { // Page Controller
     static #dtl = 300; //double tap latency
     
     static #setGlobals() {
-        window.signal = new EventTarget();
         window.html = document.querySelector(":root");
         window.body = document.body;
         window.root = document.querySelector("#content");
+        window.signal = new EventTarget();
+        window.send = e => signal.dispatchEvent(new Event(e));
         window.transition = (url, [x, y]) => {
-            this.#transition(url, [x, y]);
+            root.style.translate = `calc(${-x} * 100vw) calc(${-y} * -100vh)`;
+            root.style.filter = "opacity(0)";
+            cover.removeAttribute("style");
+            sessionStorage.setItem("transition", JSON.stringify([x, y]));
+            fetch(`${location.origin}/post/data`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(window.data)
+            });
+            setTimeout(() => location.replace(url), .6 * 1000);
         }
         window.log = (...args) => {
             const caller = new Error().stack.toString().split('\n')[2];
@@ -58,19 +68,6 @@ export default class PC { // Page Controller
         if (mColor != null) {
             html.style.setProperty("--m-color", mColor);
         }
-    }
-    
-    static #transition(url, [x, y]) {
-        root.style.translate = `calc(${-x} * 100vw) calc(${-y} * -100vh)`;
-        root.style.filter = "opacity(0)";
-        cover.removeAttribute("style");
-        sessionStorage.setItem("transition", JSON.stringify([x, y]));
-        fetch(`${location.origin}/post/data`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(window.data)
-        });
-        setTimeout(() => location.replace(url), .6 * 1000);
     }
     
     static init() {

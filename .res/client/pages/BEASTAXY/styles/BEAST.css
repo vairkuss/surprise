@@ -28,7 +28,7 @@ body {
 #stamina {
     display: block;
     margin: 0.2rem auto;
-    box-shadow: 0 0 10px hsla(0, 0% 40%, 0.8);
+    box-shadow: 0 0 10px hsla(0 0% 40%/ 0.8);
     border-radius: 0.2rem;
     width: 1.5rem;
     height: 1.5rem;

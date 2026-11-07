@@ -1,39 +1,36 @@
-/* Action Buttons */
-
-import SL from "./SL.mjs"
+/* Action Button */
 
 
 export default class AB { // Action Button
     
-    constructor(el, func, cooldown, sprites) {
-        this.el = el;
-        el.addEventListener("contextmenu", e => e.preventDefault(), 1)
-        el.addEventListener("click", e => {
+    constructor(id, func, animFps, cooldown, firstCooldown = 0) {
+        this.el = document.getElementById(id);
+        this.el.addEventListener("contextmenu", e => e.preventDefault(), true);
+        this.el.addEventListener("click", e => {
             e.preventDefault();
             if (this.interval != null) {
                 func();
-                disable(cooldown);
+                this.disable();
             }
-        }, 1);
-        const sprites = SL.beast.B[sprites];
-        [this.inactive] = sprites.splice(0, 1);
-        this.sprites = sprites;
+        }, true);
+        this.animFps = animFps;
+        this.cooldown = cooldown;
+        [this.default, ...this.sprites] = Object.values(data.beast.ui[id]);
         this.active = 0;
-        disable(5);
-    }
-    
-    disable(s) {
-        clearInterval(this.interval);
-        this.interval = null;
-        this.el.src = this.inactive;
-        setTimeout(() => this.enable(), s * 1000);
+        this.disable(firstCooldown);
     }
     
     enable() {
         this.interval = setInterval(() => {
-            this.el.src = this.sprites[this.active];
-            this.active++;
+            this.el.src = this.sprites[this.active++];
             this.active %= this.sprites.length;
-        }, 100)
+        }, 1000 / this.animFps);
+    }
+    
+    disable(s = this.cooldown) {
+        clearInterval(this.interval);
+        this.interval = null;
+        this.el.src = this.default;
+        if (s) setTimeout(() => this.enable(), s * 1000);
     }
 }

@@ -171,7 +171,6 @@
         
         transition:
             background 0.05s,
-            color 0.05s,
             transform 0.03s ease-in,
             opacity 0.12s ease-in 0.05s,
             color 0.2s ease-in 0.1s,

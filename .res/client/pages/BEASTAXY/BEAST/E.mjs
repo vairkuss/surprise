@@ -1,7 +1,7 @@
 /* Enemies */
 
-import DF from "./DF.mjs";
 import T from "./T.mjs";
+import DF from "./DF.mjs";
 
 
 class E extends T { // Enemy
