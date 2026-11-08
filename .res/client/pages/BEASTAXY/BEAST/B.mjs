@@ -11,38 +11,40 @@ import T from "./T.mjs";
 class BT extends T { // Border Tile
     
     draw(meta, gridSize, danger) {
-        const dir = [
+        [
             !this.y,
             this.x + 1 === gridSize[0],
             this.y + 1 === gridSize[1],
             !this.x
-        ].findIndex((term, i) => term && !danger.includes(i));
-        super.draw(meta,
-            new Side("#fff", this.cords, dir, 0.2)
-        );
+        ].forEach((term, dir) => {
+            if (term && !danger.includes(dir)) {
+                super.draw(meta,
+                    new Side("#fff", this.cords, dir, 0.2)
+                );
+            }
+        });
     }
 }
 
 
 export default class B { // Board
     
-    static scoreText = document.getElementById("score").appendChild(new Text());
+    static scoreText = document.getElementById("score").firstChild;
     
     static canvas = document.getElementById("board");
     static ctx = this.canvas.getContext("2d");
     static fps = 60;
     static bpm = 240;
-    static tileSize = 20;
+    static tileSize = 25;
     
-    static get canvasRect() { return this.canvas.getBoundingClientRect() }
-    static get gridWidth() { return Math.ceil(this.canvasRect.width / this.tileSize) }
-    static get gridHeight() { return Math.ceil(this.canvasRect.height / this.tileSize) }
-    static get gridSize() { return [this.gridWidth, this.gridHeight] }
+    static get gridW() { return Math.ceil(this.canvas.width / this.tileSize) }
+    static get gridH() { return Math.ceil(this.canvas.height / this.tileSize) }
+    static get gridSize() { return [this.gridW, this.gridH] }
     
     static get grid() {
         const tiles = [];
-        for (let y = 0; y < this.gridHeight; y++) {
-            for (let x = 0; x < this.gridWidth; x++) {
+        for (let y = 0; y < this.gridH; y++) {
+            for (let x = 0; x < this.gridW; x++) {
                 tiles.push([x, y]);
             }
         }
@@ -51,11 +53,11 @@ export default class B { // Board
 
     static get outerTiles() {
         const edges = [];
-        for (let x = 0; x < this.gridWidth; x++) {
-            edges.push([x, 0], [x, this.gridHeight - 1]);
+        for (let x = 0; x < this.gridW; x++) {
+            edges.push([x, 0], [x, this.gridH - 1]);
         }
-        for (let y = 1; y + 1 < this.gridHeight; y++) {
-            edges.push([0, y], [this.gridWidth - 1, y]);
+        for (let y = 1; y + 1 < this.gridH; y++) {
+            edges.push([0, y], [this.gridW - 1, y]);
         }
         return edges;
     }
@@ -63,16 +65,15 @@ export default class B { // Board
     static get freeTile() {
         const tail = this.snake.tail.map(seg => seg.cords);
         const axis = this.snake.dir.findIndex(Boolean);
-        const line = [];
-        for (let i = 0; i < this.gridSize[axis]; i++) {
-            const cords = this.snake.cords.map((v, j) => j === axis ? i : v);
-            line.push(cords);
-        }
+        const line = Array.from({ length: this.gridSize[axis] }, (_, i) => {
+            return this.snake.cords.map((v, j) => j === axis ? i : v);
+        });
         const unallowed = tail.concat(line);
+        console.log({tail, line})
         const allowed = this.grid.filter(cords => {
             return unallowed.every(bad => cords.toString() !== bad.toString());
         });
-        return this.allowed.length
+        return allowed.length
             ? allowed[Math.floor(Math.random() * allowed.length)]
             : unall;
     }
@@ -89,22 +90,22 @@ export default class B { // Board
         
         this.inputQueue = [];
         this.scoreText.nodeValue = "0";
-        
-        const randY = Math.trunc(Math.random() * (this.gridHeight - 2)) + 1;
-        this.snake = new S([-1, randY], [1, 0]);
+        setTimeout(() => this.staminaAB.disable(5));
+
         const mid = this.gridSize.map(v => Math.trunc(v / 2))
         this.spawnApple(mid);
+        const offset = Math.trunc(this.gridH / 2) * Math.trunc(Math.random() * 2);
+        const randHalfY = Math.trunc(Math.random() * (this.gridH / 2 - 2) + 1);
+        const randY = offset + randHalfY;
+        this.snake = new S([-1, randY], [1, 0]);
         this.enemies = [];
         
         this.drawInterval = setInterval(() => this.draw(), 1000 / this.fps);
-        this.gameInterval = setInterval(() => {
-            if (!this.paused) this.update();
-        }, 60 * 1000 / (this.bpm * 2));
+        this.gameInterval = setInterval(() => this.update(), 60 * 1000 / (this.bpm * 2));
     }
     
     static drawGrid() {
-        this.ctx.fillStyle = "#bb9994";
-        this.ctx.fillRect(0, 0, this.canvasRect.width, this.canvasRect.height);
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.fillStyle = "#886b66";
         this.grid.forEach(([x, y]) => {
             if (x % 2 === y % 2) {
@@ -119,7 +120,7 @@ export default class B { // Board
     }
     
     static isDeathTile(cords) {
-        const deathTiles = this.snake.tail.slice(0, -1);
+        const deathTiles = this.snake.tail.slice(1, -1);
         this.enemies?.forEach(enemy => deathTiles.push(enemy));
         return deathTiles.some(deathTile => {
             return cords.toString() === deathTile.cords.toString();
@@ -148,13 +149,12 @@ export default class B { // Board
         });
         
         if (this.apple.cords.some((v, i) => v % this.gridSize[i] <= 0)) {
-            delete this.apple;
             this.spawnApple();
         }
         this.apple.draw(meta);
         this.snake.draw(meta);
         const dpCords = this.snake.next(this.gridSize, S.dashDist);
-        new DP(dpCords, this.isDeathTile(dpCords)).draw(meta);
+        new DP(dpCords, this.isDeathTile(dpCords), this.staminaAB.interval).draw(meta);
         this.enemies.forEach(enemy => enemy.draw(meta));
     }
     
@@ -219,6 +219,7 @@ export default class B { // Board
     }
     
     static update () {
+        if (this.paused) return;
         this.enemies.forEach(enemy => enemy.move());
         this.enemies = this.enemies.filter(enemy => {
             return enemy.cords.every((v, i) => {
@@ -236,18 +237,28 @@ export default class B { // Board
         }
         
         const snakeNext = this.snake.next(this.gridSize);
-        if (`${snakeNext}` === `${this.apple.cords}`) {
-            this.apple.appendTo(this.snake.tail);
+        if (this.isDeathTile(snakeNext)) {
+            return this.gameOver();
+        }
+
+        const grow = `${snakeNext}` === `${this.apple.cords}`;
+        this.snake.cords = snakeNext;
+        if (grow) {
+            this.apple.active = true;
+            this.snake.tail.unshift(this);
+            this.snake.grew = true;
             this.spawnApple();
             this.scoreText.nodeValue = this.snake.score;
+            this.snake.tail.slice(1).toReversed().forEach((seg, i, a) => {
+                seg.cords = i ? a.at(-i).cords : this.snake.tail[0].cords;
+            });
+        } else {
+            this.snake.tail.forEach((seg, i, a) => {
+                seg.cords = i ? a[i - 1].cords : this.snake.cords;  
+            });
         }
         
-        if (this.isDeathTile(snakeNext)) {
-            this.gameOver();
-        }
-        
-        this.snake.move(this.gridSize);
-        if (this.snake.dashing) { this.snake.dashing = 0 };
+        this.snake.dashing = false;
     }
     
     static gameOver() {
@@ -261,12 +272,12 @@ export default class B { // Board
         this.ctx.lineWidth = 2;
         const text = "GAME OVER";
         this.ctx.strokeText(text,
-            (this.gridWidth - text.length) / 2 * this.tileSize,
-            (this.gridHeight + 0.5) / 2 * this.tileSize
+            (this.gridW - text.length) / 2 * this.tileSize,
+            (this.gridH + 0.5) / 2 * this.tileSize
         );
         this.ctx.fillText(text,
-            (this.gridWidth - text.length) / 2 * this.tileSize,
-            (this.gridHeight + 0.5) / 2 * this.tileSize
+            (this.gridW - text.length) / 2 * this.tileSize,
+            (this.gridH + 0.5) / 2 * this.tileSize
         );
     }
     
@@ -274,13 +285,21 @@ export default class B { // Board
     static #dash() { this.addInput(this.snake.dir) }
     
     static init() {
-        this.ctx.font = `${this.tileSize * 2}px infex`;
+        new ResizeObserver(ents => {
+            for (const ent of ents) {
+                if (ent.borderBoxSize) {
+                    const { inlineSize, blockSize } = ent.borderBoxSize[0];
+                    ent.target.width = inlineSize;
+                    ent.target.height = blockSize;
+                }
+            }
+        }).observe(this.canvas, { box: "border-box" });
+        this.ctx.font = `${this.tileSize}px infex`;
         signal.addEventListener("bPause", () => this.#pause());
         signal.addEventListener("bRestart", () => this.gameStart());
         signal.addEventListener("bKill", () => this.gameOver());
         body.addEventListener("pointerdown", e => this.swipe([e.offsetX, e.offsetY]));
         body.addEventListener("keydown", e => this.keyboardInput(e.code))
-        this.staminaAB = new AB("stamina", () => this.#dash(), 10, 1.2, 5);
-        this.gameStart();
+        this.staminaAB = new AB("stamina", () => this.#dash(), 10, 1.2);
     }
 }

@@ -8,7 +8,7 @@ class E extends T { // Enemy
     
     constructor(cords, tickFreq) {
         super(cords);
-        this.tick = tick;
+        this.tick = tickFreq;
     }
     
     draw(ctx, tileSize, color="#b00") {
@@ -18,7 +18,7 @@ class E extends T { // Enemy
     }
     
     move(gridSize, vector) {
-        this.cords = this.cords.map((v, i) => v + vector[i]);
+        this.cords = this.cords.map((v, i) => (v + vector[i] + gridSize[i]) % gridSize[i]);
     }
 }
 

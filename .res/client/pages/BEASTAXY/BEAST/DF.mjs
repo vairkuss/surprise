@@ -72,6 +72,7 @@ export class Side extends Figure {
     }
 
     draw(ctx, tileSize) {
+        if (this.dir < 0) return;
         const calc = arr => arr.map((v, i) => (v + this.bias[i]) * tileSize + (-this.bBias) ** v);
         const [x1, y1] = calc(this.begin);
         const [x2, y2] = calc(this.end);
