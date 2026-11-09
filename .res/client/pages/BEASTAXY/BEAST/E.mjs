@@ -1,56 +1,80 @@
 /* Enemies */
 
 import T from "./T.mjs";
-import DF from "./DF.mjs";
+import { Tile } from "./DF.mjs";
 
 
 class E extends T { // Enemy
     
-    constructor(cords, tickFreq) {
+    constructor(cords, tact) {
         super(cords);
-        this.tick = tickFreq;
+        this.tact = tact;
     }
     
-    draw(ctx, tileSize, color="#b00") {
-        super.draw(ctx, color,
-            DF.tile(ctx, tileSize, this.cords, .2, -1)
+    draw(meta, color="#b00") {
+        super.draw(meta,
+            new Tile(color, this.cords, .2, -1)
         );
     }
     
-    move(gridSize, vector) {
-        this.cords = this.cords.map((v, i) => (v + vector[i] + gridSize[i]) % gridSize[i]);
+    move(gridSize, dir) {
+        this.cords = this.cords.map((v, i) => {
+            return (v + dir[i] + gridSize[i]) % gridSize[i];
+        });
     }
 }
 
 
 class SE extends E { // Streamlined Enemy
     
-    constructor(cords, vector) {
-        super(cords, tick);
-        this.vector = vector;
+    constructor(cords, tact, pattern) {
+        super(cords, tact);
+        this.dir = [pattern.x, pattern.y];
     }
-    
-    draw(ctx, tileSize) { super.draw(ctx, tileSize, "#60f") }
-    move(gridSize) { super.move(gridSize, this.vector) }
+    move(gridSize) { super.move(gridSize, this.dir) }
     
     bounce(gridSize) {
         [
             !this.x || this.x + 1 === gridSize[0],
             !this.y || this.y + 1 === gridSize[1]
-        ].forEach((v, i) => { if (v) this.vector[i] *= -1 });
+        ].forEach((v, i) => { if (v) this.dir[i] *= -1 });
     }
+
+}
+
+
+export class Pawn extends SE{
+    
+    constructor(cords, pattern) {
+        pattern = Object.assign({x: 0, y: 0}, pattern);
+        super(cords, 2/4, pattern);
+    }
+    
+    draw(meta) { super.draw(meta, "#60f") }
+}
+
+
+export class Bishop extends SE {
+
+    constructor(cords, pattern) {
+        return new SE(cords, 1/4, pattern);
+    }
+    
+    draw(meta) { super.draw(meta, "#308") }
 }
 
 
 export default class ES { // Enemy Spawner
     
-    static pawn(cords, cord, dir) {
-        const vector = [0, 0];
-        vector[cord] = dir;
-        return new StreamlinedEnemy(cords, 2/4, vector);
+    static enemies = [];
+
+    static clear(gridSize) {
+        this.enemies = this.enemies.filter(enemy => {
+            return enemy.cords.some((v, i) => v < 0 || v >= gridSize[i]);
+        });
     }
-    static bishop(cords, dir) {
-        const vector = [[], [], [], []][dir];
-        return new StreamlinedEnemy(cords, 1/4, vector);
+
+    static atEdge(outerTiles, enemy) {
+        const outOfBounds = []
     }
 }

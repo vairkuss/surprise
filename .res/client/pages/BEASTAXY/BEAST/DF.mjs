@@ -6,7 +6,7 @@ export default class Figure {
     constructor(color, cords, b=0, mode=0, bias=[0, 0]) {
         this.color = color;
         this.b = b;
-        this.bBias = b * mode / 2;
+        this.bBias = 0; // b * mode;
         [this.x, this.y] = cords;
         this.bias = bias;
     }

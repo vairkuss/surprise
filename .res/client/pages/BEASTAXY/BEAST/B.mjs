@@ -69,13 +69,13 @@ export default class B { // Board
             return this.snake.cords.map((v, j) => j === axis ? i : v);
         });
         const unallowed = tail.concat(line);
-        console.log({tail, line})
+        
         const allowed = this.grid.filter(cords => {
             return unallowed.every(bad => cords.toString() !== bad.toString());
         });
         return allowed.length
-            ? allowed[Math.floor(Math.random() * allowed.length)]
-            : unall;
+            ? allowed[Math.trunc(Math.random() * allowed.length)]
+            : line[Math.trunc(Math.random() * line.length)];
     }
     
     static spawnApple(cords) {
@@ -120,10 +120,10 @@ export default class B { // Board
     }
     
     static isDeathTile(cords) {
-        const deathTiles = this.snake.tail.slice(1, -1);
+        const deathTiles = this.snake.tail.concat(this.snake);
         this.enemies?.forEach(enemy => deathTiles.push(enemy));
-        return deathTiles.some(deathTile => {
-            return cords.toString() === deathTile.cords.toString();
+        return deathTiles.some(tile => {
+            return cords.toString() === tile.cords.toString();
         });
     }
     
@@ -148,7 +148,7 @@ export default class B { // Board
             new BT(cords).draw(meta, this.gridSize, danger);
         });
         
-        if (this.apple.cords.some((v, i) => v % this.gridSize[i] <= 0)) {
+        if (this.apple.cords.some((v, i) => v >= this.gridSize[i])) {
             this.spawnApple();
         }
         this.apple.draw(meta);
@@ -220,6 +220,7 @@ export default class B { // Board
     
     static update () {
         if (this.paused) return;
+
         this.enemies.forEach(enemy => enemy.move());
         this.enemies = this.enemies.filter(enemy => {
             return enemy.cords.every((v, i) => {
@@ -232,7 +233,6 @@ export default class B { // Board
             this.snake.dir = this.inputQueue.shift();
             const repeat = `${lastDir}` === `${this.snake.dir}`;
             const pre = `${this.inputQueue[0]}` === `${this.snake.dir}`;
-            console.log({lastDir: `${lastDir}`, snake: `${this.snake.dir}`, next: `${this.inputQueue[0]}`, repeat,pre})
             if (repeat || pre) this.dash();
         }
         
@@ -242,22 +242,17 @@ export default class B { // Board
         }
 
         const grow = `${snakeNext}` === `${this.apple.cords}`;
-        this.snake.cords = snakeNext;
         if (grow) {
             this.apple.active = true;
-            this.snake.tail.unshift(this);
-            this.snake.grew = true;
-            this.spawnApple();
+            this.snake.tail.unshift(this.apple);
             this.scoreText.nodeValue = this.snake.score;
-            this.snake.tail.slice(1).toReversed().forEach((seg, i, a) => {
-                seg.cords = i ? a.at(-i).cords : this.snake.tail[0].cords;
-            });
-        } else {
-            this.snake.tail.forEach((seg, i, a) => {
-                seg.cords = i ? a[i - 1].cords : this.snake.cords;  
-            });
+            this.spawnApple();
         }
+        this.snake.tail.toReversed().forEach((seg, i, a) => {
+            seg.cords = i + 1 < a.length ? a[i + 1].cords : this.snake.cords;  
+        });
         
+        this.snake.cords = snakeNext;
         this.snake.dashing = false;
     }
     
@@ -279,6 +274,8 @@ export default class B { // Board
             (this.gridW - text.length) / 2 * this.tileSize,
             (this.gridH + 0.5) / 2 * this.tileSize
         );
+
+        // this.scoreText.parentElement.parentElement
     }
     
     static #pause() { this.paused = !this.paused }
@@ -294,7 +291,7 @@ export default class B { // Board
                 }
             }
         }).observe(this.canvas, { box: "border-box" });
-        this.ctx.font = `${this.tileSize}px infex`;
+        this.ctx.font = `${this.tileSize * 3}px infex`;
         signal.addEventListener("bPause", () => this.#pause());
         signal.addEventListener("bRestart", () => this.gameStart());
         signal.addEventListener("bKill", () => this.gameOver());

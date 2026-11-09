@@ -27,10 +27,14 @@ export default class AB { // Action Button
         }, 1000 / this.animFps);
     }
     
-    disable(s = this.cooldown) {
+    disable(s) {
         clearInterval(this.interval);
         this.interval = null;
         this.el.src = this.default;
-        if (s) setTimeout(() => this.enable(), s * 1000);
+        if (s || s == null) {
+            setTimeout(() => {
+                this.enable();
+            }, (s ?? this.cooldown) * 1000);
+        }
     }
 }
