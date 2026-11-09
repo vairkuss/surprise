@@ -268,7 +268,7 @@ export default class B { // Board
         const text = "GAME OVER";
         this.ctx.strokeText(text,
             (this.gridW - text.length) / 2 * this.tileSize,
-            (this.gridH + 0.5) / 2 * this.tileSize
+            (this.gridH + 0.5) * this.tileSize
         );
         this.ctx.fillText(text,
             (this.gridW - text.length) / 2 * this.tileSize,
@@ -291,7 +291,8 @@ export default class B { // Board
                 }
             }
         }).observe(this.canvas, { box: "border-box" });
-        this.ctx.font = `${this.tileSize * 3}px infex`;
+        this.ctx.font = `${Math.trunc(this.canvas.height / 9)}px infex`;
+        console.log({h: this.canvas.height, typeofH: typeof this.canvas.height, font: this.ctx.font, fontSize: parseFloat(this.canvas.height) / 9})
         signal.addEventListener("bPause", () => this.#pause());
         signal.addEventListener("bRestart", () => this.gameStart());
         signal.addEventListener("bKill", () => this.gameOver());
