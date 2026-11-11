@@ -10,7 +10,6 @@ export default class AB { // Action Button
             e.preventDefault();
             if (this.interval != null) {
                 func();
-                console.log("dashed")
                 this.disable();
             }
         }, true);
@@ -28,11 +27,12 @@ export default class AB { // Action Button
     }
     
     disable(s) {
+        clearTimeout(this.timeout);
         clearInterval(this.interval);
         this.interval = null;
         this.el.src = this.default;
         if (s || s == null) {
-            setTimeout(() => {
+            this.timeout = setTimeout(() => {
                 this.enable();
             }, (s ?? this.cooldown) * 1000);
         }

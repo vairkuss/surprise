@@ -141,7 +141,7 @@
 
 .btn > .inner-ring > :is(.icon, .symbol, .text) {
     --grow: 1;
-    --grew: calc(-50% * var(--grow));
+    --grew: calc(-50% / var(--grow));
 
     position: absolute;
 

@@ -1,5 +1,6 @@
 /* Board */
 
+import M from "./M.mjs";
 import AB from "./AB.mjs";
 import { Side } from "./DF.mjs";
 import ES from "./E.mjs";
@@ -30,8 +31,9 @@ class BT extends T { // Border Tile
 export default class B { // Board
     
     static scoreText = document.getElementById("score").firstChild;
+    static timeText = document.getElementById("time").firstChild;
     
-    static canvas = document.getElementById("board");
+    static canvas = document.querySelector("#board > canvas");
     static ctx = this.canvas.getContext("2d");
     static fps = 60;
     static bpm = 240;
@@ -85,6 +87,7 @@ export default class B { // Board
     static gameStart() {
         this.playing = 1;
         this.paused = 0;
+        this.gameStarted = 0;
         clearInterval(this.gameInterval);
         clearInterval(this.drawInterval);
         
@@ -156,6 +159,10 @@ export default class B { // Board
         const dpCords = this.snake.next(this.gridSize, S.dashDist);
         new DP(dpCords, this.isDeathTile(dpCords), this.staminaAB.interval).draw(meta);
         this.enemies.forEach(enemy => enemy.draw(meta));
+        
+        const elapsed = new Date() - this.gameStarted;
+        const iso = new Date(elapsed).toISOString();
+        this.timeText.nodeValue = iso.match(/\d{2}:\d{2}\.\d{3}/) ?? "error";
     }
     
     static dash() {
@@ -167,13 +174,13 @@ export default class B { // Board
     
     
     static addInput(input) {
-        const MAX_INPUTS = 4;
-        const backturner = (this.inputQueue.length
-            ? this.inputQueue.slice(-1)[0]
-            : this.snake.dir
-        ).map(v => -v).toString() === input.toString()
-        if (this.paused || backturner) return;
-        this.inputQueue.splice(MAX_INPUTS);
+        console.log(this.inputQueue)
+        const max = this.inputQueue.length >= 4;
+        const lastDir = this.inputQueue.length
+            ? this.inputQueue.at(-1)
+            : this.snake.dir;
+        const backturner = `${lastDir.map(v => -v)}` === `${input}`;
+        if (this.paused || backturner || max) return;
         this.inputQueue.push(input);
     }
     
@@ -198,27 +205,31 @@ export default class B { // Board
             case "ArrowRight":
             case "KeyD":
                 this.addInput([1, 0]);
-                break;
+            break;
+            
             case "ArrowDown":
             case "KeyS":
                 this.addInput([0, 1]);
-                break;
+            break;
+            
             case "ArrowLeft":
             case "KeyA":
                 this.addInput([-1, 0]);
-                break;
+            break;
+            
             case "ArrowUp":
             case "KeyW":
                 this.addInput([0, -1]);
-                break;
+            break;
+            
             case "ShiftLeft":
             case "Space":
                 this.addInput(this.snake.dir);
-                break;
+            break;
         }
     }
     
-    static update () {
+    static update() {
         if (this.paused) return;
 
         this.enemies.forEach(enemy => enemy.move());
@@ -231,9 +242,10 @@ export default class B { // Board
         if (this.inputQueue.length) {
             const lastDir = this.snake.dir;
             this.snake.dir = this.inputQueue.shift();
-            const repeat = `${lastDir}` === `${this.snake.dir}`;
-            const pre = `${this.inputQueue[0]}` === `${this.snake.dir}`;
-            if (repeat || pre) this.dash();
+            const repeated = `${lastDir}` === `${this.snake.dir}`;
+            const prerepeated = `${this.inputQueue[0]}` === `${this.snake.dir}`;
+            if (repeated || prerepeated) this.dash();
+            if (prerepeated) this.inputQueue.unshift();
         }
         
         const snakeNext = this.snake.next(this.gridSize);
@@ -262,42 +274,30 @@ export default class B { // Board
         clearInterval(this.drawInterval);
         this.staminaAB.disable(false);
         
-        this.ctx.strokeStyle = "#710";
-        this.ctx.fillStyle = "#f21";
-        this.ctx.lineWidth = 2;
-        const text = "GAME OVER";
-        this.ctx.strokeText(text,
-            (this.gridW - text.length) / 2 * this.tileSize,
-            (this.gridH + 0.5) * this.tileSize
-        );
-        this.ctx.fillText(text,
-            (this.gridW - text.length) / 2 * this.tileSize,
-            (this.gridH + 0.5) / 2 * this.tileSize
-        );
-
-        // this.scoreText.parentElement.parentElement
+        M.gameOver("default");
     }
     
-    static #pause() { this.paused = !this.paused }
-    static #dash() { this.addInput(this.snake.dir) }
+    static pause() { this.paused = !this.paused }
+    static dash() { this.addInput(this.snake.dir) }
+    static add() {
+        this.apple.cords = this.snake.next(this.gridSize);
+    }
     
     static init() {
         new ResizeObserver(ents => {
-            for (const ent of ents) {
-                if (ent.borderBoxSize) {
-                    const { inlineSize, blockSize } = ent.borderBoxSize[0];
-                    ent.target.width = inlineSize;
-                    ent.target.height = blockSize;
-                }
-            }
+            ents.forEach(ent => {
+                if (ent.borderBoxSize) return;
+                const { inlineSize, blockSize } = ent.borderBoxSize[0];
+                ent.target.width = inlineSize;
+                ent.target.height = blockSize;
+            });
         }).observe(this.canvas, { box: "border-box" });
-        this.ctx.font = `${Math.trunc(this.canvas.height / 9)}px infex`;
-        console.log({h: this.canvas.height, typeofH: typeof this.canvas.height, font: this.ctx.font, fontSize: parseFloat(this.canvas.height) / 9})
-        signal.addEventListener("bPause", () => this.#pause());
+        signal.addEventListener("bPause", () => this.pause());
         signal.addEventListener("bRestart", () => this.gameStart());
         signal.addEventListener("bKill", () => this.gameOver());
+        signal.addEventListener("bAdd", () => this.add());
         body.addEventListener("pointerdown", e => this.swipe([e.offsetX, e.offsetY]));
         body.addEventListener("keydown", e => this.keyboardInput(e.code))
-        this.staminaAB = new AB("stamina", () => this.#dash(), 10, 1.2);
+        this.staminaAB = new AB("stamina", () => this.dash(), 10, 1.2);
     }
 }

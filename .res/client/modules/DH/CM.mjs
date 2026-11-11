@@ -1,6 +1,6 @@
 /* Choice Menu */
 
-import VE, { VPE, VRE, VSE } from "../PL/VE.mjs";
+import VE, { VPE, VRE, VSE, VUE } from "../PL/VE.mjs";
 
 
 class DC { // Data Calculator
@@ -139,7 +139,7 @@ class CW { // Choice Wheel
         const children = [...this.body.mask.children];
         children.forEach(child => {
             const href = child.getAttribute("href");
-            const use = new SVGUE(href, { parent: negMask.el });
+            const use = new VUE(href, { parent: negMask.el });
             use.setAttribute("style", "filter: invert(1)");
         });
     }

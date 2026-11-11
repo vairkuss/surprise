@@ -37,14 +37,50 @@
     box-shadow: 0 0 10px hsla(0 0% 40%/ 0.8);
 }
 
+
 #board {
+    width:fit-content;
+    height: fit-content;
+    min-height: unset;
+    max-height: unset;
+}
+
+#board > .inner-ring {
+    width: auto;
+    height: auto;
+}
+
+#board > .inner-ring > canvas {
     touch-action: none;
     display: block;
 
-    margin: 3rem auto;
-    width: min(60vh, 60vw);
-    height: min(60vh, 60vw);
+    margin: auto;
+    width: min(40vh, 40vw);
+    height: auto;
 
-    background: #bb9994;
+    background: #b99;
     outline: 5px solid #433;
 }
+
+
+#menu {
+    place-content: center;
+}
+
+#gameover > .block {
+    margin: auto;
+    width: 80%;
+    height: auto;
+}
+
+#gameover > .block > .inner-ring > img {
+    margin: auto;
+    width: 80%;
+    height: auto;
+}
+
+#gameover > .block > .inner-ring > .label.text {
+    margin: auto;
+    text-justify: center;
+}
+

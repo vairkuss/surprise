@@ -11,7 +11,7 @@
 .block {
     display: flex;
     flex-direction: column;
-    place-content: start;
+    justify-content: start;
     align-content: center;
     
     position: relative;

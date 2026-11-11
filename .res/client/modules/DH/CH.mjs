@@ -45,7 +45,7 @@ export default class CH { // Choice Handler
                     this.cm.blinkText();
                 }
                 this.cc.setIcon(cs.icon);
-                root.style.setProperty("--cur-color", cs.color);
+                html.style.setProperty("--cur-color", cs.color);
             });
         }
     }

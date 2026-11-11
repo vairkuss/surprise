@@ -19,8 +19,10 @@ export default class SB { // Speech Bubble
     static hit() {
         this.bubbles.forEach(sb => sb.hit());
     }
-    static remove() {
-        this.bubbles.forEach(sb => sb.remove());
+    static remove(callback) {
+        return Promise.all(this.bubbles.map(sb => sb.remove())).then(() => {
+            if (callback) callback();
+        });
     }
     
     constructor(char) {
@@ -154,7 +156,6 @@ export default class SB { // Speech Bubble
         const rect = this.body.getBoundingClientRect();
         const anchor = this.char.anchor.getBoundingClientRect();
         this.body.style.bottom = `${rect.bottom - anchor.top}px`;
-        // или здесь
         console.log("remove",{bottom: this.body.style.bottom, rect, anchor})
         this.tail.svg?.remove();
         this.body.classList.add("hidden");
@@ -162,7 +163,12 @@ export default class SB { // Speech Bubble
             this.char.talking = false;
             this.char.el.style.zIndex = 90;
         }, 0.2 * 1000);
-        setTimeout(() => this.body.remove(), 0.4 * 1000);
+        return new Promise(res => {
+            setTimeout(() => {
+                this.body.remove();
+                res();
+            }, 0.4 * 1000);
+        });
     }
 }
 

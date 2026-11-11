@@ -2,7 +2,8 @@
 
 
 <div id="stats">
-    <div id="score">i</div>
+    <div>time&nbsp;<span id="time">&nbsp;</span></div>
+    <div>score&nbsp;<span id="score">&nbsp;</span></div>
     <div id="action-panel">
         <img alt="stamina action button" src="local/imgs/ui/stamina/0.png" id="stamina">
     </div>
@@ -10,24 +11,45 @@
 
 
 <div class="vbox mid">
-    <div class="block">
-        <canvas id="board" width="200" height="200"></canvas>
+    <div id="board" class="block">
+        <canvas width="200" height="200"></canvas>
     </div>
 
     <div class="hbox">
         <div class="btn block" onclick="send('bPause')">
-            <div class="icon">p</div>
+            <div class="symbol">p</div>
         </div>
         <div class="btn block" onclick="send('bRestart')">
-            <div class="icon">r</div>
+            <div class="symbol">r</div>
         </div>
         <div class="btn block" onclick="send('bKill')">
-            <div class="icon">k</div>
+            <div class="symbol">k</div>
+        </div>
+        <div class="btn block" onclick="send('bAdd')">
+            <div class="symbol">a</div>
         </div>
     </div>
 </div>
 
+<div class="hidden vbox mid" id="menu">
+    <div id="gameover" class="hidden">
+        <div class="block">
+            <div class="label text">GAME&nbsp;OVER</div>
+            <img src="local/data/defs.svg" alt="animated ending">
+        </div>
+        <div class="hidden hbox">
+            <div class="btn block">
+                <div class="text" onclick="send('bRestart')">try&nbsp;again</div>
+            </div>
+            <div class="btn block">
+                <div class="text">change&nbsp;level</div>
+            </div>
+        </div>
+    </div>
+</div>
 
-<div class="mid top btn block" onclick="transition('25285', [0, 1])">
-    <div class="load-svg icon">arrowW</div>
+<div class="mid top">
+    <div class="btn block" onclick="transition('25285', [0, 1])">
+        <div class="load-svg icon">arrowW</div>
+    </div>
 </div>

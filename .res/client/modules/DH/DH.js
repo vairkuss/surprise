@@ -43,10 +43,10 @@ class DH { // Dialogue Handler
         const now = this.#history[char.name] ?? 0;
         const dialogue = dialogues[now];
         const excerpt = dialogue[this.#excerpt];
-        // console.log({excerpt, exNo: this.#excerpt, dialogue})
         signal.addEventListener("chChosen", e => {
-            SB.remove();
-            this.#processChoice(e.detail, char);
+            SB.remove().then(() => {
+                this.#processChoice(e.detail, char);
+            });
         }, { once: 1 });
         this.#readExcerpt(excerpt);
     }
@@ -72,10 +72,10 @@ class DH { // Dialogue Handler
         }
         if (this.#replica >= end) {
             const { writer } = SB.active.at(-1) ?? {};
-            if (writer != null) {
+            if (writer) {
                 writer.onWriteEnd(() => CH.setChoice(choice));
             } else {
-                CH.setChoice(choice);
+                CH.setChoice(choice); /////////////////
             }
         } else {
             body.addEventListener("click", () => {

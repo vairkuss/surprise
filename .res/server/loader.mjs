@@ -24,8 +24,8 @@ export default class FL { // File Loader
     }
     
     #scripts() {
-        const script = src => `<script type="module" src="${src}"></script>`;
         const scriptsPath = path.join("client", "modules");
+        const script = src => `<script type="module" src="${src}"></script>`;
         return this.folder(scriptsPath).reduce((scripts, ctl) => {
             return scripts + script(`client/modules/${ctl}/${ctl}.js`); 
         }, '');
