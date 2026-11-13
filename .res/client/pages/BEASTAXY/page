@@ -1,7 +1,7 @@
 <!-- Proposition -->
 
 
-<div id="stats">
+<div id="stats" class="hidden">
     <div>time&nbsp;<span id="time">&nbsp;</span></div>
     <div>score&nbsp;<span id="score">&nbsp;</span></div>
     <div id="action-panel">
@@ -31,13 +31,14 @@
     </div>
 </div>
 
-<div class="hidden vbox mid" id="menu">
-    <div id="gameover" class="hidden">
-        <div class="block">
-            <div class="label text">GAME&nbsp;OVER</div>
-            <img src="local/data/defs.svg" alt="animated ending">
-        </div>
-        <div class="hidden hbox">
+<div class="hidden vbox fill" id="menu">
+    <i></i>
+    <div class="block">
+        <div class="lable text"></div>
+        <img id="frame" src="local/data/defs.svg" alt="animated ending">
+    </div>
+    <div id="btn-sets">
+        <div id="gameover" class="hidden hbox">
             <div class="btn block">
                 <div class="text" onclick="send('bRestart')">try&nbsp;again</div>
             </div>
@@ -45,11 +46,16 @@
                 <div class="text">change&nbsp;level</div>
             </div>
         </div>
+        <div id="pause">
+            <div class="btn block" class="hidden hbox">
+                <div class="text" onclick="send('bPause')">continue</div>
+            </div>
+        </div>
     </div>
-</div>
 
-<div class="mid top">
-    <div class="btn block" onclick="transition('25285', [0, 1])">
-        <div class="load-svg icon">arrowW</div>
+    <div class="mid top">
+        <div class="btn block" onclick="transition('25285', [0, 1])">
+            <div class="load-svg icon">arrowW</div>
+        </div>
     </div>
 </div>

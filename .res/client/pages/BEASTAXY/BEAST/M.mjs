@@ -2,29 +2,27 @@
 
 
 export default class Menu {
-
-    static #menu = document.querySelector("#menu");
+    
+    static menu = document.getElementById("menu");
+    static frame = document.getElementById("frame");
+    static lableText = document.querySelector(".lable.text").appendChild(new Text());
+    static current = null;
     static running = {};
 
-    static get menu() {
-        this.#menu.classList.remove("hidden");
-        return this.#menu;
-    }
-
     static playAnim(el, name, callback, fps=12) {
-        const sprites = Object.values(data.cinematics[name]);
+        const frames = Object.values(data.beast.cinematics[name]);
         if (!callback) {
             let i = 0;
             const interval = setTimeout(() => {
-                el.src = sprites[i++];
-                i %= sprites.length;
+                el.src = frames[i++];
+                i %= frames.length;
             }, 1000 / fps);
             this.running[id] = interval;
         } else {
-            for (let i = sprites.length; i > 0; i--) {
+            for (let i = frames.length; i > 0; i--) {
                 setTimeout(() => {
                     if (i) {
-                        el.src = sprites[i];
+                        el.src = frames[i];
                     } else {
                         callback();
                     }
@@ -44,10 +42,20 @@ export default class Menu {
         }
     }
 
-    static gameOver(reason) {
-        const el = this.menu.querySelector("#gameover");
-        el.classList.remove("hidden");
-        const buttons = el.querySelector(".hbox");
-        this.playAnim(el, reason, () => buttons.classList.remove("hidden"));
+    static load(cinematic, lable, btnSet) {
+        this.lableText.nodeValue = lable;
+        this.menu.classList.remove("hidden");
+        const buttons = document.querySelector(`#${btnSet}`);
+        [...buttons.children].forEach(btn => {
+            assignBtnFunc(btn, () => buttons.classList.add("hidden"));
+        });
+        setTimeout(() => {
+            this.frame.classList.remove("hidden");
+            this.playAnim(frame, cinematic, () => buttons.classList.remove("hidden"));
+        }, 0.4 * 1000);
+    }
+
+    static hide() {
+        this.menu.classList.add("hidden");
     }
 }

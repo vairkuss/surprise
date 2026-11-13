@@ -25,16 +25,14 @@
     
     will-change: transform;
     transition:
-        0.09s transform ease-in 0.09s,
-        0.1s background ease-in,
-        0.1s box-shadow ease-in 0.1s,
-        0s z-index 0.42s;
+        transform 0.09s ease-in 0.09s,
+        background 0.1s ease-in,
+        box-shadow 0.1s ease-in 0.1s,
+        z-index 0s;
 }
 
-/**/
 @media(hover: hover) {
-/**/
-    .btn:hover {
+    .btn:hover, .btn.hover {
         z-index: calc(var(--btn-l) + 2);
     
         background:
@@ -49,16 +47,14 @@
         transform: scale(1.2);
     
         transition:
-            0.09s transform ease-in 0.09s,
-            0.1s background ease-in,
-            0.1s box-shadow ease-in 0.1s,
-            0s z-index;
+            transform 0.09s ease-in 0.09s,
+            background 0.1s ease-in,
+            box-shadow 0.1s ease-in 0.1s,
+            z-index 0s;
     }
-/**/
 }
-/**/ 
 
-.btn:active {
+.btn:active, .btn.active {
     background:
         radial-gradient(ellipse 60% 60%,
             hsl(from var(--cur-color) h calc(s * 0.30) calc(l * 0.75)),
@@ -71,38 +67,40 @@
     transform: scale(0.5);
     
     transition:
-        0.09s transform ease-in 0.09s,
-        0.1s background ease-in,
-        0.1s box-shadow ease-in 0.1s,
-        0s z-index;
+        transform 0.09s ease-in 0.09s,
+        background 0.1s ease-in,
+        box-shadow 0.1s ease-in 0.1s,
+        z-index 0s;
 }
 
 
 .btn > .inner-ring {
     display: grid;
-    place-content: center;
     
     margin: auto;
-    padding: 0;
+    width: 100%;
+    height: 100%;
     
     border-radius: var(--ring-size);
     
     transition:
-        0.2s box-shadow ease-in 0.1s,
-        0.06s width ease-in 0.06s,
-        0.06s height ease-in 0.06s;
+        box-shadow 0.2s ease-in 0.1s,
+        width 0.06s ease-in 0.06s,
+        height 0.06s ease-in 0.06s;
 }
 
 .btn > .inner-ring::before {
-    transition: 0.8s background ease-in;
+    transition: background 0.8s ease-in;
 }
 
-/**/
 @media(hover: hover) {
-/**/
+    /**
     .btn:hover > .inner-ring {
-        width: calc(100% - (var(--btn-size) - var(--ring-size)) * (1 / -1.1));
-        height: calc(100% - (var(--btn-size) - var(--ring-size)) * (1 / -1.1));
+    /**/
+    :is(.btn:hover, .btn.hover) > .inner-ring {
+    /**/
+
+        overflow: visible;
         
         box-shadow:
             0 0 calc(var(--ring-size) * 0.5)
@@ -117,18 +115,17 @@
             );
         
         transition:
-            0.2s box-shadow ease-in 0.1s,
-            0.06s width ease-in 0.06s,
-            0.06s height ease-in 0.06s;  
+            box-shadow 0.2s ease-in 0.1s,
+            width 0.06s ease-in 0.06s,
+            height 0.06s ease-in 0.06s;  
     }
-/**/
 }
-/**/
 
+/**
 .btn:active > .inner-ring {
-    width: calc(100% - (var(--btn-size) - var(--ring-size)) * (1 / 0.4));
-    height: calc(100% - (var(--btn-size) - var(--ring-size)) * (1 / 0.4));
-    
+/**/
+:is(.btn:active, .btn.active) > .inner-ring {
+/**/
     box-shadow:
         0 0 calc(var(--ring-size) * 0.5)
         hsl(from var(--cur-color) h calc(s * 0.6) calc(l * 0.8)),
@@ -136,33 +133,45 @@
         hsl(from var(--cur-color) h calc(s * 0.6), calc(l * 0.8));
         
     transition:
-        0.2s box-shadow ease-in 0.1s,
-        0.06s width ease-in 0.06s,
-        0.06s height ease-in 0.06s;
+        box-shadow 0.2s ease-in 0.1s,
+        width 0.06s ease-in 0.06s,
+        height 0.06s ease-in 0.06s;
 }
-    
+
 
 .btn > .inner-ring > :is(.icon, .symbol, .text) {
+    --grow: 1;
+    --grew: calc(-50% / var(--grow));
+
+    position: absolute;
+
+    top: 50%;
+    left: 50%;
+
     z-index: calc(var(--btn-l) + 4);
+    transform: scale(var(--grow)) translate(var(--grew), var(--grew)); 
     
     will-change: transform, filter, opacity;
     transition:
-        0.05s background,
-        0.05s color,
-        0.03s transform ease-in,
-        0.12s opacity ease-in 0.05s,
-        0.2s color ease-in 0.1s,
-        0.2s filter ease-in 0.1s;
+        background 0.05s,
+        color 0.05s,
+        transform 0.03s ease-in,
+        opacity 0.12s ease-in 0.05s,
+        color 0.2s ease-in 0.1s,
+        filter 0.2s ease-in 0.1s;
 }
     
-/**/
 @media(hover: hover) {
-/**/
+    /**
     .btn:hover > .inner-ring > :is(.icon, .symbol, .text) {
+    /**/
+    :is(.btn:hover, .btn.hover) > .inner-ring > :is(.icon, .symbol, .text) {
+    /**/
+        --grow: 1.21;
+
         background: transparent;
         color: hsl(from var(--cur-color) h calc(s * 0.4) calc(l * 0.8));
        
-        transform: scale(1.21);
         filter:
             drop-shadow(
                 0 calc(var(--icon-size) * 0.05) 0
@@ -170,29 +179,32 @@
             );
         
         transition:
-        0.05s background,
-        0.05s color,
-            0.03s transform ease-in,
-            0.12s opacity ease-in 0.05s,
-            0.2s color ease-in 0.1s,
-            0.2s filter ease-in 0.1s
-            0s position 0.3s;
+            background 0.05s,
+            color 0.05s,
+            transform 0.03s ease-in,
+            opacity 0.12s ease-in 0.05s,
+            color 0.2s ease-in 0.1s,
+            filter 0.2s ease-in 0.1s,
+            position 0.3s;
     }
-/**/
 }
-/**/
 
+/**
 .btn:active > .inner-ring > :is(.icon, .symbol, .text) {
-    transform: scale(0.32);
+/**/
+:is(.btn:active, .btn.active) > .inner-ring > :is(.icon, .symbol, .text) {
+/**/
+    --grew: 0.32;
+
     opacity: 0;
     
     transition:
-        0.05s background,
-        0.05s color,
-        0.06s transform ease-in,
-        0.12s opacity ease-in,
-        0.2s color ease-in 0.1s,
-        0.2s filter ease-in 0.1s;
+        background 0.05s,
+        color 0.05s,
+        transform 0.06s ease-in,
+        opacity 0.12s ease-in,
+        color 0.2s ease-in 0.1s,
+        filter 0.2s ease-in 0.1s;
 }
 
 
@@ -211,8 +223,8 @@
     box-shadow: none;
     
     transition:
-        0.2s box-shadow ease-in 0.1s,
-        0.06s transform ease-in 0.06s;
+        box-shadow 0.2s ease-in 0.1s,
+        transform 0.06s ease-in 0.06s;
 }
 
 .disabled > .inner-ring::before {
@@ -220,8 +232,7 @@
     border-radius: var(--ring-size);
     border: var(--brd-size) dashed transparent;
     
-    transition:
-        0.8s background ease-in;
+    transition: background 0.8s ease-in;
 }
 
 

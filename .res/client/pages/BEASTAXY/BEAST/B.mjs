@@ -29,9 +29,12 @@ class BT extends T { // Border Tile
 
 
 export default class B { // Board
+
+    static paused = true;
     
-    static scoreText = document.getElementById("score").firstChild;
+    static stats = document.getElementById("stats");
     static timeText = document.getElementById("time").firstChild;
+    static scoreText = document.getElementById("score").firstChild;
     
     static canvas = document.querySelector("#board > canvas");
     static ctx = this.canvas.getContext("2d");
@@ -85,24 +88,26 @@ export default class B { // Board
     }
     
     static gameStart() {
-        this.playing = 1;
-        this.paused = 0;
-        this.gameStarted = 0;
         clearInterval(this.gameInterval);
         clearInterval(this.drawInterval);
-        
-        this.inputQueue = [];
-        this.scoreText.nodeValue = "0";
-        setTimeout(() => this.staminaAB.disable(5));
 
-        const mid = this.gridSize.map(v => Math.trunc(v / 2))
+        this.paused = false;
+        this.pausedTime = 0;
+        this.inputQueue = [];
+        this.gameStarted = new Date();
+        this.scoreText.nodeValue = "0";
+        
+        const mid = this.gridSize.map(v => Math.trunc(v / 2));
         this.spawnApple(mid);
+        
         const offset = Math.trunc(this.gridH / 2) * Math.trunc(Math.random() * 2);
         const randHalfY = Math.trunc(Math.random() * (this.gridH / 2 - 2) + 1);
         const randY = offset + randHalfY;
         this.snake = new S([-1, randY], [1, 0]);
         this.enemies = [];
         
+        this.staminaAB.disable(5);
+        this.stats.removeAttribute("class");
         this.drawInterval = setInterval(() => this.draw(), 1000 / this.fps);
         this.gameInterval = setInterval(() => this.update(), 60 * 1000 / (this.bpm * 2));
     }
@@ -123,7 +128,7 @@ export default class B { // Board
     }
     
     static isDeathTile(cords) {
-        const deathTiles = this.snake.tail.concat(this.snake);
+        const deathTiles = this.snake.tail.slice(0, -1);
         this.enemies?.forEach(enemy => deathTiles.push(enemy));
         return deathTiles.some(tile => {
             return cords.toString() === tile.cords.toString();
@@ -144,7 +149,8 @@ export default class B { // Board
                 const nbourTwin = nbour.map((v, i) => {
                     return (v + this.gridSize[i]) % this.gridSize[i];
                 })
-                if (this.isDeathTile(nbourTwin)) {
+                const shadows = this.snake.tail.concat(this.snake).concat(this.enemies);
+                if (shadows.map(shadow => `${shadow.cords}`).includes(`${nbourTwin}`)) {
                     danger.push(i);
                 }
             }
@@ -160,9 +166,15 @@ export default class B { // Board
         new DP(dpCords, this.isDeathTile(dpCords), this.staminaAB.interval).draw(meta);
         this.enemies.forEach(enemy => enemy.draw(meta));
         
-        const elapsed = new Date() - this.gameStarted;
-        const iso = new Date(elapsed).toISOString();
-        this.timeText.nodeValue = iso.match(/\d{2}:\d{2}\.\d{3}/) ?? "error";
+        this.lastDraw = this.currentDraw ?? this.gameStarted;
+        this.currentDraw = new Date();
+        if (this.paused) {
+            this.pausedTime += this.currentDraw - this.lastDraw;
+        } else {
+            const elapsed = this.currentDraw - this.gameStarted + this.pausedTime;
+            const iso = new Date(elapsed).toISOString();
+            this.timeText.nodeValue = iso.match(/\d{2}:\d{2}\.\d{3}/) ?? "error";
+        }
     }
     
     static dash() {
@@ -174,7 +186,7 @@ export default class B { // Board
     
     
     static addInput(input) {
-        console.log(this.inputQueue)
+        if (this.paused) return;
         const max = this.inputQueue.length >= 4;
         const lastDir = this.inputQueue.length
             ? this.inputQueue.at(-1)
@@ -232,6 +244,11 @@ export default class B { // Board
     static update() {
         if (this.paused) return;
 
+        if (this.growTimes) {
+            this.growTimes--;
+            this.add();
+        };
+
         this.enemies.forEach(enemy => enemy.move());
         this.enemies = this.enemies.filter(enemy => {
             return enemy.cords.every((v, i) => {
@@ -245,14 +262,12 @@ export default class B { // Board
             const repeated = `${lastDir}` === `${this.snake.dir}`;
             const prerepeated = `${this.inputQueue[0]}` === `${this.snake.dir}`;
             if (repeated || prerepeated) this.dash();
-            if (prerepeated) this.inputQueue.unshift();
+            if (prerepeated) this.inputQueue.shift();
         }
         
         const snakeNext = this.snake.next(this.gridSize);
-        if (this.isDeathTile(snakeNext)) {
-            return this.gameOver();
-        }
-
+        if (this.isDeathTile(snakeNext)) this.gameOver();
+        
         const grow = `${snakeNext}` === `${this.apple.cords}`;
         if (grow) {
             this.apple.active = true;
@@ -266,19 +281,24 @@ export default class B { // Board
         
         this.snake.cords = snakeNext;
         this.snake.dashing = false;
+
     }
     
     static gameOver() {
-        this.paused = 1;
         clearInterval(this.gameInterval);
         clearInterval(this.drawInterval);
-        this.staminaAB.disable(false);
         
-        M.gameOver("default");
+        this.stats.classList.add("hidden");
+        this.staminaAB.disable(false);
+        M.load("default", "GAME\u00A0OVER", "gameover");
     }
     
-    static pause() { this.paused = !this.paused }
-    static dash() { this.addInput(this.snake.dir) }
+    static pause() {
+        this.paused = !this.paused
+        if (this.paused) {
+            M.load("default", "PAUSE", "pause");
+        }
+    }
     static add() {
         this.apple.cords = this.snake.next(this.gridSize);
     }
@@ -297,7 +317,14 @@ export default class B { // Board
         signal.addEventListener("bKill", () => this.gameOver());
         signal.addEventListener("bAdd", () => this.add());
         body.addEventListener("pointerdown", e => this.swipe([e.offsetX, e.offsetY]));
-        body.addEventListener("keydown", e => this.keyboardInput(e.code))
+        body.addEventListener("keydown", e => {
+            if (e.repeat) return;
+            this.keyboardInput(e.code);
+        });
         this.staminaAB = new AB("stamina", () => this.dash(), 10, 1.2);
+
+        window.snakeGrow = count => {
+            this.growTimes = count;
+        }
     }
 }

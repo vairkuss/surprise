@@ -169,6 +169,7 @@ export default class SW { // Speech Writer
     }
     
     #processChar(current) {
+        if (!current) console.debug(this.detail);
         const [, processed, ref] = current.match(/(.*)(.)$/);
         const next = processed.length + 1;
         const plotted = this.ap.check(ref, processed);

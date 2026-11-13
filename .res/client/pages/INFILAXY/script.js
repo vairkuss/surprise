@@ -1,8 +1,8 @@
 /* INFILAXY */
 
 
-class MainPage {
-    
+class Main {
+
     static #developBlocks(blocks) {
         if (blocks == null) {
             const lowest = ".block:not(:has(.block))";
@@ -36,5 +36,5 @@ class MainPage {
 
 if (window.data == null) {
     if (window.pending == null) window.pending = [];
-    window.pending.push(() => MainPage.init());
-} else MainPage.init();
+    window.pending.push(Main);
+} else Main.init();

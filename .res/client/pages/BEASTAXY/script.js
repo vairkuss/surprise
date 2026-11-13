@@ -1,21 +1,25 @@
+/* BEASTAXY */
+
 import Board from "./BEAST/B.mjs"
 
 
-class Beast {
-
+class Proposition {
+    
     static #developBlocks(blocks) {
-        if (blocks == null) {
+        if (!blocks) {
             const lowest = ".block:not(:has(.block))";
             blocks = [...document.querySelectorAll(lowest)];
         }
-        blocks = blocks.filter(block => block != null);
+        blocks = blocks.filter(Boolean);
         if (!blocks.length) return;
         const ringless = ".block:not(:has(> .inner-ring))";
         blocks.forEach(block => {
             if (!block.matches(ringless)) return;
             const ring = document.createElement("div");
-            ring.className = "inner-ring";
-            [...block.childNodes].forEach(child => ring.appendChild(child));
+            ring.classList.add("inner-ring");
+            [...block.childNodes].forEach(child => {
+                ring.appendChild(child);
+            });
             block.appendChild(ring);
         });
         const parents = [];
@@ -37,5 +41,5 @@ class Beast {
 
 if (window.data == null) {
     if (window.pending == null) window.pending = [];
-    window.pending.push(() => Beast.init());
-} else Beast.init();
+    window.pending.push(Proposition);
+} else Proposition.init();

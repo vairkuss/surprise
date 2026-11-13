@@ -13,5 +13,5 @@ class MP { // Music Player
 
 if (window.data == null) {
     if (window.pending == null) window.pending = [];
-    window.pending.push(() => MP.init());
+    window.pending.push(MP);
 } else MP.init();

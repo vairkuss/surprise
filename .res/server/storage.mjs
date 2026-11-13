@@ -123,8 +123,10 @@ export default class DS { // Data Storage
         const imgs = folder => path.join("local", "imgs", folder);
         this.data.beast = {};
         this.data.beast.canvas = this.#loadRoot(imgs("canvas"), href => this.fl.txt(href));
+        this.data.beast.cinematics = this.#loadRoot(imgs("cinematics"));
         this.data.beast.ui = this.#loadRoot(imgs("ui"));
         this.data.sprites = this.#loadRoot(imgs("chars"));
+        console.debug(this.data.beast);
     }
 
     static load(fl) {
@@ -151,6 +153,7 @@ export default class DS { // Data Storage
         const timestamp = Date.now();
         const gatheredAt = new Date(timestamp).toLocaleTimeString("ru-RU");
         console.info(`$ [${gatheredAt}] <LOG> STORAGE: gathered data for "${page}"`);
+        console.debug(clone.beast)
         return clone;
     }
 }

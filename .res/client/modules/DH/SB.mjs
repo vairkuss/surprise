@@ -156,7 +156,6 @@ export default class SB { // Speech Bubble
         const rect = this.body.getBoundingClientRect();
         const anchor = this.char.anchor.getBoundingClientRect();
         this.body.style.bottom = `${rect.bottom - anchor.top}px`;
-        console.log("remove",{bottom: this.body.style.bottom, rect, anchor})
         this.tail.svg?.remove();
         this.body.classList.add("hidden");
         setTimeout(() => {
@@ -195,11 +194,6 @@ class ST { // Speech bubble Tail
 
         this.svg = new VSE([w, b], { cn: "sb-tail", parent: this.sb.body }).el;
         this.svg.style.left = `${-beyond * (a < 0)}px`;
-        if (this.svg.style.left === "NaNpx") {
-            console.count("update tail",{beyond, a})
-            this.b = this.sb.lifes;
-        }
-        // мб и здесь
 
         if (c < r || !b) return;
         
@@ -221,4 +215,4 @@ class ST { // Speech bubble Tail
 }
 
 
-window.sb = SB.bubbles;
+window.shutSB = () => SB.bubbles.forEach(sb => clearInterval(sb.drawInterval));

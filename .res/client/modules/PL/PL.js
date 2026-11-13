@@ -19,14 +19,13 @@ class PL { // Page Loader
     }
 
     static #preloadImgs(imgs) {
-        for (const name in imgs) {
-            const char = imgs[name];
-            for (const state in char) {
-                const collection = char[state];
-                for (const sprite in collection) {
-                    const img = new Image();
-                    img.src = collection[sprite];
-                }
+        for (const key in imgs) {
+            if (typeof imgs[key] === "string") {
+                const preload = document.getElementById("preload");
+                const img = preload.appendChild(new Image());
+                img.src = imgs[key];
+            } else if (typeof imgs[key] === "object") {
+                this.#preloadImgs(imgs[key]);
             }
         }
     }
@@ -38,16 +37,18 @@ class PL { // Page Loader
         const res = await fetch(`${location.origin}/get/data?page=${page}&chars=${JSON.stringify(chars)}`);
         const data = await res.json();
         this.#processIcons(data.icons);
-        if (chars.length) {
-            data.sprites = JSON.parse(data.sprites);
-            this.#preloadImgs(data.sprites);
-            data.replicas = JSON.parse(data.replicas);  // только после написания всех диалогов
+        data.sprites = JSON.parse(data.sprites);
+        this.#preloadImgs(data.sprites);
+        data.replicas = JSON.parse(data.replicas) ?? {};
+        if (page === "BEASTAXY") {
+            this.#preloadImgs(data.beast.cinematics);
+            this.#preloadImgs(data.beast.ui);
         }
         Object.assign(data, { page, chars });
         window.data = data;
         PF.init();
         PC.init();
-        window.pending?.forEach(init => init());
+        window.pending?.forEach(module => module.init());
     }
 }
 

@@ -66,10 +66,11 @@ class CS { // Choice Wheel Sector
             this.icon = window.data.icons.named[name];
         } else {
             const random = Object.values(window.data.icons.random);
-            const hex = this.color.slice(1);
+            const hex = this.color.slice(5);
             const number = parseInt(hex, 16);
             const index = number % random.length;
             this.icon = random[index];
+            console.log({index, index2: random.indexOf(this.icon), hex, number, random})
         }
     }
     

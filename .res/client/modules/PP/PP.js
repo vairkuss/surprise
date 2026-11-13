@@ -13,5 +13,5 @@ class PP { // Particle Processor
 
 if (window.data == null) {
     if (window.pending == null) window.pending = [];
-    window.pending.push(() => PP.init());
+    window.pending.push(PP);
 } else PP.init();

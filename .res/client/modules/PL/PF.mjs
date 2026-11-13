@@ -35,23 +35,33 @@ export default class PF { // Page Finiliser
         });
         window.dispatchEvent(new Event("resize"));
     }
+
+    static #assignBtnFunc(btn, func) {
+        btn.addEventListener("pointerdown", () => {
+            if (btn.matches(".masked")) {
+                btn.classList.remove("masked");
+                btn.style.transform = "scale(1.2)";
+                setTimeout(() => {
+                    btn.removeAttribute("style");
+                }, 200);
+            } else {
+                const timeout = setTimeout(() => {
+                    if (typeof func === "function") {
+                        func();
+                    } else if (typeof func === "string") {
+                        eval(func);
+                    }
+                }, 200);
+                sessionStorage.setItem("btnTimeout", `${timeout}`);
+            }
+        });
+    }
     
     static #assignBtnFuncs() {
         document.querySelectorAll("*[onclick]").forEach(btn => {
             const func = btn.getAttribute("onclick");
+            this.#assignBtnFunc(btn, func);
             btn.removeAttribute("onclick");
-            btn.addEventListener("pointerdown", () => {
-                if (btn.matches(".masked")) {
-                    btn.classList.remove("masked");
-                    btn.style.transform = "scale(1.2)";
-                    setTimeout(() => {
-                        btn.removeAttribute("style");
-                    }, 200);
-                } else {
-                    const timeout = setTimeout(() => eval(func), 200);
-                    sessionStorage.setItem("btnTimeout", `${timeout}`);
-                }
-            });
         });
         document.body.addEventListener("pointerup", () => {
             const timeout = sessionStorage.getItem("btnTimeout");
@@ -63,6 +73,7 @@ export default class PF { // Page Finiliser
         this.#loadSVG();
         this.#startAdjusting();
         this.#assignBtnFuncs();
+        window.assignBtnFunc = (btn, func) => this.#assignBtnFunc(btn, func);
         document.body.removeAttribute("style");
     }
 }

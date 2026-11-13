@@ -19,6 +19,25 @@
     box-shadow: 0 0 10px #fff;
 }
 
+#stats > div:not(.action-panel) {
+    margin: auto;
+}
+
+#stats > div:not(.action-panel) > span {
+    display: inline-block;
+
+    margin: auto;
+    min-width: 3rem;
+    width: 100%;
+
+    font-family: fraiche, serif;
+    text-align: center;
+
+    /**
+    outline: 2px solid red;
+    /**/
+}
+
 #score {
     margin: auto;
     
@@ -65,6 +84,18 @@
 
 #menu {
     place-content: center;
+    z-index: 50;
+}
+
+#menu > i {
+    display: block;
+    
+    position: relative;
+
+    width: 100vw;
+    height: 100vh;
+
+    background: rgb(15 0 0 / 0.6);
 }
 
 #gameover > .block {
@@ -81,6 +112,5 @@
 
 #gameover > .block > .inner-ring > .label.text {
     margin: auto;
-    text-justify: center;
+    text-align: center;
 }
-

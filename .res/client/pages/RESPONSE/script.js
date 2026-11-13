@@ -16,5 +16,5 @@ class Response {
 
 if (window.data == null) {
     if (window.pending == null) window.pending = [];
-    window.pending.push(() => Response.init());
+    window.pending.push(Response);
 } else Response.init();

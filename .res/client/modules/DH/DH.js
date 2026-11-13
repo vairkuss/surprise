@@ -12,7 +12,6 @@ class DH { // Dialogue Handler
     static #excerpt = null;
     static #replica = null;
     static get ready() {
-        console.log({excerpt: this.#excerpt})
         return this.#excerpt == null && !SB.active.length;
     }
     
@@ -86,20 +85,15 @@ class DH { // Dialogue Handler
     
     static #processChoice(chosen, char) {
         if (chosen?.constructor.name === "Array") {
-            console.log("dialogue jump")
             this.#jumpToChosen(chosen, char);
         } else if (typeof chosen === "number" && chosen < 0) {
-            console.log("patpatted")
             char.pat();
             this.#excerpt = null;
         } else {
-            console.log("did nothing, before:",{excerpt: this.#excerpt, chosen})
             this.#excerpt = chosen;
-            console.log("after:",{excerpt: this.#excerpt, chosen})
         }
 
         setTimeout(() => {
-            console.log("process choice",{excerpt: this.#excerpt, chosen});
             if (this.#excerpt != null) {
                 this.#readDialogue(char);
             } else {
@@ -175,5 +169,5 @@ class DH { // Dialogue Handler
 
 if (window.data == null) {
     if (window.pending == null) window.pending = [];
-    window.pending.push(() => DH.init());
+    window.pending.push(DH);
 } else DH.init();

@@ -44,5 +44,5 @@
 }
 
 #values::placeholder {
-    color: var(cur-color-light);
+    color: var(--cur-color-light);
 }
