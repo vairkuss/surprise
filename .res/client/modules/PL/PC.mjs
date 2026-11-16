@@ -43,6 +43,36 @@ export default class PC { // Page Controller
             if (doubleTap) e.preventDefault();
             this.#lastClick = now;
         });
+        signal.addEventListener("pcChangeClass", e => {
+            const { el, action, args } = e.detail;
+            this.styleChangePreventer.disconnect();
+            el.classList[action](...args);
+            this.setObservers();            
+        });
+        signal.addEventListener("pcChangeStyle", e => {
+            const { el, pairs } = e.detail;
+            for (const [prop, value] of pairs) {
+                el.style.setProperty(prop, value);
+            }
+            this.styleChangePreventer.disconnect();
+            el.classList[action](...args);
+            this.setObservers();            
+        });
+    }
+
+
+    static styleChangePreventer = new MutationObserver((mutations) => {
+        for (const mutation of mutations) {
+            if (mutation.attributeName === "class") {
+                mutation.target.classList.value = mutation.oldValue;
+            } else if (mutation.attributeName === "style") {
+                mutation.target.setAttribute("style", mutation.oldValue);
+            }
+        }
+    });
+
+    static #setObservers() {
+        this.styleChangePreventer.observe(document, { attributes: true });
     }
     
     static #appear() {
@@ -73,6 +103,7 @@ export default class PC { // Page Controller
     static init() {
         this.#setGlobals();
         this.#setListeners();
+        this.#setObservers();
         this.#setColor();
         this.#appear();
     }
