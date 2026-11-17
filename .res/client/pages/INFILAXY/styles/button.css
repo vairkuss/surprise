@@ -208,7 +208,7 @@
 }
 
 
-.disabled {
+:is(.disabled, .frozen) {
     pointer-events: none;
     background:
         radial-gradient(ellipse 40% 40%,
@@ -219,7 +219,7 @@
 }
 
 
-.disabled > .inner-ring {
+:is(.disabled, .frozen) > .inner-ring {
     box-shadow: none;
     
     transition:
@@ -227,7 +227,7 @@
         transform 0.06s ease-in 0.06s;
 }
 
-.disabled > .inner-ring::before {
+:is(.disabled, .frozen) > .inner-ring::before {
     background: var(--dis-grad) border-box;
     border-radius: var(--ring-size);
     border: var(--brd-size) dashed transparent;
@@ -236,14 +236,14 @@
 }
 
 
-.disabled > .inner-ring > :is(.icon, .symbol, .text) {
+:is(.disabled, .frozen) > .inner-ring > :is(.icon, .symbol, .text) {
     transform: scale(0.8);
 }
 
-.disabled > .inner-ring > .icon > svg > rect {
+:is(.disabled, .frozen) > .inner-ring > .icon > svg > rect {
     fill: url(#dis-grad);
 }
 
-.disabled > .inner-ring > :is(.symbol, .text) {
+:is(.disabled, .frozen) > .inner-ring > :is(.symbol, .text) {
     background: var(--dis-grad) text;
 }

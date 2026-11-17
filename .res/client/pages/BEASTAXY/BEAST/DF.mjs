@@ -84,3 +84,11 @@ export class Side extends Figure {
         ctx.stroke();
     }
 }
+
+export class Sprite {
+
+    constructor(data) {
+        const uint8 = new TextEncoder().encode(data);
+        this.buffer = uint8.buffer;
+    }
+}

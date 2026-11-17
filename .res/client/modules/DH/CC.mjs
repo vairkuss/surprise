@@ -109,8 +109,8 @@ export default class CC { // Choice Chip
         return getComputedStyle(this.chip);
     }
     get cords() {
-        const x = parseFloat(this.computed.left);
-        const y = parseFloat(this.computed.top);
+        const x = Number.isNaN(this.computed.left) ? 0 : parseFloat(this.computed.left);
+        const y = Number.isNaN(this.computed.top) ? 0 : parseFloat(this.computed.top);
         return [x, y];
     }
     

@@ -78,10 +78,26 @@ class TS { // Trigger Storage
 
 class TR { // Trigger Reactor
     
-    apply(storage) {
-        for (const key in this) {
-            if (storage[key]) {
-                this[key]();
+    constructor(storage) {
+        for (const term in storage.__KEYS) {
+            const [] = Object.
+            this[tag] = {};
+            for (const key in storage[tag]) {
+                this[tag][key] = func => {
+                    if (func) {
+                        this[tag][key] = func;
+                    }
+                } 
+            }
+        }
+    }
+
+    apply(pv) {
+        for (const tag in this) {
+            for (const key in this[tag]) {
+                if (pv[tag][key]) {
+                    this[tag][key]();
+                }
             }
         }
     }
@@ -140,29 +156,29 @@ export default class SW { // Speech Writer
     }
         
     #assignFuncs() {
-        this.tr = new TR(this.detail);
-        this.tr.hit = () => this.sb.hit();
-        this.tr.jump = () => this.sb.jump();
-        this.tr.glitch = () => {
+        this.tr = new TR(this.ts);
+        this.tr.func.hit(() => this.sb.hit());
+        this.tr.anim.jump(() => this.sb.jump());
+        this.tr.anim.glitch(() => {
             const charGlitch = this.sb.char.el.matches(".glitch");
             this.sb.char.el.classList.toggle("glitch", !charGlitch);
-        }
-        this.tr.shake = () => {
+        });
+        this.tr.anim.shake(() => {
             const bubbleShake = this.sb.body.matches(".shake");
             this.sb.body.classList.toggle("shake", !bubbleShake);
-        }
-        this.tr.pause = () => {
+        });
+        this.tr.time.pause(() => {
             this.sb.char.talking = false;
             this.paused = true;
             const cooldown = 12 / this.frequency;
             setTimeout(() => this.paused = false, cooldown * 1000);
-        }
-        this.tr.interrupt = () => {
+        });
+        this.tr.func.interrupt(() => {
             this.sb.char.pose = "shocked";
             this.tr.pause();
             this.sb.remove();
             this.#callNext(this.detail.text.length);
-        };
+        });
     }
     
     #processChar(processed) {

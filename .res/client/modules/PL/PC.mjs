@@ -34,32 +34,6 @@ export default class PC { // Page Controller
             });
         }
     }
-    
-    static #setListeners() {
-        body.addEventListener("click", e => {
-            const now = Date.now();
-            const clickInterval = now - this.#lastClick;
-            const doubleTap = clickInterval < this.#dtl;
-            if (doubleTap) e.preventDefault();
-            this.#lastClick = now;
-        });
-        signal.addEventListener("pcChangeClass", e => {
-            const { el, action, args } = e.detail;
-            this.styleChangePreventer.disconnect();
-            el.classList[action](...args);
-            this.setObservers();            
-        });
-        signal.addEventListener("pcChangeStyle", e => {
-            const { el, pairs } = e.detail;
-            for (const [prop, value] of pairs) {
-                el.style.setProperty(prop, value);
-            }
-            this.styleChangePreventer.disconnect();
-            el.classList[action](...args);
-            this.setObservers();            
-        });
-    }
-
 
     static styleChangePreventer = new MutationObserver((mutations) => {
         for (const mutation of mutations) {
@@ -73,6 +47,30 @@ export default class PC { // Page Controller
 
     static #setObservers() {
         this.styleChangePreventer.observe(document, { attributes: true });
+    }
+    
+    static #setListeners() {
+        body.addEventListener("click", e => {
+            const now = Date.now();
+            const clickInterval = now - this.#lastClick;
+            const doubleTap = clickInterval < this.#dtl;
+            if (doubleTap) e.preventDefault();
+            this.#lastClick = now;
+        });
+        signal.addEventListener("pcChangeClass", e => {
+            const { el, action, args } = e.detail;
+            this.styleChangePreventer.disconnect();
+            el.classList[action](...args);
+            this.#setObservers();            
+        });
+        signal.addEventListener("pcChangeStyle", e => {
+            const { el, pairs } = e.detail;
+            this.styleChangePreventer.disconnect();
+            for (const [prop, value] of pairs) {
+                el.style.setProperty(prop, value);
+            }
+            this.#setObservers();            
+        });
     }
     
     static #appear() {
