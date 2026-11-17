@@ -5,6 +5,16 @@ import Board from "./BEAST/B.mjs"
 
 class Proposition {
     
+    static #fetchData() {
+        
+    }
+    
+    static decodeData() {
+        for (const collection in data.beast.canvas) {
+            
+        }
+    }
+    
     static #developBlocks(blocks) {
         if (!blocks) {
             const lowest = ".block:not(:has(.block))";
@@ -33,6 +43,7 @@ class Proposition {
     }
     
     static init() {
+        this.#fetchData()
         this.#developBlocks();
         Board.init();
     }

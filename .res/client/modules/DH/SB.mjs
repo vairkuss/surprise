@@ -20,7 +20,7 @@ export default class SB { // Speech Bubble
         this.bubbles.forEach(sb => sb.hit());
     }
     static remove(callback) {
-        return Promise.all(this.bubbles.map(sb => sb.remove())).then(() => {
+        return Promise.all([...this.bubbles].map(sb => sb.remove())).then(() => {
             if (callback) callback();
         });
     }
@@ -85,7 +85,7 @@ export default class SB { // Speech Bubble
      #startColliding() {
         const anchor = this.char.anchor.getBoundingClientRect();
         this.vx = 0;
-        setTimeout(() => {
+        this.collisionTimeout = setTimeout(() => {
             this.initial = this.body.getBoundingClientRect();
             const initMidX = this.initial.left + this.initial.width / 2;
             const initMidY = this.initial.top + this.initial.height / 2;
@@ -93,6 +93,7 @@ export default class SB { // Speech Bubble
             this.y = anchor.top - initMidY;
             this.translationX = 0;
             this.#setCollisionInterval();
+            delete this.collisionTimeout;
         }, 0.4 * 1000);
     }
     
@@ -108,10 +109,6 @@ export default class SB { // Speech Bubble
             this.vx += dirX / 4 || step * back / 2;
             this.translationX += this.vx;
             this.body.style.left = `${this.x + this.growCompX + this.translationX}px`;
-            if(this.body.style.left.includes("NaN")) {
-                console.log("setCollisionInterval X",{translationX: this.translationX, x: this.x, growCompX: this.growCompX, vx: this.vx});
-                // тут мб тоже
-            }
         
             const style = getComputedStyle(this.body);
             const sizeStyle = parseFloat(style.minHeight);
@@ -123,11 +120,6 @@ export default class SB { // Speech Bubble
                 return h + sbRect.height + mrg;
             }, this.y)
             this.body.style.bottom = `${fromBelow + size + this.growCompY}px`;
-            if(this.body.style.bottom.includes("NaN")) {
-                console.log("setCollisionInterval Y",{fromBelow, y: this.y, growCompY: this.growCompY, size, mrg});
-                this.a = this.lifes;
-            }
-            // тута ошибка
         }, 1/30 * 1000);
     }
     
@@ -151,6 +143,7 @@ export default class SB { // Speech Bubble
     remove() {
         const id = SB.bubbles.indexOf(this);
         SB.bubbles.splice(id, 1);
+        clearTimeout(this.collisionTimeout);
         clearInterval(this.collisionInterval);
         clearInterval(this.drawInterval);
         const rect = this.body.getBoundingClientRect();

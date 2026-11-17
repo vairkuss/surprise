@@ -83,14 +83,11 @@
 
 
 #menu {
-    place-content: center;
-    z-index: 50;
-}
-
-#menu > i {
     display: block;
-    
-    position: relative;
+    place-content: center;
+
+    position: fixed;
+    z-index: 50;
 
     width: 100vw;
     height: 100vh;
@@ -98,19 +95,19 @@
     background: rgb(15 0 0 / 0.6);
 }
 
-#gameover > .block {
+#menu > .block {
     margin: auto;
     width: 80%;
     height: auto;
 }
 
-#gameover > .block > .inner-ring > img {
+#menu > .block > .inner-ring > img {
     margin: auto;
     width: 80%;
     height: auto;
 }
 
-#gameover > .block > .inner-ring > .label.text {
+#menu > .block > .inner-ring > .label.text {
     margin: auto;
     text-align: center;
 }

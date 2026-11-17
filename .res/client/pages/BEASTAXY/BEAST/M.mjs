@@ -19,7 +19,7 @@ export default class Menu {
             }, 1000 / fps);
             this.running[id] = interval;
         } else {
-            for (let i = frames.length; i > 0; i--) {
+            for (let i = frames.length - 1; i >= 0; i--) {
                 setTimeout(() => {
                     if (i) {
                         el.src = frames[i];
@@ -42,16 +42,29 @@ export default class Menu {
         }
     }
 
+    static #unload(signature, btns) {
+        [...btns.children].forEach(btn => {
+            btn.removeEventListener("pointerdown", signature, true);
+        });
+        btns.classList.add("hidden");
+        btns.parentElement.classList.add("hidden");
+        btns.parentElement.parentElement.classList.add("hidden");
+    }
+
     static load(cinematic, lable, btnSet) {
         this.lableText.nodeValue = lable;
         this.menu.classList.remove("hidden");
-        const buttons = document.querySelector(`#${btnSet}`);
-        [...buttons.children].forEach(btn => {
-            assignBtnFunc(btn, () => buttons.classList.add("hidden"));
+        const btns = document.querySelector(`#${btnSet}`);
+        const unload = () => this.#unload(unload, btns);
+        [...btns.children].forEach(btn => {
+            assignBtnFunc(btn, () => btns.classList.add("hidden"));
+            btn.addEventListener("pointerdown", unload, true);
         });
         setTimeout(() => {
             this.frame.classList.remove("hidden");
-            this.playAnim(frame, cinematic, () => buttons.classList.remove("hidden"));
+            this.playAnim(frame, cinematic, () => {
+                btns.classList.remove("hidden")
+            });
         }, 0.4 * 1000);
     }
 

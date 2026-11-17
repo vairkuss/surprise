@@ -126,7 +126,6 @@ export default class DS { // Data Storage
         this.data.beast.cinematics = this.#loadRoot(imgs("cinematics"));
         this.data.beast.ui = this.#loadRoot(imgs("ui"));
         this.data.sprites = this.#loadRoot(imgs("chars"));
-        console.debug(this.data.beast);
     }
 
     static load(fl) {

@@ -53,7 +53,7 @@ export default class S extends T { // Snake
     }
     
     next(gridSize, dist) {
-        const step = dist ?? this.dashing ? S.dashDist : S.stepDist;
+        const step = dist ?? (this.dashing ? S.dashDist : S.stepDist);
         if (this.dashing) console.log("dash");
         return this.cords.map((v, i) => {
             return (v + this.dir[i] * step + gridSize[i]) % gridSize[i];

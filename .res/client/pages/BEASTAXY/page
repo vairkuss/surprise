@@ -32,7 +32,6 @@
 </div>
 
 <div id="menu" class="hidden vbox fill">
-    <i></i>
     <div class="block">
         <div class="lable text"></div>
         <img id="frame" src="local/data/defs.svg" alt="animated ending">
@@ -46,7 +45,7 @@
                 <div class="text">change&nbsp;level</div>
             </div>
         </div>
-        <div id="pause">
+        <div id="pause" class="hidden hbox">
             <div class="btn block" class="hidden hbox">
                 <div class="text" onclick="send('bPause')">continue</div>
             </div>

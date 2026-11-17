@@ -35,12 +35,11 @@ class AP { // Action Plotter
 class TE { // Tag Entry
 
     get some() {
-                for (const key in this) {
-                    if (key === "some") continue;
-                    if (this[key]) return true;
-                }
-                return false;
-            }
+        for (const key in this) {
+            if (typeof this[key] != "boolean") return true;
+        }
+        return false;
+    }
 }
 
 
@@ -56,15 +55,16 @@ class PV { // Protructed Values
 
 class TS { // Trigger Storage
     
-    constructor() {
-        this.__KEYS = [];
-    }
-    
+    __KEYS = [];
+        
     add(tag, trigger, key) {
-        const type = trigger.constructor.name;
-        const term = (ref, processed) => type === "RegExp"
-            ? processed.match(trigger) != null
-            : trigger.includes(ref);
+        const term = (ref, processed) => {
+            return trigger.constructor.name === "RegExp"
+                ? processed.match(trigger) != null
+                : typeof trigger === "function"
+                ? trigger(this, ref, processed)
+                : trigger.includes(ref);
+        }
         this[key] = { tag, term };
         this.__KEYS.push(key);
     }
@@ -84,19 +84,23 @@ class TR { // Trigger Reactor
     
     constructor(storage) {
         storage.__KEYS.forEach(key => {
-            const [tag] = Object.entries(storage[key]);
-            const ent = {};
-            ent[key] = func => {
+            const tag = storage[key].tag;
+            const reaction = {};
+            reaction[key] = func => {
                 if (func) this[tag][key] = func;
             };
-            this[tag] = Object.assign(this[tag] ?? {}, ent);
-        }
+            this[tag] = Object.assign(this[tag] ?? {}, reaction);
+        });
     }
 
     apply(pv) {
+        console.log({ tr: this });
         for (const tag in this) {
             for (const key in this[tag]) {
+                if (this[tag][key].length) continue;
+                console.log({ key: this[tag], tag: this[tag][key] })
                 if (pv[tag][key]) {
+                    console.log("firing", key);
                     this[tag][key]();
                 }
             }
@@ -143,28 +147,27 @@ export default class SW { // Speech Writer
         }, this.ap.plots[0].expr.source);
         const plotted = new RegExp(`(?:${source})`);
         this.ts = new TS();
-        this.ts.add("ignore", plotted, "plot")
-        this.ts.add("ignore", /[\s:]$/, "space");
-        this.ts.add("ignore", /°.$/, "pokeout");
-        this.ts.add("ignore", "\\", "escape");
-        this.ts.add("anim", '¢', "glitch");
-        this.ts.add("anim", 'π', "shake");
-        this.ts.add("anim", '∆', "jump");
+        this.ts.add("skip", plotted, "plot")
+        this.ts.add("skip", /[\s:]$/, "space");
+        this.ts.add("skip", /°.$/, "pokeout");
+        this.ts.add("skip", '\\', "escape");
+        this.ts.add("skip", '¢', "glitch");
+        this.ts.add("skip", 'π', "shake");
+        this.ts.add("skip", '∆', "jump");
         this.ts.add("time", "§~", "pause");
         this.ts.add("time", "•!?-.,);3", "stutter");
-        this.ts.add("func", '®', "interrupt");
-        this.ts.add("func", '✓', "hit");
+        this.ts.add("misc", '®', "interrupt");
+        this.ts.add("misc", '✓', "hit");
     }
         
     #assignFuncs() {
         this.tr = new TR(this.ts);
-        this.tr.func.hit(() => this.sb.hit());
-        this.tr.anim.jump(() => this.sb.jump());
-        this.tr.anim.glitch(() => {
+        this.tr.skip.jump(() => this.sb.jump());
+        this.tr.skip.glitch(() => {
             const charGlitch = this.sb.char.el.matches(".glitch");
             this.sb.char.el.classList.toggle("glitch", !charGlitch);
         });
-        this.tr.anim.shake(() => {
+        this.tr.skip.shake(() => {
             const bubbleShake = this.sb.body.matches(".shake");
             this.sb.body.classList.toggle("shake", !bubbleShake);
         });
@@ -174,7 +177,8 @@ export default class SW { // Speech Writer
             const cooldown = 12 / this.frequency;
             setTimeout(() => this.paused = false, cooldown * 1000);
         });
-        this.tr.func.interrupt(() => {
+        this.tr.misc.hit(() => this.sb.hit());
+        this.tr.misc.interrupt(() => {
             this.sb.char.pose = "shocked";
             this.tr.pause();
             this.sb.remove();
@@ -182,9 +186,8 @@ export default class SW { // Speech Writer
         });
     }
     
-    #processChar(processed) {
-        if (!processed) console.debug(this.detail);
-        const ref = processed.splice(-1);
+    #processChar(written) {
+        const [processed, ref] = written.match(/(.*)(.)$/s).slice(1);
         const plotted = this.ap.check(ref, processed);
         if (plotted) return;
         let wait = 1 / this.frequency;
@@ -193,12 +196,10 @@ export default class SW { // Speech Writer
         if (!escaped && meta) {
             const pv = this.ts.protruct(ref, processed);
             this.tr.apply(pv);
-            const anim = pv.anim.some;
-            const ignore = pv.ignore.some;
-            const skip = anim || ignore;
+            const skip = pv.skip.some;
             const { stutter, pause } = pv.time;
             wait *= !skip * ((stutter * 4) + (pause * 8));
-            console.log(wait * 1000);
+            console.log({ pv });
         } else {
             this.sb.text += ref;
         }
@@ -252,14 +253,11 @@ export default class SW { // Speech Writer
         const boost = () => this.#boost(boost);
         body.addEventListener("click", boost, true);
         for (let i = 0; i <= text.length; i++) {
-            signal.addEventListener(`swWrite${i}:${replica}`, e => {
-                this.#write(e, i);
-            }, { once: 1 });
+            const write = e => this.#write(e, i)
+            signal.addEventListener(`swWrite${i}:${replica}`, write, { once: 1 });
             signal.addEventListener(`swCancel${i}:${replica}`, () => {
-                signal.removeEventListener(`swWrite${i}:${replica}`, e => {
-                    this.#write(e, i);
-                }, { once: 1 });
-            })
+                signal.removeEventListener(`swWrite${i}:${replica}`, write, { once: 1 });
+            }, { once: 1 });
         };
         signal.addEventListener(`swWriteEnd:${replica}`, () => {
             this.sb.className = "sb-body";

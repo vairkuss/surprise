@@ -319,6 +319,7 @@ export default class B { // Board
         body.addEventListener("pointerdown", e => this.swipe([e.offsetX, e.offsetY]));
         body.addEventListener("keydown", e => {
             if (e.repeat) return;
+            e.preventDefault();
             this.keyboardInput(e.code);
         });
         this.staminaAB = new AB("stamina", () => this.dash(), 10, 1.2);
