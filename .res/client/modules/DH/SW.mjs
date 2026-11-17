@@ -32,20 +32,24 @@ class AP { // Action Plotter
 }
 
 
-class PV { // Protructed Values
-    
-    add(tag, key, value) {
-        const ent = {};
-        ent[key] = value;
-        this[tag] = Object.assign(this[tag] ?? {
-            get some() {
+class TE { // Tag Entry
+
+    get some() {
                 for (const key in this) {
                     if (key === "some") continue;
                     if (this[key]) return true;
                 }
                 return false;
             }
-        }, ent);
+}
+
+
+class PV { // Protructed Values
+    
+    add(tag, key, value) {
+        const ent = {};
+        ent[key] = value;
+        this[tag] = Object.assign(this[tag] ?? new TE(), ent);
     }
 }
 
@@ -79,16 +83,13 @@ class TS { // Trigger Storage
 class TR { // Trigger Reactor
     
     constructor(storage) {
-        for (const term in storage.__KEYS) {
-            const [] = Object.
-            this[tag] = {};
-            for (const key in storage[tag]) {
-                this[tag][key] = func => {
-                    if (func) {
-                        this[tag][key] = func;
-                    }
-                } 
-            }
+        storage.__KEYS.forEach(key => {
+            const [tag] = Object.entries(storage[key]);
+            const ent = {};
+            ent[key] = func => {
+                if (func) this[tag][key] = func;
+            };
+            this[tag] = Object.assign(this[tag] ?? {}, ent);
         }
     }
 
