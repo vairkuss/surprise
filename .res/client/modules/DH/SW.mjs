@@ -22,11 +22,8 @@ class AP { // Action Plotter
             const outside = processed.match(expr) == null;
             const processing = trigger !== ref;
             if (outside || processing) return false;
-            let content;
-            this.detail.text = this.detail.text.replace(expr, (_, cut) => {
-                content = cut;
-                return `.${cut}.`
-            });
+            const content = this.detail.text.match(expr)[1];
+            this.detail.text = this.detail.text.replace(expr, (_, cut) => `.${cut}.`);
             const next = processed.length + 1;
             func(content, next);
             return true;
@@ -168,10 +165,9 @@ export default class SW { // Speech Writer
         };
     }
     
-    #processChar(current) {
-        if (!current) console.debug(this.detail);
-        const [, processed, ref] = current.match(/(.*)(.)$/);
-        const next = processed.length + 1;
+    #processChar(processed) {
+        if (!processed) console.debug(this.detail);
+        const ref = processed.splice(-1);
         const plotted = this.ap.check(ref, processed);
         if (plotted) return;
         let wait = 1 / this.frequency;
@@ -185,9 +181,12 @@ export default class SW { // Speech Writer
             const skip = anim || ignore;
             const { stutter, pause } = pv.time;
             wait *= !skip * ((stutter * 4) + (pause * 8));
+            console.log(wait * 1000);
         } else {
             this.sb.text += ref;
         }
+        console.log({ ref, wait: wait * 1000 });
+        const next = processed.length + 1;
         setTimeout(() => this.#callNext(next), wait * 1000);
     }
     
@@ -209,10 +208,9 @@ export default class SW { // Speech Writer
     }
     
     #boost(signature) {
-        if (!this.paused) {
-            this.frequency *= 2;
-            body.removeEventListener("click", signature, true);
-        }
+        if (this.paused) return;
+        this.frequency *= 2;
+        body.removeEventListener("click", signature, true);
     }
 
     #write(e, i) {
@@ -225,28 +223,28 @@ export default class SW { // Speech Writer
 
     get writing() { return this.detail != null }
     
-    write(detail) {
+    write(text, replica) {
         this.sb.text = '';
         this.sb.lifes = 2;
         this.frequency = 20;
         this.pending = [];
-        this.detail = detail;
+        this.detail = { text, replica };
         this.#plotActions();
         this.#storeTriggers();
         this.#assignFuncs();
         const boost = () => this.#boost(boost);
         body.addEventListener("click", boost, true);
-        for (let i = 0; i <= detail.text.length; i++) {
-            signal.addEventListener(`swWrite${i}:${detail.replica}`, e => {
+        for (let i = 0; i <= text.length; i++) {
+            signal.addEventListener(`swWrite${i}:${replica}`, e => {
                 this.#write(e, i);
             }, { once: 1 });
-            signal.addEventListener(`swCancel${i}:${detail.replica}`, () => {
-                signal.removeEventListener(`swWrite${i}:${detail.replica}`, e => {
+            signal.addEventListener(`swCancel${i}:${replica}`, () => {
+                signal.removeEventListener(`swWrite${i}:${replica}`, e => {
                     this.#write(e, i);
                 }, { once: 1 });
             })
         };
-        signal.addEventListener(`swWriteEnd:${detail.replica}`, () => {
+        signal.addEventListener(`swWriteEnd:${replica}`, () => {
             this.sb.className = "sb-body";
             this.sb.char.talking = false;
             this.detail = null;
@@ -256,7 +254,10 @@ export default class SW { // Speech Writer
     }
 
     onWriteEnd(func) {
-        if (!this.writing) return func();
-        this.pending.push(func);
+        if (this.writing) {
+            this.pending.push(func);
+        } else {
+            func();
+        }
     }
 }

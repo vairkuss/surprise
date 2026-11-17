@@ -77,7 +77,7 @@ export default class CO { // Character Object
         } else {
             sb.jump();
         }
-        sb.writer.write({ text, replica });
+        sb.writer.write(text, replica ?? this.name);
     }
     
     jump() {
