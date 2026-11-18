@@ -12,14 +12,13 @@ export default class VE { // sVg namespace Element
             ? document.createElementNS(xmlns, name)
             : new DOMParser().parseFromString(data, "image/svg+xml").querySelector(name);
         this.raw = data ?? this.el.outerHTML;
-        if (id != null) this.setAttribute("id", id);
-        if (cn != null) this.setAttribute("class", cn);
-        if (donor != null) this.cloneChildren(donor);
-        if (parent != null) this.appendTo(parent);
+        if (id) this.setAttribute("id", id);
+        if (cn) this.setAttribute("class", cn);
+        if (donor) this.cloneChildren(donor);
+        if (parent) this.appendTo(parent);
     }
     
     get id() { return this.el.getAttribute("id") }
-    get className() { return this.el.className }
     get classList() { return this.el.classList }
     get children() { return this.el.children }
     
@@ -32,7 +31,9 @@ export default class VE { // sVg namespace Element
     remove() { this.el.remove() }
     
     cloneChildren(el) {
-        [...el.children].forEach(childEl => this.el.appendChild(childEl.cloneNode(true)));
+        [...el.children].forEach(child => {
+            this.el.appendChild(child.cloneNode(true));
+        });
     }
 }
 
@@ -80,7 +81,7 @@ export class VCE extends VE { // sVg Circle Element
         const { x, y } = options;
         const cx = x ?? r;
         const cy = y ?? cx;
-        if (r != null) {
+        if (r) {
             this.setAttribute("r", r);
             this.setAttribute("cx", cx);
             this.setAttribute("cy", cy);
@@ -93,27 +94,26 @@ export class VSE extends VE { // sVg Svg Element
     
     constructor([w, h], options={}) {
         const { parse } = options;
-        w = w ?? parse?.getAttribute("width");
+        w = w ?? parse?.getAttribute("width") ?? h;
         h = h ?? parse?.getAttribute("height") ?? w;
         super("svg", options);
-        if (!this.id) IG.add(this.el, "VSE");
-        if (w != null) {
+        if (!id) IG.add(this.el, "VSE");
+        if (w && h) {
             this.setAttribute("width", w);
             this.setAttribute("height", h);
             this.setAttribute("viewBox", `0 0 ${w} ${h}`);
         }
-        this.#genMask(w, h, options ?? {}, parse?.cloneNode(true));
+        this.#genMask([w, h], options ?? {}, parse?.cloneNode(true));
     }
     
-    #genMask(w, h, { fill }, donor) {
+    #genMask(size, { fill }, donor) {
         this.defs = new VE("defs", { parent: this.el });
         this.mask = new VE("mask", { id: `${this.id}-mask`, parent: this.defs.el });
-        this.fill = new VRE([w, h], { parent: this.el });
+        this.fill = new VRE(size, { parent: this.el });
         this.fill.setAttribute("mask", `url(#${this.mask.id})`);
         this.fill.setAttribute("fill", fill ?? "currentColor");
-        if (donor == null) return;
-        const donorDefs = donor.querySelector("defs");
-        if (donorDefs != null) {
+        const donorDefs = donor?.querySelector("defs");
+        if (donorDefs) {
             [...donorDefs.childNodes].forEach(child => {
                 this.defs.appendChild(child);
             });
@@ -123,6 +123,7 @@ export class VSE extends VE { // sVg Svg Element
     }
     
     maskFromDonor(el) {
+        if (!(el instanceof Node)) return;
         [...el.childNodes].forEach(child => {
             if (child.nodeType === Node.ELEMENT_NODE) {
                 child.setAttribute("fill", "#fff");

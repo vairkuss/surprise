@@ -80,19 +80,19 @@ export default class CC { // Choice Chip
             { filter: "brightness(1.3)" },
             { filter: "brightness(1)" }
         ];
-        const conf = {
+        const config = {
             duration: 4000,
             easing: "ease-in-out",
             iterations: Infinity
         };
-        const anim = el.animate(pulse, conf);
+        const anim = el.animate(pulse, config);
         new MutationObserver((records) => {
             for (const record of records) {
                 if (record.attributeName !== "class") continue;
                 if (this.base.matches(".active")) {
                     return anim.play();
                 }
-                const current = anim.currentTime % conf.duration;
+                const current = anim.currentTime % config.duration;
                 const left = conf.duration - current;
                 anim.effect.updateTiming({
                     iterations: 1,
