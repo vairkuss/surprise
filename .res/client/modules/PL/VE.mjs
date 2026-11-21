@@ -27,7 +27,8 @@ export default class VE { // sVg namespace Element
     setAttribute(attr, value) { this.el.setAttribute(attr, value) }
     getAttribute(attr) { return this.el.getAttribute(attr) }
     
-    appendChild(el) { this.el.appendChild(el) }
+    appendChild(el) { return this.el.appendChild(el) }
+    append(...els) { this.el.append(...els) }
     appendTo(el) { el.appendChild(this.el) }
     remove() { this.el.remove() }
     
@@ -119,15 +120,23 @@ export class VSE extends VE { // sVg Svg Element
             });
             donorDefs.remove();
         }
-        this.maskFromDonor(donor);
+        [...donor.childNodes].forEach(child => {
+            if (child.nodeType === Node.ELEMENT_NODE) {
+                child.append(...VSE.maskFromEl(child));
+            }
+            this.mask.appendChild(child);
+        })
     }
     
-    maskFromDonor(el) {
-        [...el.childNodes].forEach(child => {
+    static maskFromEl(el) {
+        return [...el.childNodes].map(child => {
             if (child.nodeType === Node.ELEMENT_NODE) {
                 child.setAttribute("fill", "#fff");
+                if (child instanceof SVGLineElement || child.getAttribute("stroke-width")) {
+                    child.setAttribute("stroke", "#fff");
+                }
             }
-            this.addToMask(child);
+            return this.maskFromEl(child);
         });
     }
     

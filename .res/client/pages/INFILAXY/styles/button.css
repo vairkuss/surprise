@@ -32,7 +32,7 @@
 }
 
 @media(hover: hover) {
-    .btn:hover, .btn.hover {
+    .btn:hover {
         z-index: calc(var(--btn-l) + 2);
     
         background:
@@ -54,7 +54,7 @@
     }
 }
 
-.btn:active, .btn.active {
+.btn:active {
     background:
         radial-gradient(ellipse 60% 60%,
             hsl(from var(--cur-color) h calc(s * 0.30) calc(l * 0.75)),
@@ -97,7 +97,7 @@
     /**
     .btn:hover > .inner-ring {
     /**/
-    :is(.btn:hover, .btn.hover) > .inner-ring {
+    .btn:hover > .inner-ring {
     /**/
 
         overflow: visible;
@@ -124,7 +124,7 @@
 /**
 .btn:active > .inner-ring {
 /**/
-:is(.btn:active, .btn.active) > .inner-ring {
+.btn:active > .inner-ring {
 /**/
     box-shadow:
         0 0 calc(var(--ring-size) * 0.5)
@@ -140,10 +140,13 @@
 
 
 .btn > .inner-ring > :is(.icon, .symbol, .text) {
+    position: absolute;
+}
+
+.btn > .inner-ring > :is(.icon, .symbol, .text) {
     --grow: 1;
     --grew: calc(-50% / var(--grow));
 
-    position: absolute;
 
     top: 50%;
     left: 50%;
@@ -165,7 +168,7 @@
     /**
     .btn:hover > .inner-ring > :is(.icon, .symbol, .text) {
     /**/
-    :is(.btn:hover, .btn.hover) > .inner-ring > :is(.icon, .symbol, .text) {
+    .btn:hover > .inner-ring > :is(.icon, .symbol, .text) {
     /**/
         --grow: 1.21;
 
@@ -192,7 +195,7 @@
 /**
 .btn:active > .inner-ring > :is(.icon, .symbol, .text) {
 /**/
-:is(.btn:active, .btn.active) > .inner-ring > :is(.icon, .symbol, .text) {
+.btn:active > .inner-ring > :is(.icon, .symbol, .text) {
 /**/
     --grow: 0.32;
 
@@ -208,10 +211,13 @@
 }
 
 
-:is(.disabled, .frozen) {
-    --grow: scale(0.8);
-    
+.btn.disabled, .frozen {
     pointer-events: none;
+}
+
+.btn:is(.disabled, .frozen) {
+    --grow: 0.8;
+
     background:
         radial-gradient(ellipse 40% 40%,
             hsl(from var(--cur-color) h calc(s * 0.15) calc(l * 0.175)),

@@ -43,7 +43,7 @@ class NC { // Node Collection
     
     get(href) {
         const { keys, name } = this.#hrefToKeys(href);
-        if (name != null) {
+        if (typeof name === "string") {
             const extlessName = name.replace(/\..*/, '');
             keys.push(extlessName); 
         }
@@ -73,7 +73,7 @@ export default class DS { // Data Storage
     static #savePath = path.join("local", "data", "save.json");
     
     static #loadSave() {
-        this.data.save = {
+        this.save = {
             stage: 0,
             history: {},
             playlists: {},
@@ -82,29 +82,29 @@ export default class DS { // Data Storage
         }
         if (fs.existsSync(this.#savePath)) {
             const local = this.fl.json(this.#savePath);
-            Object.apply(this.data.save, local);
+            Object.apply(this.save, local);
         }
         this.writeSave();
     }
     
     static writeSave(save) {
-        if (save != null) {
-            this.data.save = save;
+        if (save) {
+            this.save = save;
         }
-        const data = JSON.stringify(this.data.save);
+        const data = JSON.stringify(this.save);
         fs.writeFileSync(this.#savePath, data, "utf-8");
     }
     
     static #loadDialogues() {
         const dialoguesPath = path.join("local", "data", "dialogues.json");
-        this.data.dialogues = this.fl.json(dialoguesPath);
+        this.dialogues = this.fl.json(dialoguesPath);
     }
     
     static #loadIcons() {
         const icons = folder => path.join("local", "icons", folder);
         const named = this.fl.folder(icons("named"));
         const random = this.fl.folder(icons("random"));
-        this.data.icons = {
+        this.icons = {
             named: named.reduce((named, icon) => {
                 const iconPath = path.join(icons("named"), icon);
                 const parts = icon.split(".");
@@ -121,38 +121,39 @@ export default class DS { // Data Storage
     
     static #loadImgs() {
         const imgs = folder => path.join("local", "imgs", folder);
-        this.data.beast = {};
-        this.data.beast.canvas = this.#loadRoot(imgs("canvas"), href => this.fl.txt(href));
-        this.data.beast.cinematics = this.#loadRoot(imgs("cinematics"));
-        this.data.beast.ui = this.#loadRoot(imgs("ui"));
-        this.data.sprites = this.#loadRoot(imgs("chars"));
+        this.beast = {
+            ui: this.#loadRoot(imgs("ui")),
+            cinematics: this.#loadRoot(imgs("cinematics")),
+            canvas: this.#loadRoot(imgs("canvas"), href => this.fl.txt(href))
+        }
+        this.sprites = this.#loadRoot(imgs("chars"));
     }
 
     static load(fl) {
         this.fl = fl;
-        this.data = {};
         this.#loadSave();
         this.#loadDialogues();
         this.#loadIcons();
         this.#loadImgs();
     }
     
-    static gather(page, chars) {
-        if (page == null || chars == null) return {};
-        const clone = JSON.parse(JSON.stringify(this.data));
-        delete clone.dialogues;
-        if (page !== "BEASTAXY") delete clone.beast;
-        const replicas = this.data.dialogues[`${page}:${this.data.save.stage}`];
-        clone.replicas = JSON.stringify(replicas);
-        const sprites = JSON.parse(chars).reduce((sprites, char) => {
-            sprites[char] = this.data.sprites[char];
-            return sprites;
-        }, {});
-        clone.sprites = JSON.stringify(sprites);
-        const timestamp = Date.now();
-        const gatheredAt = new Date(timestamp).toLocaleTimeString("ru-RU");
-        console.info(`$ [${gatheredAt}] <LOG> STORAGE: gathered data for "${page}"`);
-        console.debug(clone.beast)
-        return clone;
+    static gather(pageTitle) {
+        const data = {}
+        const page = this.fl.html(pageTitle)
+        if (page.code === 200) {
+            data.save = this.save;
+            data.icons = this.icons;
+            const replicas = this.dialogues[`${pageTitle}:${this.save.stage}`];
+            data.replicas = JSON.stringify(replicas);
+            const charRegex = /<div id="(.*?)" class="character">/g;
+            const chars = [...page.data.matchAll(charRegex)].map(x => x[1]) ?? [];
+            console.debug(chars)
+            const sprites = chars.reduce((sprites, char) => {
+                sprites[char] = this.sprites[char];
+                return sprites;
+            }, {});
+            data.sprites = JSON.stringify(sprites);
+        }
+        return data;
     }
 }

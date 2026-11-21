@@ -31,11 +31,14 @@ class PL { // Page Loader
     }
     
     static async load() {
-        if (window.data != null) return;
-        const page = document.querySelector("title").textContent;
-        const chars = [...document.querySelectorAll(".character")].map(el => el.id);
-        const res = await fetch(`${location.origin}/get/data?page=${page}&chars=${JSON.stringify(chars)}`);
-        const data = await res.json();
+        if (window.data) return;
+        const page = document.querySelector("title").firstChild.nodeValue;
+        const res = await fetch(`${location.origin}/post/data`, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain" },
+            body: page
+        });
+        window.data = await res.json();
         this.#processIcons(data.icons);
         data.sprites = JSON.parse(data.sprites);
         this.#preloadImgs(data.sprites);
@@ -45,7 +48,6 @@ class PL { // Page Loader
             this.#preloadImgs(data.beast.ui);
         }
         Object.assign(data, { page, chars });
-        window.data = data;
         PF.init();
         PC.init();
         window.pending?.forEach(module => module.init());

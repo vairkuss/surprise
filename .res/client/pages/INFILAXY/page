@@ -42,7 +42,7 @@
             </div>
             
             <div class="big btn block" onclick="transition('preview', [0, -1])">
-                <div class="load-svg icon">play</div> <!-- спустится с интро -->
+                <div class="load-svg icon">play</div> <!-- спустится с интро, нужно будет зажать и "зарядить" -->
             </div>
             
             <div class="btn block hover">
@@ -56,15 +56,11 @@
 
 
 <div class="hbox mid bot" id="chars">
-    <div id="infi" class="character" ><!--
-        style="outline: 2px solid red" 
-        -->
+    <div id="infi" class="character">
         <div class="sprite"></div>
         <div class="anchor"></div>
     </div>
-    <div id="virko" class="character" ><!--
-        style="outline: 2px solid red" 
-        -->
+    <div id="virko" class="character">
         <div class="sprite"></div>
         <div class="anchor"></div>
     </div>

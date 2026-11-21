@@ -1,0 +1,57 @@
+<svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="200"
+    height="200"
+    viewBox="0 0 16 16">
+    <defs>
+        <radialGradient id="page-texture-mask-grad">
+            <stop offset="0" stop-color="#fff"/>
+            <stop offset="0.9"/>
+        </radialGradient>
+        <filter
+            id="page-texture-mask-filt"
+            width="100%"
+            height="100%"
+            viewBox="0 0 16 16">
+            <feTurbulence
+                numOctaves="100"
+                seed="714825285"
+                baseFrequency="0.05 0.0714825285"
+                stitchTiles="stitch"
+                width="100%"
+                height="100%"
+                result="turb">
+                <animate
+                    attributeName="seed"
+                    values="714;825;285"
+                    dur="450s"
+                    repeatCount="indefinite"/>
+            </feTurbulence>
+            <feDisplacementMap
+                in2="turb"
+                in="sourceGraphic"
+                result="disp"
+                scale="15"
+                xChannelSelector="R"
+                yChannelSelector="G"/>
+        </filter>
+        <mask id="page-texture-shadows-mask">
+            <rect
+                width="100%"
+                height="100%"
+                fill="url(#page-texture-mask-grad)"
+                filter="url(#page-texture-mask-filt)"/>
+        </mask>
+    </defs>
+    <rect
+        width="16"
+        height="16"
+        opacity="1"
+        fill="#fff7ee"/>
+        <rect
+        width="16"
+        height="16"
+        fill="#aaa740"
+        opacity="1"
+        mask="url(#page-texture-shadows-mask)"/>
+</svg>

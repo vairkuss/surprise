@@ -12,21 +12,19 @@ class AP { // Action Plotter
     }
     
     plot(trigger, func) {
-        const expr = new RegExp(String.raw`(?<!\\)${trigger}(.+?)(?:${trigger}|$)`);
-        func = typeof func === "function" ? func : new Function();
+        const expr = new RegExp(String.raw`(?<!\\)${trigger}(.+[^${trigger}])$`);
         this.plots.push({ trigger, expr, func });
     }
     
-    check(ref, processed) {
+    checkPlotted(uncovered) {
         return this.plots.some(({ trigger, expr, func }) => {
-            const outside = processed.match(expr) == null;
-            const processing = trigger !== ref;
-            if (outside || processing) return false;
-            const content = this.detail.text.match(expr)[1];
-            this.detail.text = this.detail.text.replace(expr, (_, cut) => `.${cut}.`);
-            const next = processed.length + 1;
-            func(content, next);
-            return true;
+            const content = uncovered.slice(0, -1).match(expr)?.at(1) ?? "";
+            const firing = uncovered.endsWith(trigger);
+            const next = uncovered.length;
+            if (firing) {
+                this.detail.text = this.detail.text.replace(expr, (_, cut) => `.${cut}.`);
+            }
+            return func(content, firing, next) ?? firing;
         });
     }
 }
@@ -94,13 +92,10 @@ class TR { // Trigger Reactor
     }
 
     apply(pv) {
-        console.log({ tr: this });
         for (const tag in this) {
             for (const key in this[tag]) {
                 if (this[tag][key].length) continue;
-                console.log({ key: this[tag], tag: this[tag][key] })
                 if (pv[tag][key]) {
-                    console.log("firing", key);
                     this[tag][key]();
                 }
             }
@@ -115,28 +110,27 @@ export default class SW { // Speech Writer
     
     #plotActions() {
         this.ap = new AP(this.detail);
-        this.ap.plot('√', (_, next) => {
-            this.#callNext(next);
+        this.ap.plot('√', () => true);
+        this.ap.plot('©', (pose, firing) => {
+            if (firing) {
+                this.sb.char.pose = pose;
+            }
+            return !firing;
         });
-        this.ap.plot('©', (pose, next) => {
-            this.sb.char.pose = pose;
-            this.#callNext(next);
-        });
-        this.ap.plot('¥', (csv, next) => {
+        this.ap.plot('¥', (csv, firing, next) => {
+            if (!firing) this.#callNext(next);
             const [name, pose] = csv.split(':');
             const char = CO.find(name);
             if (!char) return;
             this.sb.char.talking = false;
             const text = this.detail.text.slice(next);
             char.say(text, pose, this.detail.replica);
-            const recipient = SB.getByChar(char).writer;
             for (let i = next; i < this.detail.text.length; i++) {
                 const call = `swCancel${i}:${this.detail.replica}`;
                 signal.dispatchEvent(new Event(call));
             }
-            for (let i = 0; i < this.pending.length; i++) {
-                recipient.pending.push(this.pending.pop());
-            }
+            SB.getByChar(char).writer.pending = this.pending;
+            this.pending = [];
             this.detail = null;
         });
     }
@@ -186,10 +180,11 @@ export default class SW { // Speech Writer
         });
     }
     
-    #processChar(written) {
-        const [processed, ref] = written.match(/(.*)(.)$/s).slice(1);
-        const plotted = this.ap.check(ref, processed);
-        if (plotted) return;
+    #processChar(uncovered) {
+        if (this.ap.checkPlotted(uncovered)) {
+            return this.#callNext(uncovered.length);
+        }
+        const [processed, ref] = uncovered.match(/(.*)(.)$/s).slice(1);
         let wait = 1 / this.frequency;
         const escaped = processed.endsWith('\\');
         const meta = "\\¥©®✓•§°√|¢π∆".includes(ref);
@@ -199,13 +194,10 @@ export default class SW { // Speech Writer
             const skip = pv.skip.some;
             const { stutter, pause } = pv.time;
             wait *= !skip * ((stutter * 4) + (pause * 8));
-            console.log({ pv });
         } else {
             this.sb.text += ref;
         }
-        console.log({ ref, wait: wait * 1000 });
-        const next = processed.length + 1;
-        setTimeout(() => this.#callNext(next), wait * 1000);
+        setTimeout(() => this.#callNext(uncovered.length), wait * 1000);
     }
     
     #callNext(i) {
@@ -231,7 +223,7 @@ export default class SW { // Speech Writer
         body.removeEventListener("click", signature, true);
     }
 
-    #write(e, i) {
+    #writeChar(e, i) {
         if (this.writing) {
             const current = e.detail.text.slice(0, i);
             return this.#processChar(current);
@@ -241,7 +233,7 @@ export default class SW { // Speech Writer
 
     get writing() { return this.detail != null }
     
-    write(text, replica) {
+    writeReplica(text, replica) {
         this.sb.text = '';
         this.sb.lifes = 2;
         this.frequency = 20;
@@ -253,10 +245,10 @@ export default class SW { // Speech Writer
         const boost = () => this.#boost(boost);
         body.addEventListener("click", boost, true);
         for (let i = 0; i <= text.length; i++) {
-            const write = e => this.#write(e, i)
-            signal.addEventListener(`swWrite${i}:${replica}`, write, { once: 1 });
+            const writeChar = e => this.#writeChar(e, i)
+            signal.addEventListener(`swWrite${i}:${replica}`, writeChar, { once: 1 });
             signal.addEventListener(`swCancel${i}:${replica}`, () => {
-                signal.removeEventListener(`swWrite${i}:${replica}`, write, { once: 1 });
+                signal.removeEventListener(`swWrite${i}:${replica}`, writeChar, { once: 1 });
             }, { once: 1 });
         };
         signal.addEventListener(`swWriteEnd:${replica}`, () => {

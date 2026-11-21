@@ -61,8 +61,10 @@ export default class SB { // Speech Bubble
         // сделать так, чтобы вылетало из середины и с анимацией, а не просто появлялось
         const rad = Math.PI / 4 + Math.random() * Math.PI / 2;
         const x = Math.cos(rad);
-        const y = -(Math.sin(rad) + 1) / 2;
+        const y = -(Math.sin(rad)) / 2;
         void this.body.offsetWidth;
+        this.body.style.left = `0`;
+        this.body.style.top = `0`;
         this.body.classList.remove("hidden");
         this.body.style.left = `calc(${x} * 2 * var(--sb-size))`;
         this.body.style.top = `calc(${y} * 2 * var(--sb-size))`;
@@ -84,6 +86,9 @@ export default class SB { // Speech Bubble
     
      #startColliding() {
         const anchor = this.char.anchor.getBoundingClientRect();
+        this.body.style.bottom = `${this.body.getBoundingClientRect().bottom}px`;
+        this.body.style.removeProperty("top");
+        void this.body.offsetWidth;
         this.vx = 0;
         this.collisionTimeout = setTimeout(() => {
             this.initial = this.body.getBoundingClientRect();
@@ -129,7 +134,9 @@ export default class SB { // Speech Bubble
         const bot = parseFloat(style.bottom);
         clearInterval(this.collisionInterval);
         setTimeout(() => {
-            this.body.style.bottom = `${bot + size}px`;
+            if (![bot, size].some(x => Number.isNaN(x))) {
+                this.body.style.bottom = `${bot + size / 3}px`;
+            }
             setTimeout(() => {
                 this.#setCollisionInterval();
             }, 0.2 * 1000);

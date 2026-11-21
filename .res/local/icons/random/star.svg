@@ -1,1 +1,22 @@
-<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><defs><marker id="star-cap" markerWidth="2" viewBox="0 0 3 2" refY=".75" orient="auto-start-reverse"><path d="m0 0c.25 0 .75.25.75.75s-.5.75-.75.75"/></marker></defs><path d="m5.5 12 2.5-8L10.5 12 4 7 12 7z"/><g marker-start="url(#star-cap)" marker-mid="url(#star-cap)" marker-end="url(#star-cap)" stroke-width="1.5"><line x1="8" y1="4" y2="12" x2="5.5" stroke="#000"/><line x1="8" y1="4" y2="12" x2="10.5" stroke="#000"/><line x1="12" y1="7" y2="7" x2="4" stroke="#000"/><line x1="10.5" y1="12" y2="7" x2="4" stroke="#000"/><line x1="5.5" y1="12" y2="7" x2="12" stroke="#000"/></g></svg>
+<svg width="16"
+     height="16"
+     viewBox="0 0 16 16"
+     xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <marker id="star-cap"
+                viewBox="0 0 3 2"
+                refY=".75"
+                markerWidth="2"
+                orient="auto-start-reverse">
+            <path d="m0 0c.25 0 .75.25.75.75s-.5.75-.75.75"/>
+        </marker>
+    </defs>
+    <path d="m5.5 12 2.5-8L10.5 12 4 7 12 7z"/>
+    <g marker-start="url(#star-cap)" marker-mid="url(#star-cap)" marker-end="url(#star-cap)" stroke-width="1.5">
+        <line x1="8" y1="4" y2="12" x2="5.5"/>
+        <line x1="8" y1="4" y2="12" x2="10.5"/>
+        <line x1="12" y1="7" y2="7" x2="4"/>
+        <line x1="10.5" y1="12" y2="7" x2="4"/>
+        <line x1="5.5" y1="12" y2="7" x2="12"/>
+    </g>
+</svg>

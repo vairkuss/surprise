@@ -155,8 +155,8 @@
     
     --r: 6;
     --sectors: 7;
-    --first: calc((4 / 7) * (2 * pi * var(--r)) / var(--sectors));
-    --second: calc((3 / 7) * (2 * pi * var(--r)) / var(--sectors));
+    --first: calc((4 / 7) * (2 * pi * var(--r)) / var(--sectors) * 1px);
+    --second: calc((3 / 7) * (2 * pi * var(--r)) / var(--sectors) * 1px);
     stroke-dasharray: var(--first) var(--second);
 
     will-change: transform, filter;
@@ -239,7 +239,7 @@
 
 
 .cho-field.active {
-    fill: white;
+    fill: #fff;
 }
 
 .cho-divider {

@@ -1,13 +1,10 @@
 /* Surprise Server */
 
+import http from "http";
+
 import DS from "./storage.mjs";
 import FL from "./loader.mjs";
 import RR from "./sender.mjs";
-
-import http from "http";
-import path from "path";
-import url from "url";
-import fs from "fs";
 
 
 if (process.argv.length < 3) {
@@ -22,16 +19,14 @@ const fl = new FL(CWD);
 
 
 const SERVER = http.createServer(async (req, res) => {
-    const adr = new URL(req.url, `http://${HOST}:${PORT}`);
-    const meta = adr.searchParams;
-    const rr = new RR(req, res, adr.pathname);
+    const rr = new RR(req, res);
     const notFound = function() {
         const file = fl.response(404);
         rr.sendFile(file);
     }
     let body = "";
     
-    switch(adr.pathname) {
+    switch(req.url) {
         case "/favicon.ico":
             rr.end();
         break;
@@ -68,20 +63,27 @@ const SERVER = http.createServer(async (req, res) => {
         break;
         
         
-        case "/get/data":
-            const keys = req.url.match(/\?page=(.*)&chars=(\[.*\])$/);
-            if (req.method !== "GET" || keys == null) return notFound();
-            const [, page, chars] = keys;
-            const data = DS.gather(page, chars.replace(/%22/g, '"'));
-            rr.sendObj(data);
+        case "/get/beast":
+            if (req.method !== "GET") return notFound();
+            rr.sendObj(DS.beast);
         break;
-        
+            
         case "/post/data":
             if (req.method !== "POST") return notFound();
             req.on("data", data => body += data);
             req.on("end", () => {
-                const data = JSON.parse(body);
-                DS.writeSave(data.save);
+                const page = body;
+                const data = DS.gather(page);
+                rr.sendObj(data);
+            });
+        break;
+        
+        case "/post/save":
+            if (req.method !== "POST") return notFound();
+            req.on("data", data => body += data);
+            req.on("end", () => {
+                const save = JSON.parse(body);
+                DS.writeSave(save);
                 rr.end();
             });
         break;
@@ -108,7 +110,7 @@ const SERVER = http.createServer(async (req, res) => {
             
         default:
             if (req.method !== "GET") return notFound();
-            const href = adr.pathname.slice(1);
+            const href = req.url.slice(1);
             rr.sendFile(fl.file(href));
         break;
     }

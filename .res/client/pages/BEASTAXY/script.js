@@ -5,13 +5,22 @@ import Board from "./BEAST/B.mjs"
 
 class Proposition {
     
-    static #fetchData() {
-        
+    static async #fetchData() {
+        const res = await fetch(`${location.origin}/get/beast`);
+        window.beast = await res.json();
+        this.#decodeCanvas();
     }
     
-    static decodeData() {
-        for (const collection in data.beast.canvas) {
-            
+    static #decodeCanvas() {
+        for (const collection in beast.canvas) {
+            const sets = beast.canvas[collection];
+            for (const set in sets) {
+                const sprites = sets[set];
+                for (const sprite in sprites) {
+                    const bytes = new TextEncoder.encode(sprites[sprite]);
+                    sprites[sprite] = Buffer.from(bytes);
+                }
+            }
         }
     }
     
@@ -43,9 +52,10 @@ class Proposition {
     }
     
     static init() {
-        this.#fetchData()
-        this.#developBlocks();
-        Board.init();
+        this.#fetchData().then(() => {
+            this.#developBlocks();
+            Board.init();
+        })
     }
 }
 

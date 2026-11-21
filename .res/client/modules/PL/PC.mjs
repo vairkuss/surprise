@@ -17,10 +17,10 @@ export default class PC { // Page Controller
             root.style.filter = "opacity(0)";
             cover.removeAttribute("style");
             sessionStorage.setItem("transition", JSON.stringify([x, y]));
-            fetch(`${location.origin}/post/data`, {
+            fetch(`${location.origin}/post/save`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(window.data)
+                body: JSON.stringify(window.data.save)
             });
             setTimeout(() => location.replace(url), .6 * 1000);
         }
