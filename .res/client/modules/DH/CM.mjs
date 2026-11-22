@@ -42,7 +42,7 @@ class CS { // Choice Wheel Sector
         this.i = i;
         this.color = "var(--m-color)";
         this.#calculateColor(key);
-        this.onReady(() => this.#fetchIcon());
+        this.onReady(() => this.#setIcon());
         this.#generateSector(sizes, i, a);
     }
     
@@ -57,20 +57,19 @@ class CS { // Choice Wheel Sector
         signal.dispatchEvent(ready);
     }
     
-    #fetchIcon() {
-        const name = this.value == null ? "x"
+    #setIcon() {
+        const name = this.value === null ? "x"
             : typeof this.value !== "number" ? "sb"
             : this.value < 0 ? "pat"
             : null;
         if (name != null) {
-            this.icon = window.data.icons.named[name];
+            this.icon = data.icons.named[name];
         } else {
-            const random = Object.values(window.data.icons.random);
+            const random = Object.values(data.icons.random);
             const hex = this.color.slice(5);
             const number = parseInt(hex, 16);
             const index = number % random.length;
             this.icon = random[index];
-            console.log({index, index2: random.indexOf(this.icon), hex, number, random})
         }
     }
     
