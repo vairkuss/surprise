@@ -296,7 +296,11 @@ export default class B { // Board
     static pause() {
         this.paused = !this.paused
         if (this.paused) {
+            clearInterval(this.staminaAB.interval)
             M.load("default", "PAUSE", "pause");
+        } else {
+            
+            this.staminaAB
         }
     }
     static add() {

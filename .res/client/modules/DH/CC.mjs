@@ -61,9 +61,10 @@ export default class CC { // Choice Chip
         this.base.appendChild(this.chip);
         this.#assignAnim(this.chip);
         
-        this.container = document.createElement("div");
-        this.container.appendChild(new Text("..."));
-        this.chip.appendChild(this.container);
+        this.content = document.createElement("div");
+        this.content.id = "chip-content";
+        this.content.appendChild(new Text("..."));
+        this.chip.appendChild(this.content);
         
         this.border = new VSE([14], { id: "chip-border", parent: this.chip });
         new VCE(6, { x: 7, parent: this.border });
@@ -93,7 +94,7 @@ export default class CC { // Choice Chip
                     return anim.play();
                 }
                 const current = anim.currentTime % config.duration;
-                const left = conf.duration - current;
+                const left = config.duration - current;
                 anim.effect.updateTiming({
                     iterations: 1,
                     duration: left
@@ -110,7 +111,7 @@ export default class CC { // Choice Chip
     }
     get cords() {
         const x = Number.isNaN(this.computed.left) ? 0 : parseFloat(this.computed.left);
-        const y = Number.isNaN(this.computed.top) ? 0 : parseFloat(this.computed.top);
+        const y = Number.isNaN(this.computed.top)  ? 0 : parseFloat(this.computed.top);
         return [x, y];
     }
     
@@ -124,34 +125,28 @@ export default class CC { // Choice Chip
     }
     
     #blinkIcon(wait) {
-        this.blinking = true;
-        this.icon?.classList.add("hidden");
-        this.chip.style.color = "transparent";
+        this.content.classList.add("hidden");
         signal.addEventListener("ccChangeIcon", () => {
             this.#changeIcon();
-            this.icon?.classList.remove("hidden");
+            this.content.classList.remove("hidden");
             this.chip.style.removeProperty("color");
-            this.blinking = false;
         }, { once: 1 });
         if (this.transition) clearTimeout(this.transition);
         this.transition = setTimeout(() => {
             this.transition = null;
-            const changeIcon = new Event("ccChangeIcon");
-            signal.dispatchEvent(changeIcon);
+            call("ccChangeIcon");  
         }, wait);
     }
     
     #changeIcon() {
-        this.container.firstChild.remove();
+        this.content.firstChild.remove();
         if (!this.changingTo) {
             this.icon = null;
-            this.container.appendChild(new Text("..."));
+            this.content.appendChild(new Text("..."));
         } else {
             this.icon = new VSE([], {
-                id: "chip-icon",
-                cn: "hidden",
                 parse: this.changingTo,
-                parent: this.container
+                parent: this.content
             });
         }
     }
@@ -166,7 +161,7 @@ export default class CC { // Choice Chip
             const c = Math.sqrt(this.cords.reduce((s, v) => s + v**2, 0));
             const [x, y] = this.cords.map((v, i) => v - dir[i] * c / 10);
             this.chip.style.left = Math.abs(x) < .5 ? 0 : x + "px";
-            this.chip.style.top = Math.abs(y) < .5 ? 0 : y + "px";
+            this.chip.style.top =  Math.abs(y) < .5 ? 0 : y + "px";
             this.updateChain();
         }, 1/60 * 1000);
     }

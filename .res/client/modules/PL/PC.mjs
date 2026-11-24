@@ -11,7 +11,8 @@ export default class PC { // Page Controller
         window.body = document.body;
         window.root = document.querySelector("#content");
         window.signal = new EventTarget();
-        window.send = e => signal.dispatchEvent(new Event(e));
+        window.call = sign => signal.dispatchEvent(new Event(sign));
+        window.send = (sign, detail) => signal.dispatchEvent(new CustomEvent(sign, { detail }));
         window.transition = (url, [x, y]) => {
             root.style.translate = `calc(${-x} * 100vw) calc(${-y} * -100vh)`;
             root.style.filter = "opacity(0)";
@@ -24,23 +25,21 @@ export default class PC { // Page Controller
             });
             setTimeout(() => location.replace(url), .6 * 1000);
         }
-        window.log = (...args) => {
-            const caller = new Error().stack.toString().split('\n')[2];
-            console.debug(caller, ...args);
-            fetch(`${location.origin}/post/log`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ pathname: location.pathname, args, caller })
-            });
-        }
+        // window.log = (...args) => {
+        //     const caller = new Error().stack.toString().split('\n')[2];
+        //     console.debug(caller, ...args);
+        //     fetch(`${location.origin}/post/log`, {
+        //         method: "POST",
+        //         headers: { "Content-Type": "application/json" },
+        //         body: JSON.stringify({ pathname: location.pathname, args, caller })
+        //     });
+        // }
     }
 
-    static styleChangePreventer = new MutationObserver((mutations) => {
+    static styleChangePreventer = new MutationObserver(mutations => {
         for (const mutation of mutations) {
-            if (mutation.attributeName === "class") {
-                mutation.target.classList.value = mutation.oldValue;
-            } else if (mutation.attributeName === "style") {
-                mutation.target.setAttribute("style", mutation.oldValue);
+            if (["style", "class"].includes(mutation.attributeName)) {
+                mutation.target.setAttribute(mutation.attributeName, mutation.oldValue);
             }
         }
     });

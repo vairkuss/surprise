@@ -15,8 +15,9 @@ export default class AB { // Action Button
         }, true);
         this.animFps = animFps;
         this.cooldown = cooldown;
-        [this.default, ...this.sprites] = Object.values(data.beast.ui[id]);
+        [this.default, ...this.sprites] = Object.values(beast.ui[id]);
         this.active = 0;
+        this.frozen = false;
     }
     
     enable() {
@@ -26,15 +27,25 @@ export default class AB { // Action Button
         }, 1000 / this.animFps);
     }
     
-    disable(s) {
+    disable(s=this.cooldown) {
         clearTimeout(this.timeout);
         clearInterval(this.interval);
         this.interval = null;
         this.el.src = this.default;
-        if (s || s == null) {
-            this.timeout = setTimeout(() => {
-                this.enable();
-            }, (s ?? this.cooldown) * 1000);
+        if (s) {
+            const freezeSign = [`abFreeze:${this.el.id}`, () => {
+                this.frozen = true;
+            }, { once: true }];
+            this.el.addEventListener(...freezeSign);
+            let timer = 0;
+            this.timeout = setInterval(() => {
+                if (timer >= s * 60) {
+                    clearInterval(this.timeout);
+                    this.enable();
+                    this.el.removeEventListener(...freezeSign);
+                }
+                timer += !this.frozen;
+            }, 1/60 * 1000);
         }
     }
 }

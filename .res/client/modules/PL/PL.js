@@ -8,8 +8,7 @@ class PL { // Page Loader
     
     static #processIcons(icons) {
         for (const name in icons.named) {
-            const icon = icons.named[name];
-            const tree = new DOMParser().parseFromString(icon, "image/svg+xml");
+            const tree = new DOMParser().parseFromString(icons.named[name], "image/svg+xml");
             icons.named[name] = tree.querySelector(":root");
         }
         icons.random = icons.random.map(icon => {
@@ -43,11 +42,7 @@ class PL { // Page Loader
         data.sprites = JSON.parse(data.sprites);
         this.#preloadImgs(data.sprites);
         data.replicas = JSON.parse(data.replicas) ?? {};
-        if (page === "BEASTAXY") {
-            this.#preloadImgs(data.beast.cinematics);
-            this.#preloadImgs(data.beast.ui);
-        }
-        Object.assign(data, { page, chars });
+        Object.assign(data, { page });
         PF.init();
         PC.init();
         window.pending?.forEach(module => module.init());

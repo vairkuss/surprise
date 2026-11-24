@@ -7,7 +7,7 @@ import CO from "./CO.mjs";
 class AP { // Action Plotter
 
     constructor(detail) {
-        this.detail = detail;
+        this.text = detail.text;
         this.plots = [];
     }
     
@@ -21,20 +21,25 @@ class AP { // Action Plotter
             const content = uncovered.slice(0, -1).match(expr)?.at(1) ?? "";
             const firing = uncovered.endsWith(trigger);
             const next = uncovered.length;
-            if (firing) {
-                this.detail.text = this.detail.text.replace(expr, (_, cut) => `.${cut}.`);
+            if (content && firing) {
+                console.log({ content, firing, next })
+                this.text = this.text.replace(expr, (_, cut) => `.${cut}.`);
             }
-            return func(content, firing, next) ?? firing;
+            console.log({func: func(content, firing, next), acting: (content && firing)})
+            return func(content, firing, next) ?? (content && firing);
         });
     }
 }
 
 
-class TE { // Tag Entry
+class TO { // Tag Object
 
     get some() {
+        Object.values(this).every(Boolean)
         for (const key in this) {
-            if (typeof this[key] != "boolean") return true;
+            if (typeof this[key] != "boolean") {
+                return true;
+            }
         }
         return false;
     }
@@ -44,9 +49,9 @@ class TE { // Tag Entry
 class PV { // Protructed Values
     
     add(tag, key, value) {
-        const ent = {};
-        ent[key] = value;
-        this[tag] = Object.assign(this[tag] ?? new TE(), ent);
+        if (!this[tag]) this[tag] = new TO();
+        this[tag][key] = value;
+        console.log(this)
     }
 }
 
@@ -110,15 +115,20 @@ export default class SW { // Speech Writer
     
     #plotActions() {
         this.ap = new AP(this.detail);
-        this.ap.plot('√', () => true);
         this.ap.plot('©', (pose, firing) => {
             if (firing) {
                 this.sb.char.pose = pose;
             }
-            return !firing;
         });
         this.ap.plot('¥', (csv, firing, next) => {
-            if (!firing) this.#callNext(next);
+            if (!csv) return;
+            if (!firing) {
+                new Promise(res => {
+                    this.#callNext(next)
+                    res();
+                });
+                return true;
+            }
             const [name, pose] = csv.split(':');
             const char = CO.find(name);
             if (!char) return;
@@ -126,8 +136,8 @@ export default class SW { // Speech Writer
             const text = this.detail.text.slice(next);
             char.say(text, pose, this.detail.replica);
             for (let i = next; i < this.detail.text.length; i++) {
-                const call = `swCancel${i}:${this.detail.replica}`;
-                signal.dispatchEvent(new Event(call));
+                const callCancel = `swCancel${i}:${this.detail.replica}`;
+                signal.dispatchEvent(new Event(callCancel));
             }
             SB.getByChar(char).writer.pending = this.pending;
             this.pending = [];

@@ -193,12 +193,10 @@ export default class CM { // Choice Menu
     constructor(choices) {
         this.menu = document.createElement("div");
         this.menu.id = "cho-menu";
-        this.menu.className = "hidden";
-        this.pre = document.createElement("pre");
+        this.menu.classList.add("hidden");
+        this.pre = this.menu.appendChild(document.createElement("pre"));
         this.pre.id = "cho-text";
-        this.text = new Text();
-        this.pre.appendChild(this.text);
-        this.menu.appendChild(this.pre);
+        this.text = this.pre.appendChild(new Text());
         this.choices = choices;
     }
         

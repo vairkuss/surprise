@@ -15,7 +15,6 @@ export default class CH { // Choice Handler
             this.cc.base.appendChild(this.cm.menu);
         } else {
             const detail = choice ?? null;
-            console.log("automatic choice",{choice, detail})
             const chosen = new CustomEvent("chChosen", { detail });
             body.addEventListener("click", () => {
                 signal.dispatchEvent(chosen);

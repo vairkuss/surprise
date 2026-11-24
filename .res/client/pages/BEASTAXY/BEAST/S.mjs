@@ -31,7 +31,7 @@ export default class S extends T { // Snake
         this.dir = dir;
         this.tail = [];
         this.sprite = 0;
-        this.sprites = data.beast.canvas.S.run
+        this.sprites = beast.canvas.S.run
         this.dashing = false;
     }
     

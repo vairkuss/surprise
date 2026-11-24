@@ -94,11 +94,10 @@ class DH { // Dialogue Handler
         }
 
         setTimeout(() => {
-            if (this.#excerpt != null) {
+            if (this.#excerpt) {
                 this.#readDialogue(char);
             } else {
                 signal.dispatchEvent(new Event("dhDialogueEnd"));
-                console.log("dialogue end");
             }
         }, 0.4 * 1000);
     }
@@ -119,7 +118,7 @@ class DH { // Dialogue Handler
     
     static #loadBranch() {
         this.#branch = data.replicas;
-        if (data.save.history[data.page] == null) {
+        if (!data.save.history[data.page]) {
             data.save.history[data.page] = {};
         }
         this.#history = data.save.history[data.page];

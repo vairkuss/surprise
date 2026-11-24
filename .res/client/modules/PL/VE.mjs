@@ -98,7 +98,7 @@ export class VSE extends VE { // sVg Svg Element
         w = w ?? parse?.getAttribute("width") ?? h;
         h = h ?? parse?.getAttribute("height") ?? w;
         super("svg", options);
-        if (!id) IG.add(this.el, "VSE");
+        if (!this.getAttribute("id")) IG.add(this.el, "VSE");
         if (w && h) {
             this.setAttribute("width", w);
             this.setAttribute("height", h);
@@ -113,7 +113,8 @@ export class VSE extends VE { // sVg Svg Element
         this.fill = new VRE(size, { parent: this.el });
         this.fill.setAttribute("mask", `url(#${this.mask.id})`);
         this.fill.setAttribute("fill", fill ?? "currentColor");
-        const donorDefs = donor?.querySelector("defs");
+        if (!donor) return;
+        const donorDefs = donor.querySelector("defs");
         if (donorDefs) {
             [...donorDefs.childNodes].forEach(child => {
                 this.defs.appendChild(child);
@@ -121,7 +122,9 @@ export class VSE extends VE { // sVg Svg Element
             donorDefs.remove();
         }
         [...donor.childNodes].forEach(child => {
-            if (child.nodeType === Node.ELEMENT_NODE) {
+            const isElement = child.nodeType === Node.ELEMENT_NODE;
+            const isDefs = child instanceof SVGDefsElement;
+            if (isElement && !isDefs) {
                 child.append(...VSE.maskFromEl(child));
             }
             this.mask.appendChild(child);

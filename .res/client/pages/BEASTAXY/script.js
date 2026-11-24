@@ -17,8 +17,8 @@ class Proposition {
             for (const set in sets) {
                 const sprites = sets[set];
                 for (const sprite in sprites) {
-                    const bytes = new TextEncoder.encode(sprites[sprite]);
-                    sprites[sprite] = Buffer.from(bytes);
+                    const bytes = new TextEncoder().encode(sprites[sprite]);
+                    sprites[sprite] = new Uint8ClampedArray(bytes);
                 }
             }
         }

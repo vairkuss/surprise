@@ -88,14 +88,14 @@ const SERVER = http.createServer(async (req, res) => {
             });
         break;
             
-        case "/post/log":
-            if (req.method !== "POST") return notFound();
-            req.on("data", data => body += data);
-            req.on("end", () => {
-                const data = JSON.parse(body);
-                rr.sendLog(data);
-            });
-        break;
+        // case "/post/log":
+        //     if (req.method !== "POST") return notFound();
+        //     req.on("data", data => body += data);
+        //     req.on("end", () => {
+        //         const data = JSON.parse(body);
+        //         rr.sendLog(data);
+        //     });
+        // break;
         
         
         case "/shutdown":

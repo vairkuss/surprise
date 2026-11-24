@@ -48,16 +48,15 @@ export default class RR { // Request Responder
         this.sendText('');
     }
     
-    sendLog({ pathname, args, caller }) {
-        const timestamp = Date.now();
-        const logTime = new Date(timestamp).toLocaleTimeString("en-GB");
-        const text = Array.from(args).join("\n$\t");
-        console.debug(`\n$ [${logTime}] <LOG> ${pathname}\n${caller}:`);
-        for (const arg of args) {
-            console.debug("$\t", arg);
-        }
-        console.log();
-        this.res.statusCode = 200;
-        this.res.end();
-    }
+    // sendLog({ pathname, args, caller }) {
+    //     const timestamp = Date.now();
+    //     const logTime = new Date(timestamp).toLocaleTimeString("en-GB");
+    //     console.debug(`\n$ [${logTime}] <LOG> ${pathname}\n${caller}:`);
+    //     for (const arg of args) {
+    //         console.debug("$\t", arg);
+    //     }
+    //     console.log();
+    //     this.res.statusCode = 200;
+    //     this.res.end();
+    // }
 }

@@ -20,6 +20,10 @@
         bottom 0.4s ease-in;
 }
 
+#chip-content.hidden {
+    transform: unset;
+}
+
 #cho-menu.hidden {
     top: 100vh;
     transition:
