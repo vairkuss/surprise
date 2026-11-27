@@ -1,19 +1,24 @@
 /* Function Generator */
 
 
-function clone(obj) {
-    return JSON.parse(JSON.stringify(obj));
-}
-
-
 export class PA { // Polynomial Approximator 
 
-    __LGSToMatrix(points) {
-        const matrix = points.map(([x, y], _, a) => {
+    constructor(points) {
+        const matrix = this.__pointsToMatrix(points);
+        const sorted = this.__sortMatrix(matrix);
+        const calculated = this.__gaussianAlg(sorted);
+        this.factors = this.__estimateFactors(calculated);
+    }
+
+    __pointsToMatrix(points) {
+        return points.map(([x, y], _, a) => {
             const expos = a.map((_, i) => x ** i);
             return expos.toReversed().concat(y);
         });
-        const sorted = matrix.reduce((sorted, _, i) => {
+    }
+    
+    __sortMatrix(matrix) {
+        return matrix.reduce((sorted, _, i) => {
             const candidates = matrix.filter(row => {
                 const clear = row.slice(i, -1).every(Boolean);
                 const unique = !sorted.includes(row);
@@ -25,30 +30,38 @@ export class PA { // Polynomial Approximator
             }
             return sorted.concat(candidates);
         }, []);
-        for (let stair = 0; stair < sorted.length - 1; stair++) {
-            for (let current = stair + 1; current < sorted.length; current++) {
-                if (!sorted[current][stair]) continue;
-                const k = sorted[current][stair] / sorted[stair][stair];
-                for (let cell = stair; cell < sorted.length + 1; cell++) {
-                    sorted[current][cell] -= sorted[stair][cell] * k;
+    }
+    
+    __gaussianAlg(matrix) {
+        for (let stair = 0; stair < matrix.length - 1; stair++) {
+            for (let current = stair + 1; current < matrix.length; current++) {
+                if (!matrix[current][stair]) continue;
+                const k = matrix[current][stair] / matrix[stair][stair];
+                for (let cell = stair; cell < matrix.length + 1; cell++) {
+                    matrix[current][cell] -= matrix[stair][cell] * k;
                 }
             }
         }
-        this.keys = sorted.toReversed().reduce((keys, row) => {
+        return matrix;
+    }
+    
+    __estimateFactors(matrix) {
+        return matrix.toReversed().reduce((keys, row) => {
             const y = row.pop();
             const k = row.at(-keys.length - 1);
             const toOtherSide = keys.reduce((sum, key, i) => {
-                console.log("summing i of row:", { sum, key, row, i, factor: row.at(-i - 1) })
                 return sum + key * row.at(-i - 1);
             }, 0);
             return keys.concat((y - toOtherSide) / k);
         }, []);
     }
 
-    func(x) {
-        return this.keys.reduce((sum, k, i) => {
+    f(x) {
+        const sum = this.factors.reduce((sum, k, i) => {
             return sum + k * (x ** i);
-        }, 0).toFixed(5);
+        }, 0);
+        console.log(sum);
+        return parseFloat(sum.toFixed(5));
     }
 }
 
@@ -57,23 +70,31 @@ export default class FG {
     
     constructor(points) {
         this.__points = points;
+        const pa = new PA(points);
+        this.f = pa.f.bind(pa);
     }
     
     get __biased() {
         return Array.from(this.__points, ([x, y]) => {
+            // Z = sqrt(-2 * ln(U1)) * cos(2 * PI * U2)
             const pt1 = Math.sqrt(-2 * Math.log(Math.random()));
             const pt2 = Math.cos(2 * Math.PI * Math.random());
-            const standartDirtribution = pt1 * pt2;
-            const standartDeviation = 0.4;
-            const normalised = standartDeviation * standartDirtribution;
-            return [x, y + normalised];
+            const stDistr = pt1 * pt2;
+            const stDev = 0.2;
+            // N ~ µ + σ * Z
+            const normalisedBias = 0 + stDev * stDistr;
+            return [x, y + normalisedBias];
         });
     }
 
-    get randomFunc() {
-        return new PA(this.__biased).func;
+    get randF() {
+        const biased = this.__biased;
+        const pa = new PA(biased);
+        console.log({ biased, pa, fg: this });
+        return pa.f.bind(pa);
     }
 }
+
 
 export class InOut extends FG {
     
@@ -87,3 +108,8 @@ export class InOut extends FG {
         ]);
     }
 }
+
+
+const io = new InOut();
+window.f = x => io.f(x);
+window.rf = x => io.randF(x);
