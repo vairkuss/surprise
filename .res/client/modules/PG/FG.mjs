@@ -8,7 +8,7 @@ function clone(obj) {
 
 export class PA { // Polynomial Approximator 
 
-    constructor(points) {
+    __LGSToMatrix(points) {
         const matrix = points.map(([x, y], _, a) => {
             const expos = a.map((_, i) => x ** i);
             return expos.toReversed().concat(y);
@@ -59,7 +59,7 @@ export default class FG {
         this.__points = points;
     }
     
-    get __randomised_points() {
+    get __biased() {
         return Array.from(this.__points, ([x, y]) => {
             const pt1 = Math.sqrt(-2 * Math.log(Math.random()));
             const pt2 = Math.cos(2 * Math.PI * Math.random());
@@ -70,7 +70,9 @@ export default class FG {
         });
     }
 
-
+    get randomFunc() {
+        return new PA(this.__biased).func;
+    }
 }
 
 export class InOut extends FG {
